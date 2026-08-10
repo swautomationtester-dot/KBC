@@ -11,6 +11,7 @@ function playQuestionAudio(questionIndex){
   }catch(e){}
 }
 const prizeLadder=[10,20,30,40,50];
+const safeHavens=[20,40];
 function playerScore(users){const u=(users||[]).find(v=>v.employeeCode===me);return u?Number(u.score||0):0}
 function renderPlayerLadder(users){ /* hidden in the live player view */ }
 function clearAnswerResult(){if($("result"))$("result").innerHTML="";}
@@ -46,6 +47,20 @@ function answer(i){
  document.querySelectorAll("#answers .answer").forEach(b=>b.disabled=true);
  $("status").innerHTML=`🔒 <b>ANSWER LOCKED</b><br>Waiting for host approval…`;
  s.emit("player:answer",{choice:i});
+}
+function renderQuitButton(amount,enabled=true){
+ const wrap=$("quitWrap"),btn=$("quitBtn"),hint=$("quitHint"); if(!wrap||!btn)return;
+ const n=Number(amount||0); wrap.classList.remove("hidden");
+ btn.textContent=n>0?`🚪 Quit & Take ₹${n}`:"🚪 Quit (No guaranteed amount yet)";
+ btn.disabled=!enabled||n<=0;
+ if(hint)hint.textContent=n>0?`Guaranteed amount secured: ₹${n}. You may walk away now.`:"Reach ₹20 after Q2 or ₹40 after Q4 to unlock Quit & Take.";
+}
+function hideQuitButton(){const w=$("quitWrap");if(w)w.classList.add("hidden");}
+function quitGame(){
+ if(answerLocked)return; const btn=$("quitBtn"); if(btn?.disabled)return;
+ const amount=Number(btn.textContent.replace(/\D/g,"")||0); if(amount<=0)return;
+ if(!confirm(`Quit the quiz and take the guaranteed ₹${amount}?`))return;
+ btn.disabled=true; $("status").innerHTML=`🚪 <b>Quit requested.</b><br>Securing your guaranteed ₹${amount}…`; s.emit("player:quit");
 }
 function life(type){
  if(answerLocked)return;
@@ -173,6 +188,7 @@ s.on("state",x=>{ tvUniqueUrl=x.screenUrl||tvUniqueUrl; renderPlayerLadder(x.use
  }
  clearInterval(eliminationTimer);
  if(x.phase==="registration"){
+   hideQuitButton();
    if(!audiencePollActive)clearAnswerResult();
    if(hasJoined){
      $("form").classList.add("hidden");
@@ -181,8 +197,8 @@ s.on("state",x=>{ tvUniqueUrl=x.screenUrl||tvUniqueUrl; renderPlayerLadder(x.use
    }
    return;
 }
- if(x.phase==="fastest"){audiencePollActive=false;renderAudiencePollResult({},null);clearAnswerResult();renderFastest(x.pool,x.fastestSequence,x.fastestStartAt,x.fastestDurationMs);$("life").innerHTML="";return}
- if(x.phase==="fastestResult"){audiencePollActive=false;renderAudiencePollResult({},null);clearAnswerResult();
+ if(x.phase==="fastest"){hideQuitButton();audiencePollActive=false;renderAudiencePollResult({},null);clearAnswerResult();renderFastest(x.pool,x.fastestSequence,x.fastestStartAt,x.fastestDurationMs);$("life").innerHTML="";return}
+ if(x.phase==="fastestResult"){hideQuitButton();audiencePollActive=false;renderAudiencePollResult({},null);clearAnswerResult();
    const iWon=x.winner&&x.winner.employeeCode===me;
    $("answers").innerHTML="";
    if(iWon){
@@ -192,11 +208,11 @@ s.on("state",x=>{ tvUniqueUrl=x.screenUrl||tvUniqueUrl; renderPlayerLadder(x.use
    }
    return
  }
- if(x.phase==="fastestTimeout"){audiencePollActive=false;renderAudiencePollResult({},null);clearAnswerResult();
+ if(x.phase==="fastestTimeout"){hideQuitButton();audiencePollActive=false;renderAudiencePollResult({},null);clearAnswerResult();
    $("answers").innerHTML="";
    $("status").innerHTML="⏳ <b>Waiting for the next Fastest Finger.</b><br>You remain registered and may be selected in the next round.";
    return}
- if(x.phase==="eliminated"){audiencePollActive=false;renderAudiencePollResult({},null);clearAnswerResult();$("status").innerHTML="❌ <b>Game result is being shown…</b>";return}
+ if(x.phase==="eliminated"){hideQuitButton();audiencePollActive=false;renderAudiencePollResult({},null);clearAnswerResult();$("status").innerHTML="❌ <b>Game result is being shown…</b>";return}
  if(x.phase==="question"&&x.question){currentQuestion=x.question;playQuestionAudio(x.current);if(!audiencePollActive)clearAnswerResult(); audiencePollActive=!!x.pollActive; audiencePollCounts=x.pollCounts||audiencePollCounts; renderAudiencePollResult(audiencePollCounts,x.question);
    if(x.contestant&&x.contestant.employeeCode===me){
      setQuizActive(true);
@@ -205,7 +221,7 @@ s.on("state",x=>{ tvUniqueUrl=x.screenUrl||tvUniqueUrl; renderPlayerLadder(x.use
      $("connection").classList.add("hidden");
      $("game").classList.remove("hidden");answerLocked=!!x.pendingAnswer;
      fiftyFiftyRemoved=Array.isArray(x.fiftyFiftyRemoved)?x.fiftyFiftyRemoved.map(Number):[];
-     $("status").innerHTML=`<div class=eyebrow>YOUR GAME • QUESTION ${x.current+1} OF ${(x.totalQuestions||5)} • ${x.question.points} POINTS</div><br><b>${x.question.text}</b>`;
+     $("status").innerHTML=`<div class=eyebrow>YOUR GAME • QUESTION ${x.current+1} OF ${(x.totalQuestions||5)} • ${x.question.points} POINTS</div><div class="questionCategory">${x.question.category||"General Knowledge"}</div><br><b>${x.question.text}</b>`;
      $("answers").innerHTML="";
      x.question.options.forEach((o,i)=>{
        const b=document.createElement("button");
@@ -229,15 +245,18 @@ const used5050=!!used["5050"],usedAudience=!!used["audience"],usedPhone=!!used["
 const lockAudience=usedAudience;
 const lock5050=used5050;
 $("life").innerHTML=`<button onclick="life('5050')" ${lock5050?"disabled":""}>${used5050?"✓ ":""}50:50</button><button onclick="life('audience')" ${lockAudience?"disabled":""}>${usedAudience?"✓ ":""}Audience</button><button onclick="life('phone')" ${usedPhone?"disabled":""}>${usedPhone?"✓ ":""}Phone-a-Friend</button>`;
+     renderQuitButton(x.assuredMoney||0,!x.pendingAnswer);
    }else{
      setQuizActive(false);
      $("status").innerHTML="📺 <b>You are not the current contestant.</b><br>Watch the projector screen.";
      $("answers").innerHTML="";
      $("life").innerHTML="";
+     hideQuitButton();
    }
    return;
  }
  if(x.phase==="winnerCelebration"){
+  hideQuitButton();
   setQuizActive(true);
   clearAnswerResult();
   const iWon=x.winner&&x.winner.employeeCode===me;
@@ -333,10 +352,14 @@ s.on("answerRevealed",a=>{
    }
  });
  if(a.correct){
-   $("status").innerHTML=`<div class="answerDecision correctDecision">🟢 <b>CORRECT ANSWER</b><small>Points earned: +₹${Number(a.points||0).toLocaleString("en-IN")}</small></div>`;
+   $("status").innerHTML=`<div class="answerDecision correctDecision">🟢 <b>CORRECT ANSWER</b><small>Question value: ₹${Number(a.points||0).toLocaleString("en-IN")} • Guaranteed amount: ₹${Number(a.assuredMoney||0).toLocaleString("en-IN")}</small></div>`;
  }else{
-   $("status").innerHTML=`<div class="answerDecision wrongDecision">🔴 <b>WRONG ANSWER</b><small>You have been eliminated.</small></div>`;
+   $("status").innerHTML=`<div class="answerDecision wrongDecision">🔴 <b>WRONG ANSWER</b><small>₹0 prize. You are eliminated.</small></div>`;
  }
+});
+s.on("quitAccepted",r=>{
+ hideQuitButton(); $("answers").innerHTML=""; $("life").innerHTML="";
+ $("status").innerHTML=`<div class="quitDecision"><div class="eyebrow">🚪 WALKED AWAY</div><h2>Congratulations!</h2><p>You quit the game and secured</p><strong>₹${Number(r.amount||0).toLocaleString("en-IN")}</strong><small>Watch the TV for the next contestant.</small></div>`;
 });
 s.on("audiencePollRequested",()=>{});
 s.on("audiencePollApproved",()=>{

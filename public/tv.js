@@ -246,6 +246,12 @@ s.on("answerLocked",a=>{
   lock.innerHTML=`<span>🔒 ANSWER LOCKED</span> ${escapeHtml(a.contestant?.name||"Contestant")} selected <b>${String.fromCharCode(65+a.choice)}. ${escapeHtml(a.option)}</b><small> Waiting for host approval…</small>`;
   panel.appendChild(lock);tone(520,.12,"sine",.04);
 });
+s.on("contestantQuit",a=>{
+ const panel=document.getElementById("tvmain"); if(!panel)return;
+ panel.innerHTML=`<div class="elimination"><div class="tvkicker">🚪 CONTESTANT WALKED AWAY</div><div class="winnerCrown">🏆</div><h1>${escapeHtml(a.contestant?.name||"Contestant")}</h1><p>They chose to quit and take the guaranteed amount.</p><div class="securedPoints">GUARANTEED PRIZE <b>₹${Number(a.amount||0).toLocaleString("en-IN")}</b></div><div class="nextBadge">NEXT: FASTEST FINGER</div></div>`;
+ setTimeout(()=>{if(latestTvState&&latestTvState.phase==="fastest")render(latestTvState);},4000);
+});
+
 s.on("contestantAnswer",a=>{
   const panel=document.querySelector(".questionScreen");if(!panel)return;
   const opts=panel.querySelectorAll(".tvopts div");
@@ -319,9 +325,9 @@ s.on("state",x=>{ latestTvState=x;try{
  if(x.phase==="fastestTimeout"){$("tvmain").innerHTML=`<div class=winnerScreen><div class=tvkicker>TIME UP</div><h1>⏱️ NOBODY FINISHED</h1><p>Host can restart Fastest Finger with the same 7 players.</p></div>`;return}
  if(x.phase==="eliminated"){
  const e=x.eliminatedContestant;
- $("tvmain").innerHTML=`<div class=elimination><div class=tvkicker>CONTESTANT ELIMINATED</div><div class=wrongX>✕</div><h1>WRONG ANSWER</h1><h2>${e?e.name:"Contestant"}</h2><p>Well played!</p><div class=securedPoints>POINTS SECURED <b>₹${Number(e?.pointsEarned||0).toLocaleString("en-IN")}</b></div><div class=nextBadge>NEXT: FASTEST FINGER</div></div>`;return}
+ $("tvmain").innerHTML=`<div class=elimination><div class=tvkicker>CONTESTANT ELIMINATED</div><div class=wrongX>✕</div><h1>WRONG ANSWER</h1><h2>${e?e.name:"Contestant"}</h2><p>Well played!</p><div class=securedPoints>PRIZE WON <b>₹${Number(e?.prizeWon??0).toLocaleString("en-IN")}</b></div><div class=nextBadge>NEXT: FASTEST FINGER</div></div>`;return}
  if(x.phase==="question"&&x.question){if(lastQuestion!==x.current){playQuestionAudio(x.current);transition("NEW CONTESTANT GAME",`QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}`);setTimeout(()=>{
-   $("tvmain").innerHTML=`<div class="questionScreen ${x.current===4?"finalQuestion":""}"><div class=qmeta><span>QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}</span><span>₹${x.question.points.toLocaleString("en-IN")}</span></div>${x.current===4?'<div class="finalBadge">🏆 FINAL QUESTION • ₹50</div>':""}<h1>${x.question.text}</h1><div class=tvopts>${x.question.options.map((o,i)=>`<div><b>${String.fromCharCode(65+i)}</b><span>${o}</span></div>`).join("")}</div></div>`;
+   $("tvmain").innerHTML=`<div class="questionScreen ${x.current===4?"finalQuestion":""}"><div class=qmeta><span>QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}</span><span>${x.question.category||"General Knowledge"}</span><span>₹${x.question.points.toLocaleString("en-IN")}</span></div>${x.current===1?'<div class="finalBadge">🛡️ SAFE HAVEN • ₹20</div>':x.current===3?'<div class="finalBadge">🛡️ SAFE HAVEN • ₹40</div>':x.current===4?'<div class="finalBadge">🏆 FINAL QUESTION • ₹50</div>':""}<h1>${x.question.text}</h1><div class=tvopts>${x.question.options.map((o,i)=>`<div><b>${String.fromCharCode(65+i)}</b><span>${o}</span></div>`).join("")}</div></div>`;
    tone(440,.18);tone(660,.22,"sine",.05,.18);
    // The delayed question transition used to overwrite the audience-poll
    // overlay about 650ms after the poll opened. Always restore the poll after

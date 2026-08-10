@@ -111,6 +111,7 @@ s.on("answerRejected",a=>{
 function approveAnswer(){s.emit("host:approveAnswer")}
 function rejectAnswer(){s.emit("host:rejectAnswer")}
 
+s.on("contestantQuit",a=>{const el=$("status");if(el)el.innerHTML=`🚪 <b>${a.contestant?.name||"Contestant"} walked away with ₹${Number(a.amount||0).toLocaleString("en-IN")}</b>.`;});
 function updateFlowControls(x){
   window.__hostPhase=x.phase||"";
   window.__hostWinnerName=x.winner?.name||x.contestant?.name||"";
