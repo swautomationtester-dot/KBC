@@ -1,4 +1,4 @@
-const path=require("path"),http=require("http"),express=require("express"),crypto=require("crypto");
+const path=require("path"),fs=require("fs"),http=require("http"),express=require("express"),crypto=require("crypto");
 const {Server}=require("socket.io"),QRCode=require("qrcode"),mysql=require("mysql2/promise");
 const independenceBank=require("./questions.json");
 const app=express(),server=http.createServer(app),io=new Server(server,{cors:{origin:true}});
@@ -14,6 +14,44 @@ function getPublicUrlForSocket(s){
   if(host && !/localhost|127\\.0\\.0\\.1/i.test(host)) return `${proto}://${host}`;
   return `http://localhost:${PORT}`;
 }
+
+const DATA_DIR=path.join(__dirname,"data");
+const REGISTERED_USERS_FILE=path.join(DATA_DIR,"registered-users.json");
+
+function loadRegisteredUsers(){
+  try{
+    fs.mkdirSync(DATA_DIR,{recursive:true});
+    if(!fs.existsSync(REGISTERED_USERS_FILE)) return new Map();
+    const raw=JSON.parse(fs.readFileSync(REGISTERED_USERS_FILE,"utf8"));
+    return new Map((Array.isArray(raw)?raw:[]).map(u=>[String(u.employeeCode),u]));
+  }catch(err){
+    console.error("Could not load registered users:",err.message);
+    return new Map();
+  }
+}
+
+const registeredUsers=loadRegisteredUsers();
+
+function saveRegisteredUsers(){
+  fs.mkdirSync(DATA_DIR,{recursive:true});
+  const tmp=REGISTERED_USERS_FILE+".tmp";
+  fs.writeFileSync(tmp,JSON.stringify([...registeredUsers.values()],null,2),"utf8");
+  fs.renameSync(tmp,REGISTERED_USERS_FILE);
+}
+
+function registerUserOnce({name,employeeCode,roomCode}){
+  const key=String(employeeCode).trim();
+  if(registeredUsers.has(key)) return false;
+  registeredUsers.set(key,{
+    name:String(name).trim(),
+    employeeCode:key,
+    registeredAt:Date.now(),
+    registeredRoom:String(roomCode||"")
+  });
+  saveRegisteredUsers();
+  return true;
+}
+
 const ADMIN_USERNAME=process.env.ADMIN_USERNAME||"admin";
 const ADMIN_PASSWORD=process.env.ADMIN_PASSWORD||"change-me";
 const adminSessions=new Map();
@@ -164,7 +202,10 @@ async function startFastest(r, keepPool=false){
  r.fastestSequence=Array.from({length:5},()=>Math.floor(Math.random()*4));
  r.fastestToken=crypto.randomBytes(12).toString("base64url");
  const roomCode=[...rooms.entries()].find(([,room])=>room===r)?.[0]||"";
- r.fastestJoinUrl=`${getPublicUrlForSocket(s)}/join.html?room=${encodeURIComponent(roomCode)}&game=${encodeURIComponent(r.fastestToken)}`;
+ // startFastest receives a room, not a socket. Use the room's public join URL
+  // so Randomly Select 7 cannot crash with "s is not defined".
+  const publicBase = r.joinUrl ? new URL(r.joinUrl).origin : (PUBLIC_URL || "");
+  r.fastestJoinUrl=`${publicBase}/join.html?room=${encodeURIComponent(roomCode)}&game=${encodeURIComponent(r.fastestToken)}`;
  r.fastestJoinQr=await QRCode.toDataURL(r.fastestJoinUrl,{margin:1,width:280});
  if(!r.pool.length){r.phase="finished";return}
  r.pool.forEach(u=>u.inPool=true);
@@ -268,9 +309,7 @@ const CM_CARDS=[
  {key:"football",image:"/assets/cardmatch/football.svg"},
  {key:"pizza",image:"/assets/cardmatch/pizza.svg"},
  {key:"fox",image:"/assets/cardmatch/fox.svg"},
- {key:"guitar",image:"/assets/cardmatch/guitar.svg"},
- {key:"crown",image:"/assets/cardmatch/crown.svg"},
- {key:"brain",image:"/assets/cardmatch/brain.svg"}
+ {key:"guitar",image:"/assets/cardmatch/guitar.svg"}
 ];
 const CM_COLORS=["#ff5c7a","#5c8dff","#20c997","#ffb020"];
 function cmDeck(){
@@ -297,10 +336,8 @@ io.on("connection",s=>{
    const code=cmCode(),channel="cardmatch-"+code;
    const r={code,channel,tv:s.id,players:[],deck:[],flipped:[],turn:0,status:"lobby",winner:[]};
    cardMatchRooms.set(code,r);s.join(channel);s.data.cmRoom=code;s.data.cmRole="tv";
-   const forwardedProto=String(s.handshake.headers["x-forwarded-proto"]||"https").split(",")[0].trim().replace(/:$/,"");
-   const forwardedHost=String(s.handshake.headers["x-forwarded-host"]||s.handshake.headers.host||"").split(",")[0].trim();
-   const base=String(PUBLIC_URL||"").trim()||(`${forwardedProto}://${forwardedHost}`);
-   s.emit("cm:room",{code,joinUrl:`${base.replace(/\/$/,"")}/card-match.html?join=${code}`});cmBroadcast(r);
+   const proto=String(s.handshake.headers["x-forwarded-proto"]||"http").split(",")[0].trim().replace(/:$/,""),host=String(s.handshake.headers.host||"").trim();
+   s.emit("cm:room",{code,joinUrl:`${proto}://${host}/card-match.html?join=${code}`});cmBroadcast(r);
  });
  s.on("cm:join",({code,name}={})=>{
    const r=cardMatchRooms.get(String(code||""));if(!r)return s.emit("cm:error",{message:"Room not found."});
@@ -359,15 +396,73 @@ io.on("connection",s=>{
    return;
  }
 });
-s.on("host:create",async()=>{
- let code;do code=String(Math.floor(1000+Math.random()*9000));while(rooms.has(code));
- const r=makeRoom();r.host=s.id;r.hostToken=crypto.randomBytes(24).toString("hex");r.hostDisconnectTimer=null;r.questions=[];
- rooms.set(code,r);s.join(code);s.data.room=code;s.data.role="host";
- const joinUrl=`${getPublicUrlForSocket(s)}/join.html?room=${code}`;r.joinUrl=joinUrl;r.joinQr=await QRCode.toDataURL(joinUrl);r.screenToken=crypto.randomBytes(14).toString("base64url");r.screenUrl=`${getPublicUrlForSocket(s)}/screen/${r.screenToken}`;r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});r.audiencePollUrl=`${getPublicUrlForSocket(s)}/audience.html?room=${code}`;r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});s.emit("room",{code,hostToken:r.hostToken,joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});emitState(code)});
- s.on("join",({code,name,employeeCode,role="player",game})=>{code=String(code||"").trim();const r=rooms.get(code);if(!/^\d{4}$/.test(code))return s.emit("errorMsg","Room code must be exactly 4 digits.");if(!r)return s.emit("errorMsg","Room not found. Ask the host for a new code.");
+s.on("host:create",async(_payload={},ack)=>{
+  try{
+    // Always create a fresh room; never reuse the previous host session.
+    let code;do code=String(Math.floor(1000+Math.random()*9000));while(rooms.has(code));
+    const r=makeRoom();
+    r.host=s.id;
+    r.hostToken=crypto.randomBytes(24).toString("hex");
+    r.hostDisconnectTimer=null;
+    r.questions=[];
+    rooms.set(code,r);
+    s.join(code);
+    s.data.room=code;
+    s.data.role="host";
+
+    // Prefer PUBLIC_URL on production so QR codes never contain localhost.
+    const base=String(PUBLIC_URL||"").trim()||getPublicUrlForSocket(s);
+    const joinUrl=`${base}/join.html?room=${code}`;
+    r.joinUrl=joinUrl;
+    r.joinQr=await QRCode.toDataURL(joinUrl,{margin:1,width:320});
+    r.screenToken=crypto.randomBytes(14).toString("base64url");
+    r.screenUrl=`${base}/screen/${r.screenToken}`;
+    r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});
+    r.audiencePollUrl=`${base}/audience.html?room=${code}`;
+    r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});
+
+    const payload={
+      code,hostToken:r.hostToken,joinUrl,qr:r.joinQr,
+      screenUrl:r.screenUrl,screenQr:r.screenQr,
+      audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr
+    };
+    s.emit("room",payload);
+    if(typeof ack==="function")ack({ok:true,...payload});
+    emitState(code);
+  }catch(err){
+    console.error("host:create failed:",err);
+    if(typeof ack==="function")ack({ok:false,error:"Unable to create the game room. Please try again."});
+    s.emit("errorMsg","Unable to create the game room. Please try again.");
+  }
+});
+ 
+s.on("player:resume",({code,name,employeeCode,game}={})=>{
+ code=String(code||"").trim(); name=String(name||"").trim(); employeeCode=String(employeeCode||"").trim();
+ const r=rooms.get(code);
+ if(!r||!employeeCode)return s.emit("errorMsg","Game session expired. Please join again.");
+ const existing=[...r.users.entries()].find(([,u])=>u.employeeCode===employeeCode);
+ if(!existing)return s.emit("errorMsg","Player session not found. Please join again.");
+ const u=existing[1];
+ if(name && u.name!==name)return s.emit("errorMsg","Player details do not match.");
+ r.users.delete(existing[0]);
+ u.id=s.id;
+ r.users.set(s.id,u);
+ s.join(code);s.data.room=code;s.data.role="player";
+ s.emit("joined",{name:u.name,employeeCode:u.employeeCode,resumed:true});
+ emitState(code);
+});
+s.on("join",({code,name,employeeCode,role="player",game})=>{code=String(code||"").trim();const r=rooms.get(code);if(!/^\d{4}$/.test(code))return s.emit("errorMsg","Room code must be exactly 4 digits.");if(!r)return s.emit("errorMsg","Room not found. Ask the host for a new code.");
  if(game){const ec=String(employeeCode||"").trim();if(game!==r.fastestToken)return s.emit("errorMsg","This Fastest Finger QR is no longer active.");if(!/^\d+$/.test(ec))return s.emit("errorMsg","Register number must contain numbers only.");if(!r.pool.some(p=>p.employeeCode===ec))return s.emit("errorMsg","You are not selected for this Fastest Finger round.");}
- s.join(code);s.data.room=code;s.data.role=role;if(role==="audience"||role==="tv"||role==="roster"){s.emit("joined",{name:role==="tv"?"TV Screen":role==="roster"?"Roster Viewer":"Audience"});emitState(code);return}name=String(name||"").trim();employeeCode=String(employeeCode||"").trim();if(!/^[A-Za-z]+(?:[ ][A-Za-z]+)*$/.test(name))return s.emit("errorMsg","Name must contain alphabets only.");if(!/^\d+$/.test(employeeCode))return s.emit("errorMsg","Register number must contain numbers only.");if([...r.users.values()].some(u=>u.employeeCode===employeeCode))return s.emit("errorMsg","This register number is already registered.");r.users.set(s.id,{id:s.id,name,employeeCode,score:0,status:"active",inPool:false,lifelinesUsed:{"5050":false,"audience":false,"phone":false},registeredAt:Date.now()});s.emit("joined",{name,employeeCode});emitState(code)});
- s.on("host:showParticipants",()=>{
+ s.join(code);s.data.room=code;s.data.role=role;if(role==="audience"||role==="tv"||role==="roster"){s.emit("joined",{name:role==="tv"?"TV Screen":role==="roster"?"Roster Viewer":"Audience"});emitState(code);return}name=String(name||"").trim();employeeCode=String(employeeCode||"").trim();if(!/^[A-Za-z]+(?:[ ][A-Za-z]+)*$/.test(name))return s.emit("errorMsg","Name must contain alphabets only.");if(!/^\d+$/.test(employeeCode))return s.emit("errorMsg","Register number must contain numbers only.");if([...r.users.values()].some(u=>u.employeeCode===employeeCode))return s.emit("errorMsg","This register number is already registered in this game.");
+ if(registeredUsers.has(employeeCode))return s.emit("errorMsg","This register number is already registered. You cannot register again.");
+ if(!registerUserOnce({name,employeeCode,roomCode:code}))return s.emit("errorMsg","This register number is already registered. You cannot register again.");
+ r.users.set(s.id,{id:s.id,name,employeeCode,score:0,status:"active",inPool:false,lifelinesUsed:{"5050":false,"audience":false,"phone":false},registeredAt:Date.now()});
+ s.emit("joined",{name,employeeCode});emitState(code)});
+ s.on("host:registeredUsers",()=>{
+ const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;
+ s.emit("registeredUsers",[...registeredUsers.values()].sort((a,b)=>a.registeredAt-b.registeredAt));
+});
+s.on("host:showParticipants",()=>{
   const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;
   s.emit("participantsList",[...r.users.values()].map(u=>({name:u.name,employeeCode:u.employeeCode,score:u.score,status:u.status,registeredAt:u.registeredAt})));
 });
