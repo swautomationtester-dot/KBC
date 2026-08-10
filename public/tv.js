@@ -339,7 +339,7 @@ s.on("state",x=>{ latestTvState=x;try{
   const winner=x.winner||{};
   const until=Number(x.winnerCelebrationUntil||Date.now()+30000);
   $("tvmain").innerHTML=`<div class="winnerCelebration">
-    <div class="tvkicker">🏆 PERFICIENT OFFICE QUIZ • FINAL CHECK</div>
+    <div class="tvkicker">🏆 GAMESARENA QUIZ • FINAL CHECK</div>
     <div class="winnerCrown">🏆</div>
     <div class="winnerCheck">ANSWER CHECK</div>
     <h1 class="winnerName">${winner.name||"Champion"}</h1>
@@ -351,9 +351,9 @@ s.on("state",x=>{ latestTvState=x;try{
   startWinnerCelebrationAudio(until);
   return;
 }
-if(x.phase==="finished"){$("tvmain").innerHTML=`<div class=winnerScreen><div class=tvkicker>PERFICIENT OFFICE QUIZ</div><div class=winnerCrown>🏆</div><h1>GAME COMPLETE</h1><p>Congratulations to our champions!</p></div>`;return}
+if(x.phase==="finished"){$("tvmain").innerHTML=`<div class=winnerScreen><div class=tvkicker>GAMESARENA QUIZ</div><div class=winnerCrown>🏆</div><h1>GAME COMPLETE</h1><p>Congratulations to our champions!</p></div>`;return}
 
- $("tvmain").innerHTML=`<div class=lobby><div class=tvkicker>PERFICIENT OFFICE QUIZ</div><h1>Get Ready!</h1></div>`;
+ $("tvmain").innerHTML=`<div class=lobby><div class=tvkicker>GAMESARENA QUIZ</div><h1>Get Ready!</h1></div>`;
 }catch(e){
  console.error("TV state render error",e);
  const toast=$("toast");

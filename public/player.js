@@ -265,7 +265,7 @@ $("life").innerHTML=`<button onclick="life('5050')" ${lock5050?"disabled":""}>${
     $("answers").innerHTML="";
     $("life").innerHTML="";
     $("status").innerHTML=`<div class="winnerPlayer">
-      <div class="eyebrow">🏆 PERFICIENT OFFICE QUIZ • FINAL CHECK</div>
+      <div class="eyebrow">🏆 GAMESARENA QUIZ • FINAL CHECK</div>
       <div class="winnerCrown">🏆</div>
       <h1>CONGRATULATIONS</h1>
       <h2>${x.winner.name||"Champion"}</h2>

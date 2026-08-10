@@ -480,3 +480,8 @@
   .cardMatchPage .cmBoard{gap:7px}
   .cardMatchPage .cmBack .gaCardLogo{width:82%!important;height:82%!important}
 }
+
+
+/* Tie-break result */
+.cardMatchPage .cmTieReason{margin:0 auto 12px;padding:10px 14px;border:1px solid #f1cc5d66;border-radius:10px;color:#f1cc5d;background:#07505688;font-weight:800;text-align:center}
+.cardMatchPage .cmFinalRow small{display:block;color:#b8d4d1;margin-top:3px}

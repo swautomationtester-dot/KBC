@@ -81,8 +81,11 @@ function render(){
 
  if(state.status==="finished"){
    show("winner");
-   $("winnerText").textContent=state.winner?.length===1?state.winner[0]+" wins!":"It's a tie!";
-   $("final").innerHTML=(state.players||[]).slice().sort((a,b)=>b.score-a.score).map(p=>`<div class="cmFinalRow" style="border-left:4px solid ${p.color}"><b>${esc(p.name)}</b><small>${p.score} pair${p.score===1?"":"s"}</small></div>`).join("");
+   const winners=state.winner||[];
+   $("winnerText").textContent=winners.length===1?winners[0]+" wins!":winners.length>1?"It's a tie!":"Game complete";
+   const fmt=ms=>{const sec=Math.max(0,Math.round((ms||0)/1000));return `${Math.floor(sec/60)}m ${String(sec%60).padStart(2,"0")}s`};
+   const reason=state.winnerReason?`<div class="cmTieReason">${esc(state.winnerReason)}</div>`:"";
+   $("final").innerHTML=reason+(state.players||[]).slice().sort((a,b)=>b.score-a.score||(a.timeMs||0)-(b.timeMs||0)).map(p=>`<div class="cmFinalRow" style="border-left:4px solid ${p.color}"><b>${esc(p.name)}</b><small>${p.score} pair${p.score===1?"":"s"} · ${fmt(p.timeMs)}</small></div>`).join("");
    return;
  }
 
