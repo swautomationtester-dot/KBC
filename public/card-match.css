@@ -27,3 +27,41 @@
 .cardMatchPage .sitebar{position:sticky;top:0;z-index:20}
 .cardMatchPage .cmHero{padding-top:18px}
 .cardMatchPage .cmHero .primary,.cardMatchPage .cmHero .cmSecondary{min-width:230px}
+
+/* Card Match overrides the main site's global #toast rules. */
+.cardMatchPage #toast{
+  position:fixed !important;
+  left:50% !important;
+  top:auto !important;
+  right:auto !important;
+  bottom:24px !important;
+  width:max-content !important;
+  max-width:min(92vw,520px) !important;
+  min-width:0 !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:12px 18px !important;
+  box-sizing:border-box !important;
+  display:block !important;
+  white-space:normal !important;
+  overflow:hidden !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  color:#111 !important;
+  font:800 14px/1.25 Arial,sans-serif !important;
+  text-align:center !important;
+  z-index:99999 !important;
+  opacity:0;
+  transform:translate(-50%,20px) !important;
+  pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease !important;
+}
+.cardMatchPage #toast.show{
+  opacity:1 !important;
+  transform:translate(-50%,0) !important;
+}
+
+.cmHint{color:#8993a8;font-size:13px;margin:0 0 12px}
+.cmPanel .expired{border-color:#ff647c}
