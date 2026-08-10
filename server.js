@@ -92,7 +92,7 @@ async function questions(){
 const GAME_POINTS=[10,20,30,40,50];
 const GAME_DIFFICULTY=[1,2,3,4,5];
 const TOTAL_QUESTIONS=5;
-const QUESTION_BANK_VERSION="GAMESARENA-MIXED-INDIA-CINEMA-POLITICS-TECH-v2";
+const QUESTION_BANK_VERSION="GAMESARENA-KBC-KIDS-WARMUP-HARD-FINISH-v3";
 
 function shuffleCopy(arr){
  const a=Array.isArray(arr)?arr.slice():[];
@@ -103,46 +103,46 @@ function shuffleCopy(arr){
  return a;
 }
 function buildGameQuestions(bank,usedIds=new Set()){
-  // Every 5-question game deliberately covers all requested themes once:
-  // South Indian cinema, Indian cinema, Politics & Indian Polity,
-  // Technology, plus one General Knowledge question. Questions already
-  // used in this room are excluded so the same question is not repeated
-  // across consecutive games until the available bank is exhausted.
+  // KBC-style difficulty progression:
+  // Q1–Q2 always start with Kids General Knowledge (easy warm-up).
+  // Q3 introduces a moderate question.
+  // Q4–Q5 are deliberately harder.
+  // Politics is kept EASY/MODERATE only; Bollywood/Indian Cinema is excluded.
   const targets=[
-    {category:"South Indian Cinema",difficulty:1},
-    {category:"Indian Cinema",difficulty:2},
-    {category:"Politics & Indian Polity",difficulty:3},
-    {category:"Technology",difficulty:4},
-    {category:"Kids General Knowledge",difficulty:4}
+    {category:"Kids General Knowledge",difficulty:1,displayDifficulty:1},
+    {category:"Kids General Knowledge",difficulty:2,displayDifficulty:2},
+    {category:"Politics & Indian Polity",difficulty:2,displayDifficulty:3},
+    {category:"Technology",difficulty:4,displayDifficulty:4},
+    {category:"South Indian Cinema",difficulty:4,displayDifficulty:5}
   ];
   const used=new Set(usedIds||[]);
   const selected=[];
   for(const target of targets){
-    const exact=(bank||[]).filter(q=>q.category===target.category && Number(q.difficulty)===target.difficulty && !used.has(q.id));
-    const sameCat=(bank||[]).filter(q=>q.category===target.category && !used.has(q.id));
+    const exact=(bank||[]).filter(q=>q.category===target.category&&Number(q.difficulty)===target.difficulty&&!used.has(q.id));
+    const sameCat=(bank||[]).filter(q=>q.category===target.category&&!used.has(q.id));
     const pool=exact.length?exact:sameCat;
-    if(!pool.length) continue;
-    const pick=shuffleCopy(pool)[0];
-    selected.push(structuredClone(pick));
-    used.add(pick.id);
+    if(!pool.length)continue;
+    const copy=structuredClone(shuffleCopy(pool)[0]);
+    copy._displayDifficulty=target.displayDifficulty;
+    selected.push(copy); used.add(copy.id);
   }
-  // If a category is temporarily exhausted, fill the slot from any unused
-  // question rather than showing fewer than five questions.
   if(selected.length<TOTAL_QUESTIONS){
-    const fallback=shuffleCopy((bank||[]).filter(q=>!used.has(q.id)));
+    const fallback=shuffleCopy((bank||[]).filter(q=>!used.has(q.id)))
+      .sort((a,b)=>Number(b.difficulty||1)-Number(a.difficulty||1));
     for(const q of fallback){
       if(selected.length>=TOTAL_QUESTIONS)break;
-      selected.push(structuredClone(q));
-      used.add(q.id);
+      const copy=structuredClone(q);
+      copy._displayDifficulty=Math.min(5,selected.length+1);
+      selected.push(copy); used.add(copy.id);
     }
   }
   const game=selected.slice(0,TOTAL_QUESTIONS);
   game.forEach((q,index)=>{
-    const original=q.options.slice(), correct=original[q.answer];
-    q.options=shuffleCopy(original);
-    q.answer=q.options.indexOf(correct);
+    const original=q.options.slice(),correct=original[q.answer];
+    q.options=shuffleCopy(original); q.answer=q.options.indexOf(correct);
     q.points=GAME_POINTS[index];
-    q.difficulty=index+1;
+    q.difficulty=Number(q._displayDifficulty||Math.min(5,index+1));
+    delete q._displayDifficulty;
   });
   return game;
 }
@@ -412,11 +412,9 @@ io.on("connection",s=>{
  s.on("cm:refresh",({code}={})=>{
    const roomCode=String(code||s.data.cmRoom||"").trim(),r=cardMatchRooms.get(roomCode);
    if(!r)return s.emit("cm:error",{message:"The game room is no longer available."});
-   if(s.id!==r.tv)return s.emit("cm:error",{message:"Only the TV can sync the game board."});
+   if(s.id!==r.tv)return s.emit("cm:error",{message:"Only the TV can sync the game."});
    if(r.status!=="playing")return cmBroadcast(r);
-   // Refresh means re-sync the authoritative board. Do NOT shuffle or close
-   // already matched cards and do NOT reset scores. "New Game" is the action
-   // that intentionally creates a fresh board.
+   // Sync only: never create a new deck and never close matched cards.
    cmBroadcast(r);
  });
  s.on("cm:flip",({cardId}={})=>{
