@@ -1,16 +1,134 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Card Match</title><link rel="stylesheet" href="/style.css?v=65"><link rel="stylesheet" href="/card-match.css?v=99"></head>
-<body class="cardMatchPage"><header class="sitebar"><a href="/" class="cmBrand"><img src="/assets/logo-dark.png" class="brand"> 🃏 <b>Card Match</b></a><span class="chip">MEMORY ARENA</span></header>
-<main class="cmWrap">
-<section id="home" class="cmScreen active"><div class="cmHero"><label>MULTIPLAYER MINI GAME</label><h1>Remember.<br><em>Match.</em><br>Win.</h1><p>2–4 players. The TV shows the board while everyone plays from their phone.</p><div class="cmHeroBtns"><button id="create" class="primary big">📺 Create TV Game</button><button id="join" class="cmSecondary big">📱 Join a Game</button></div></div></section>
-<section id="lobby" class="cmScreen"><div class="cmPanel"><label>ROOM READY</label><div id="code" class="cmCode">----</div><p>Scan the QR code or enter the room code.</p><div id="qr" class="cmQr"></div><div id="url" class="cmUrl"></div><div id="players" class="cmPlayers"></div><button id="start" class="primary big wide">Start Match</button><button id="lobbyNew" class="cmSecondary wide">New Room</button></div></section>
-<section id="joinPage" class="cmScreen"><div class="cmPanel"><label>JOIN GAME</label><h2>Enter the arena</h2><p id="joinHint" class="cmHint">Enter the code shown on the TV.</p><input id="name" maxlength="18" placeholder="Your name"><input id="room" maxlength="4" inputmode="numeric" placeholder="4-digit room code"><button id="joinNow" class="primary big wide">Join Game</button><button id="back" class="cmSecondary wide">Back</button><button id="newRoom" class="cmSecondary wide">📺 Create New TV Game</button></div></section>
-<section id="game" class="cmScreen cmGame">
- <div class="cmGameTop"><div><label>MEMORY BATTLE</label><h2 id="turn">Waiting…</h2><div id="turnMeta" class="turnMeta"></div></div><div class="cmTvControls"><button id="refreshGame" class="cmControl">↻ Refresh Board</button><button id="restartGame" class="cmControl primarySmall">⟳ New Game</button></div></div>
- <div id="turnStrip" class="turnStrip"></div>
- <div id="scores" class="cmScores"></div>
- <div id="board" class="cmBoard"></div>
- <div class="cmFoot"><span id="status"></span><span id="roomLabel"></span></div>
-</section>
-<section id="winner" class="cmScreen"><div class="cmPanel"><div class="trophy">🏆</div><label>MATCH COMPLETE</label><h1 id="winnerText"></h1><div id="final"></div><button id="again" class="primary big wide">Play Again</button><button id="winnerRefresh" class="cmSecondary wide">Refresh Board</button></div></section>
-<div id="toast"></div><footer class="gaFooter" style="max-width:1000px"><span>GamesArena</span><span>Teamwork • Strategy • Fun</span><span>Powered by Perficient</span></footer></main>
-<script src="/socket.io/socket.io.js"></script><script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script><script src="/card-match.js?v=99"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GamesArena • Card Match</title>
+<link rel="stylesheet" href="/style.css?v=66">
+<link rel="stylesheet" href="/card-match.css?v=50">
+</head>
+<body class="cardMatchPage">
+<header class="cmHeader">
+  <a href="/" class="cmHeaderBrand">
+    <img src="/assets/gamesarena-logo-premium.png" alt="GamesArena">
+    <span class="cmHeaderTitle">🃏 <b>CARD MATCH</b></span>
+  </a>
+  <span class="cmWelcome">WELCOME TO GAMESARENA <span>👥</span></span>
+</header>
+
+<main class="cmApp">
+  <section id="home" class="cmScreen active">
+    <div class="cmHomeGrid">
+      <aside class="cmInfo">
+        <div class="cmGameTitle"><span class="playingCards">🂡♥</span><div><b>CARD MATCH</b><small>MULTIPLAYER MEMORY GAME</small></div></div>
+        <div class="cmInfoBox">
+          <div class="cmRule"><span>🧠</span><b>Remember.</b></div>
+          <div class="cmRule gold"><span>🧩</span><b>Match.</b></div>
+          <div class="cmRule"><span>🏆</span><b>Win.</b></div>
+          <p>2–4 players. The TV shows the board while everyone plays from their phone.</p>
+        </div>
+      </aside>
+      <section class="cmCenterHero">
+        <label>MEMORY BATTLE</label>
+        <img src="/assets/gamesarena-logo-premium.png" class="cmHeroLogo" alt="GamesArena">
+        <h1>Waiting for players…</h1>
+        <p>Share the room code or scan QR to join</p>
+        <div class="cmJoinBox">
+          <div><small>ROOM CODE</small><strong id="homeCode">----</strong><button class="copyMini" id="copyHomeCode">⧉</button></div>
+          <div class="joinQrMini"><small>JOIN QR CODE</small><div id="homeQr"></div></div>
+        </div>
+        <div class="cmHeroActions"><button id="create" class="cmGoldBtn">📺 Create TV Game</button><button id="join" class="cmTealBtn">📱 Join a Game</button></div>
+      </section>
+      <aside class="cmPlayersPanel">
+        <div class="panelHeading">PLAYERS <span id="playerCount">(0 / 4)</span></div>
+        <div id="homePlayers"></div>
+      </aside>
+    </div>
+    <div class="cmTurnBanner"><span>🟢 <b>Playing Now:</b> <strong id="homeNow">Waiting for players</strong></span><span>🔵 <b>Next Player:</b> <strong id="homeNext">—</strong></span></div>
+  </section>
+
+  <section id="lobby" class="cmScreen">
+    <div class="cmLobbyPanel">
+      <label>ROOM READY</label><div id="code" class="cmCode">----</div>
+      <p>Scan the QR code or enter the room code.</p><div id="qr" class="cmQr"></div><div id="url" class="cmUrl"></div>
+      <div id="players" class="cmPlayers"></div>
+      <button id="start" class="cmGoldBtn wide">Start Match</button><button id="lobbyNew" class="cmTealBtn wide">New Room</button>
+    </div>
+  </section>
+
+  <section id="joinPage" class="cmScreen">
+    <div class="cmLobbyPanel"><label>JOIN GAME</label><h2>Enter the arena</h2><p id="joinHint" class="cmHint">Enter the code shown on the TV.</p>
+      <input id="name" maxlength="18" placeholder="Your name"><input id="room" maxlength="4" inputmode="numeric" placeholder="4-digit room code">
+      <button id="joinNow" class="cmGoldBtn wide">Join Game</button><button id="back" class="cmTealBtn wide">Back</button><button id="newRoom" class="cmTealBtn wide">📺 Create New TV Game</button>
+    </div>
+  </section>
+
+  <section id="game" class="cmScreen cmGame">
+    <div class="cmGameHeader">
+      <aside class="cmGameIdentity">
+        <div class="cmGameTitle"><span class="playingCards">🂡♥</span><div><b>CARD MATCH</b><small>MULTIPLAYER MEMORY GAME</small></div></div>
+        <div class="cmInfoBox">
+          <div class="cmRule"><span>🧠</span><b>Remember.</b></div>
+          <div class="cmRule gold"><span>🧩</span><b>Match.</b></div>
+          <div class="cmRule"><span>🏆</span><b>Win.</b></div>
+          <p>2–4 players. The TV shows the board while everyone plays from their phone.</p>
+        </div>
+      </aside>
+
+      <section class="cmGameCenter">
+        <label>MEMORY BATTLE</label>
+        <img src="/assets/gamesarena-logo-premium.png" class="cmGameLogo" alt="GamesArena">
+        <h1 id="turn">Waiting for players…</h1>
+        <p id="turnSub">Watch the board and follow the active player.</p>
+        <div class="cmRoomCard">
+          <div class="cmRoomCode"><small>ROOM CODE</small><strong id="gameRoomCode">----</strong><button class="copyMini" id="copyGameCode">⧉</button></div>
+          <div class="cmRoomQr"><small>JOIN QR CODE</small><div id="gameQr"></div></div>
+        </div>
+      </section>
+
+      <aside class="cmGamePlayers">
+        <div class="panelHeading">PLAYERS <span id="gamePlayerCount">(0 / 4)</span></div>
+        <div id="gamePlayersPanel"></div>
+      </aside>
+    </div>
+
+    <div class="cmTurnBanner">
+      <span>🟢 <b>Playing Now:</b> <strong id="gameNow">Waiting for players</strong></span>
+      <span>🔵 <b>Next Player:</b> <strong id="gameNext">—</strong></span>
+    </div>
+
+    <div class="cmGameControls">
+      <button id="refreshGame" class="cmTealBtn cmControlBtn">⟳ <b>Refresh Board</b><small>Same players, new board</small></button>
+      <button id="restartGame" class="cmGoldBtn cmControlBtn">⟳ <b>New Game</b><small>Reset scores &amp; start fresh</small></button>
+    </div>
+
+    <div class="cmGameLayout">
+      <aside class="cmSide left">
+        <div class="cmSidePanel">
+          <h3>GAME INFO</h3>
+          <div class="infoLine">👥 <span>Players</span><b id="gamePlayers">0 / 4</b></div>
+          <div class="infoLine">🧩 <span>Pairs</span><b id="gamePairs">0</b></div>
+          <div class="infoLine">⏱️ <span>Status</span><b id="gameStatus">Ready</b></div>
+        </div>
+        <div class="cmSidePanel"><h3>HOW TO PLAY</h3><p>🟢 Players take turns selecting two cards</p><p>🟢 Match a pair to score</p><p>🟢 A successful match earns another turn</p></div>
+        <button class="cmTealBtn backHomeGame" id="backGame">← Back to Home</button>
+      </aside>
+
+      <section class="cmBoardArea">
+        <div id="turnStrip" class="turnStrip"></div>
+        <div id="board" class="cmBoard"></div>
+        <div class="cmFoot"><span id="status"></span><span id="roomLabel"></span></div>
+      </section>
+
+      <aside class="cmSide right">
+        <div class="cmSidePanel"><h3>GAME STATUS</h3><div id="turnStatusPanel"></div></div>
+        <div class="cmSidePanel"><h3>SCOREBOARD</h3><div id="scorePanel"></div></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="winner" class="cmScreen"><div class="cmLobbyPanel"><div class="trophy">🏆</div><label>MATCH COMPLETE</label><h1 id="winnerText"></h1><div id="final"></div><button id="again" class="cmGoldBtn wide">Play Again</button><button id="winnerRefresh" class="cmTealBtn wide">Refresh Board</button></div></section>
+</main>
+<div id="toast"></div>
+<footer class="cmFooter"><span>GamesArena</span><span>🏆 Teamwork &nbsp;•&nbsp; Strategy &nbsp;•&nbsp; Fun &nbsp;•&nbsp; Recognition</span><span>Powered by Perficient ♥</span></footer>
+<script src="/socket.io/socket.io.js"></script><script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script><script src="/card-match.js?v=50"></script>
+</body></html>
