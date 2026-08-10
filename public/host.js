@@ -110,7 +110,15 @@ s.on("answerRejected",a=>{
 });
 function approveAnswer(){s.emit("host:approveAnswer")}
 function rejectAnswer(){s.emit("host:rejectAnswer")}
+function approveQuit(){s.emit("host:approveQuit")}
+function rejectQuit(){s.emit("host:rejectQuit")}
 
+s.on("quitRequested",a=>{
+ const el=$("status"); if(el)el.innerHTML=`🚪 <b>SAFE QUIT REQUEST</b> — ${a.contestant?.name||"Contestant"} is requesting to take ₹${Number(a.amount||0).toLocaleString("en-IN")}. Approve or reject above.`;
+});
+s.on("quitRejected",a=>{
+ const el=$("status"); if(el)el.innerHTML=`↩️ Safe Quit rejected for ${a.contestant?.name||"contestant"}. The game continues.`;
+});
 s.on("contestantQuit",a=>{const el=$("status");if(el)el.innerHTML=`🚪 <b>${a.contestant?.name||"Contestant"} walked away with ₹${Number(a.amount||0).toLocaleString("en-IN")}</b>.`;});
 function updateFlowControls(x){
   window.__hostPhase=x.phase||"";
@@ -120,7 +128,7 @@ function updateFlowControls(x){
   const canRestart=phase==="fastestTimeout" && Array.isArray(x.pool) && x.pool.length>0;
   const canNext7=["fastestResult","fastestTimeout","eliminated"].includes(phase);
   const canStart=phase==="fastestResult" && !!(x.winner||x.contestant);
-  const canNextQ=phase==="question" && !x.pendingAnswer;
+  const canNextQ=phase==="question" && !x.pendingAnswer && !x.pendingQuit;
   const canPoll=phase==="question" && !!x.winner;
 
   const set=(id,disabled)=>{const el=$(id);if(el)el.disabled=disabled};
@@ -172,6 +180,9 @@ s.on("state",x=>{ audiencePollOpen=!!x.pollActive;renderHostAudiencePoll(x);upda
  if(x.pendingAnswer){
  $("answerReview").classList.remove("hidden");
  $("answerReview").innerHTML=`<div class="reviewTitle">🔒 ANSWER LOCKED</div><div class="reviewAnswer">${x.pendingAnswer.name} selected <b>${String.fromCharCode(65+x.pendingAnswer.choice)}. ${x.pendingAnswer.option}</b></div><div class="reviewButtons"><button class="approve" onclick="approveAnswer()">✓ APPROVE / REVEAL</button><button class="reject" onclick="rejectAnswer()">↶ REJECT / UNLOCK</button></div>`;
+}else if(x.pendingQuit){
+ $("answerReview").classList.remove("hidden");
+ $("answerReview").innerHTML=`<div class="reviewTitle">🚪 SAFE QUIT REQUEST</div><div class="reviewAnswer"><b>${x.pendingQuit.name}</b> wants to quit and take the guaranteed <strong>₹${Number(x.pendingQuit.amount||0).toLocaleString("en-IN")}</strong>.</div><div class="reviewButtons"><button class="approve" onclick="approveQuit()">✓ APPROVE SAFE QUIT</button><button class="reject" onclick="rejectQuit()">✕ REJECT — CONTINUE</button></div>`;
 }else if(x.pendingPollRequest){
  $("answerReview").classList.remove("hidden");
  $("answerReview").innerHTML=`<div class="reviewTitle">🗳️ AUDIENCE POLL REQUEST</div><div class="reviewAnswer"><b>${x.pendingPollRequest.name}</b> requested the Audience Poll lifeline.</div><div class="reviewButtons"><button class="approve" onclick="approveAudiencePoll()">✓ APPROVE POLL</button><button class="reject" onclick="rejectAudiencePoll()">✕ REJECT POLL</button></div>`;

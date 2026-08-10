@@ -1448,3 +1448,13 @@ body.tv #tvSideRail #prizeLadder .ladderRow.active{
 .questionCategory{display:inline-block;margin:8px 0 12px;padding:6px 12px;border:1px solid rgba(255,214,92,.5);border-radius:999px;color:#ffd65c;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,214,92,.08)}
 
 .questionCategory{display:inline-block;margin:8px 0 12px;padding:6px 12px;border:1px solid rgba(255,214,92,.5);border-radius:999px;color:#ffd65c;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,214,92,.08)}
+
+
+/* KBC Safe Quit approval */
+.quitWrap{margin-top:18px;padding:12px;border:1px solid rgba(255,214,92,.42);border-radius:14px;background:rgba(5,39,43,.62);text-align:center}
+.quitBtn{width:100%;min-height:46px;border:1px solid rgba(255,214,92,.65);border-radius:10px;background:linear-gradient(135deg,#f6d66d,#ffe8a1);color:#062e32;font-weight:800;cursor:pointer}
+.quitBtn:disabled{opacity:.55;cursor:not-allowed}
+.quitHint{display:block;margin-top:8px;opacity:.82}
+.answerReview .reviewTitle{font-weight:900;letter-spacing:.08em}
+.answerReview .reviewButtons .approve{border-color:#4ade80}
+.answerReview .reviewButtons .reject{border-color:#ff6b6b}

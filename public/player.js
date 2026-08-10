@@ -53,14 +53,14 @@ function renderQuitButton(amount,enabled=true){
  const n=Number(amount||0); wrap.classList.remove("hidden");
  btn.textContent=n>0?`🚪 Quit & Take ₹${n}`:"🚪 Quit (No guaranteed amount yet)";
  btn.disabled=!enabled||n<=0;
- if(hint)hint.textContent=n>0?`Guaranteed amount secured: ₹${n}. You may walk away now.`:"Reach ₹20 after Q2 or ₹40 after Q4 to unlock Quit & Take.";
+ if(hint)hint.textContent=n>0?`Guaranteed amount secured: ₹${n}. Host approval is required to walk away.`:"Reach ₹20 after Q2 or ₹40 after Q4 to unlock Safe Quit.";
 }
 function hideQuitButton(){const w=$("quitWrap");if(w)w.classList.add("hidden");}
 function quitGame(){
  if(answerLocked)return; const btn=$("quitBtn"); if(btn?.disabled)return;
  const amount=Number(btn.textContent.replace(/\D/g,"")||0); if(amount<=0)return;
  if(!confirm(`Quit the quiz and take the guaranteed ₹${amount}?`))return;
- btn.disabled=true; $("status").innerHTML=`🚪 <b>Quit requested.</b><br>Securing your guaranteed ₹${amount}…`; s.emit("player:quit");
+ btn.disabled=true; $("status").innerHTML=`🚪 <b>Safe Quit requested.</b><br>Waiting for the Host to approve your guaranteed ₹${amount}…`; s.emit("player:quit");
 }
 function life(type){
  if(answerLocked)return;
@@ -245,7 +245,7 @@ const used5050=!!used["5050"],usedAudience=!!used["audience"],usedPhone=!!used["
 const lockAudience=usedAudience;
 const lock5050=used5050;
 $("life").innerHTML=`<button onclick="life('5050')" ${lock5050?"disabled":""}>${used5050?"✓ ":""}50:50</button><button onclick="life('audience')" ${lockAudience?"disabled":""}>${usedAudience?"✓ ":""}Audience</button><button onclick="life('phone')" ${usedPhone?"disabled":""}>${usedPhone?"✓ ":""}Phone-a-Friend</button>`;
-     renderQuitButton(x.assuredMoney||0,!x.pendingAnswer);
+     const meUser=(x.users||[]).find(u=>u.employeeCode===me); const assured=Number(x.contestantAssuredMoney||meUser?.assuredMoney||0); renderQuitButton(assured,!x.pendingAnswer&&!x.pendingQuit);
    }else{
      setQuizActive(false);
      $("status").innerHTML="📺 <b>You are not the current contestant.</b><br>Watch the projector screen.";
@@ -356,6 +356,15 @@ s.on("answerRevealed",a=>{
  }else{
    $("status").innerHTML=`<div class="answerDecision wrongDecision">🔴 <b>WRONG ANSWER</b><small>₹0 prize. You are eliminated.</small></div>`;
  }
+});
+s.on("quitPending",r=>{
+ const amount=Number(r.amount||0);
+ const btn=$("quitBtn"); if(btn)btn.disabled=true;
+ $("status").innerHTML=`<div class="quitDecision"><div class="eyebrow">🚪 SAFE QUIT REQUESTED</div><h2>Waiting for Host approval</h2><p>Your guaranteed amount is</p><strong>₹${amount.toLocaleString("en-IN")}</strong><small>The Host must approve the walk-away request.</small></div>`;
+});
+s.on("quitRejected",r=>{
+ const btn=$("quitBtn"); if(btn)btn.disabled=false;
+ $("status").innerHTML=`⚠️ <b>Safe Quit was not approved.</b><br>${r.reason||"Continue the game."}`;
 });
 s.on("quitAccepted",r=>{
  hideQuitButton(); $("answers").innerHTML=""; $("life").innerHTML="";

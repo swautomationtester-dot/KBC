@@ -109,8 +109,11 @@ function render(){
  if($("sideScores"))$("sideScores").innerHTML=players.map(p=>`<div class="sideScoreRow"><span class="scoreDot" style="--player:${p.color}"></span><b>${esc(p.name)}</b><strong>${p.score}</strong></div>`).join("");
 
  const open=new Set(state.flipped||[]);
+ // A matched card is permanently revealed. The temporary `flipped` list is
+ // only for cards currently being inspected before the match is resolved.
+ const permanentlyRevealed=new Set((state.deck||[]).filter(c=>c.matched).map(c=>c.id));
  $("board").innerHTML=state.deck.map(c=>{
-   const visible=open.has(c.id)||c.matched;
+   const visible=open.has(c.id)||permanentlyRevealed.has(c.id);
    const ok=role==="player"&&cur?.id===pid&&!c.matched&&(state.flipped||[]).length<2;
    const ownerColor=c.matchedByColor||"";
    const ownerClass=ownerColor?` ownedPair`:"";
