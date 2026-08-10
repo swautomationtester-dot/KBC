@@ -1,0 +1,33 @@
+
+/* Card Match home UI — intentionally scoped */
+.cardMatchHomeCard{
+  position:relative;
+  display:block;
+  text-decoration:none !important;
+  color:inherit !important;
+  cursor:pointer;
+  overflow:hidden;
+  transition:transform .2s ease, border-color .2s ease, background .2s ease;
+}
+.cardMatchHomeCard:hover{
+  transform:translateY(-3px);
+}
+.cardMatchHomeCard .homeCardIcon{
+  font-size:26px;
+  line-height:1;
+  margin-bottom:10px;
+}
+.cardMatchHomeCard h3{margin:0 0 7px}
+.cardMatchHomeCard p{margin:0}
+.cardMatchHomeFallback{
+  max-width:420px;
+  margin:22px auto 50px;
+  padding:0 16px;
+}
+.cardMatchHomeFallback .cardMatchHomeCard{
+  padding:20px;
+  border-radius:16px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.12);
+  text-align:center;
+}
