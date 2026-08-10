@@ -1298,5 +1298,5465 @@
       "Monkey"
     ],
     "answer": 0
+  },
+  {
+    "id": "SIC-001",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which Tamil film features the character Chitti, a humanoid robot?",
+    "options": [
+      "Enthiran",
+      "Kaithi",
+      "96",
+      "Vikram"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-002",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "In which language was the film RRR primarily made?",
+    "options": [
+      "Telugu",
+      "Tamil",
+      "Malayalam",
+      "Kannada"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-003",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which actor played the lead role of Devasena in Baahubali: The Beginning?",
+    "options": [
+      "Anushka Shetty",
+      "Nayanthara",
+      "Samantha Ruth Prabhu",
+      "Trisha"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-004",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which city is the film industry commonly known as Sandalwood associated with?",
+    "options": [
+      "Bengaluru",
+      "Hyderabad",
+      "Chennai",
+      "Kochi"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-005",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed the Telugu film Eega?",
+    "options": [
+      "S. S. Rajamouli",
+      "Mani Ratnam",
+      "Gautham Vasudev Menon",
+      "Lokesh Kanagaraj"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-006",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Malayalam film won the National Film Award for Best Feature Film in 2019?",
+    "options": [
+      "Marakkar: Lion of the Arabian Sea",
+      "Bhonsle",
+      "Vada Chennai",
+      "Kumbalangi Nights"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-007",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Tamil actor played the title role in the film Vada Chennai?",
+    "options": [
+      "Dhanush",
+      "Suriya",
+      "Vijay",
+      "Karthi"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-008",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Kannada film became the first Kannada film to gross over ₹100 crore worldwide?",
+    "options": [
+      "Mungaru Male",
+      "K.G.F: Chapter 1",
+      "Kantara",
+      "K.G.F: Chapter 2"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-009",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Who composed the music for the Tamil film Roja?",
+    "options": [
+      "A. R. Rahman",
+      "Ilaiyaraaja",
+      "Anirudh Ravichander",
+      "Harris Jayaraj"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-010",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actor portrayed Rocky in K.G.F: Chapter 1?",
+    "options": [
+      "Yash",
+      "Puneeth Rajkumar",
+      "Darshan",
+      "Sudeep"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-011",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed the Malayalam film Drishyam?",
+    "options": [
+      "Jeethu Joseph",
+      "Lijo Jose Pellissery",
+      "Dileesh Pothan",
+      "Aashiq Abu"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-012",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which Tamil film features the song Why This Kolaveri Di?",
+    "options": [
+      "3",
+      "VIP",
+      "Maari",
+      "Anegan"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-013",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which South Indian film became the first Indian film to win the Academy Award for Best Original Song?",
+    "options": [
+      "RRR",
+      "Baahubali 2",
+      "Kantara",
+      "Jai Bhim"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-014",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed the Kannada film Kantara?",
+    "options": [
+      "Rishab Shetty",
+      "Prashanth Neel",
+      "Hemanth Rao",
+      "Rakshit Shetty"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-015",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which Malayalam actor played Georgekutty in Drishyam?",
+    "options": [
+      "Mohanlal",
+      "Mammootty",
+      "Fahadh Faasil",
+      "Prithviraj Sukumaran"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-016",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which filmmaker directed both Mouna Ragam and Bombay?",
+    "options": [
+      "Mani Ratnam",
+      "Shankar",
+      "Bharathiraja",
+      "Vetrimaaran"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-017",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed the Tamil film Vikram, released in 2022?",
+    "options": [
+      "Lokesh Kanagaraj",
+      "Karthik Subbaraj",
+      "Pa. Ranjith",
+      "Atlee"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-018",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Telugu actor played the role of Bheem in RRR?",
+    "options": [
+      "N. T. Rama Rao Jr.",
+      "Ram Charan",
+      "Allu Arjun",
+      "Prabhas"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-019",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which film stars Dulquer Salmaan as a soldier named Ram?",
+    "options": [
+      "Sita Ramam",
+      "Charlie",
+      "Kurup",
+      "Ustad Hotel"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-020",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which Kannada actor starred in the film 777 Charlie?",
+    "options": [
+      "Rakshit Shetty",
+      "Yash",
+      "Sudeep",
+      "Shiva Rajkumar"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-001",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who is known as the Father of Indian Cinema?",
+    "options": [
+      "Dadasaheb Phalke",
+      "Satyajit Ray",
+      "Raj Kapoor",
+      "Guru Dutt"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-002",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Which film is widely regarded as India’s first full-length feature film?",
+    "options": [
+      "Raja Harishchandra",
+      "Alam Ara",
+      "Kisan Kanya",
+      "Devdas"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-003",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Which Hindi film features the character Rancho?",
+    "options": [
+      "3 Idiots",
+      "PK",
+      "Taare Zameen Par",
+      "Dangal"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-004",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who played the lead role of Geet in Jab We Met?",
+    "options": [
+      "Kareena Kapoor Khan",
+      "Priyanka Chopra Jonas",
+      "Deepika Padukone",
+      "Rani Mukerji"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-005",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed Lagaan?",
+    "options": [
+      "Ashutosh Gowariker",
+      "Rajkumar Hirani",
+      "Sanjay Leela Bhansali",
+      "Anurag Kashyap"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-006",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Indian film won the Best Foreign Language Film category at the 1957 Karlovy Vary International Film Festival?",
+    "options": [
+      "Do Bigha Zamin",
+      "Pather Panchali",
+      "Mother India",
+      "Mughal-e-Azam"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-007",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which actor played the title role in Bhaag Milkha Bhaag?",
+    "options": [
+      "Farhan Akhtar",
+      "Ranveer Singh",
+      "Ayushmann Khurrana",
+      "Rajkummar Rao"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-008",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which film is based on the life of wrestler Mahavir Singh Phogat?",
+    "options": [
+      "Dangal",
+      "Sultan",
+      "Mary Kom",
+      "Chak De! India"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-009",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed the Apu Trilogy?",
+    "options": [
+      "Satyajit Ray",
+      "Mrinal Sen",
+      "Ritwik Ghatak",
+      "Bimal Roy"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-010",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Which Indian film was the first to be nominated for the Academy Award for Best Foreign Language Film?",
+    "options": [
+      "Mother India",
+      "Salaam Bombay!",
+      "Lagaan",
+      "Pather Panchali"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-011",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who composed the music for the film Dil Se..?",
+    "options": [
+      "A. R. Rahman",
+      "Vishal Bhardwaj",
+      "Shankar-Ehsaan-Loy",
+      "Pritam"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-012",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Which film won the National Film Award for Best Popular Film Providing Wholesome Entertainment in 2001?",
+    "options": [
+      "Kuch Kuch Hota Hai",
+      "Lagaan",
+      "Swades",
+      "Kabhi Khushi Kabhie Gham"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-013",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which director made the films Gangs of Wasseypur and Raman Raghav 2.0?",
+    "options": [
+      "Anurag Kashyap",
+      "Vishal Bhardwaj",
+      "Neeraj Ghaywan",
+      "Zoya Akhtar"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-014",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which Indian film won the Palme d’Or at Cannes in 2024?",
+    "options": [
+      "No Indian film won it",
+      "All We Imagine as Light",
+      "Payal Kapadia",
+      "The Shameless"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-015",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed the 2018 film Andhadhun?",
+    "options": [
+      "Sriram Raghavan",
+      "R. Balki",
+      "Srijit Mukherji",
+      "Shoojit Sircar"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-016",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which film became the first Indian production to win the Academy Award for Best Documentary Short Film?",
+    "options": [
+      "The Elephant Whisperers",
+      "Writing with Fire",
+      "Period. End of Sentence.",
+      "Smile Pinki"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-017",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed the film Masaan?",
+    "options": [
+      "Neeraj Ghaywan",
+      "Vikramaditya Motwane",
+      "Hansal Mehta",
+      "Anurag Basu"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-018",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which actor played the role of Milkha Singh in Bhaag Milkha Bhaag?",
+    "options": [
+      "Farhan Akhtar",
+      "Irrfan Khan",
+      "Shahid Kapoor",
+      "Ranbir Kapoor"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-019",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which film centers on the Indian women’s national hockey team?",
+    "options": [
+      "Chak De! India",
+      "Paan Singh Tomar",
+      "Gold",
+      "M.S. Dhoni: The Untold Story"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-020",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed the film Queen?",
+    "options": [
+      "Vikas Bahl",
+      "Karan Johar",
+      "Rajkumar Hirani",
+      "Imtiaz Ali"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-001",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Who is known as the Father of the Indian Constitution?",
+    "options": [
+      "B. R. Ambedkar",
+      "Jawaharlal Nehru",
+      "Sardar Patel",
+      "Rajendra Prasad"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-002",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "How many houses does the Parliament of India have?",
+    "options": [
+      "Two",
+      "One",
+      "Three",
+      "Four"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-003",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "What is the lower house of the Parliament of India called?",
+    "options": [
+      "Lok Sabha",
+      "Rajya Sabha",
+      "Vidhan Sabha",
+      "Gram Sabha"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-004",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "What is the upper house of the Parliament of India called?",
+    "options": [
+      "Rajya Sabha",
+      "Lok Sabha",
+      "Vidhan Parishad",
+      "Zila Parishad"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-005",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Who was the first President of independent India?",
+    "options": [
+      "Dr. Rajendra Prasad",
+      "S. Radhakrishnan",
+      "Zakir Husain",
+      "V. V. Giri"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-006",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Who was the first Prime Minister of independent India?",
+    "options": [
+      "Jawaharlal Nehru",
+      "Sardar Vallabhbhai Patel",
+      "Lal Bahadur Shastri",
+      "Rajendra Prasad"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-007",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Which part of the Indian Constitution contains Fundamental Rights?",
+    "options": [
+      "Part III",
+      "Part I",
+      "Part IV",
+      "Part V"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-008",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "The voting age in India was reduced from 21 to 18 by which constitutional amendment?",
+    "options": [
+      "61st Amendment",
+      "42nd Amendment",
+      "44th Amendment",
+      "73rd Amendment"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-009",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which article guarantees equality before the law in India?",
+    "options": [
+      "Article 14",
+      "Article 19",
+      "Article 21",
+      "Article 32"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-010",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Who was the first woman President of India?",
+    "options": [
+      "Pratibha Patil",
+      "Indira Gandhi",
+      "Sarojini Naidu",
+      "Sushma Swaraj"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-011",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which constitutional amendment gave constitutional status to Panchayati Raj institutions?",
+    "options": [
+      "73rd Amendment",
+      "74th Amendment",
+      "42nd Amendment",
+      "86th Amendment"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-012",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which constitutional amendment is associated with municipalities?",
+    "options": [
+      "74th Amendment",
+      "73rd Amendment",
+      "61st Amendment",
+      "101st Amendment"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-013",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Who chaired the Drafting Committee of the Constituent Assembly?",
+    "options": [
+      "B. R. Ambedkar",
+      "B. N. Rau",
+      "Rajendra Prasad",
+      "Jawaharlal Nehru"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-014",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which schedule of the Constitution deals with allocation of seats in the Rajya Sabha?",
+    "options": [
+      "Fourth Schedule",
+      "First Schedule",
+      "Seventh Schedule",
+      "Tenth Schedule"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-015",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which constitutional amendment introduced the Goods and Services Tax framework?",
+    "options": [
+      "101st Amendment",
+      "97th Amendment",
+      "86th Amendment",
+      "73rd Amendment"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-016",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Who was the first woman to become President of the Indian National Congress?",
+    "options": [
+      "Annie Besant",
+      "Sarojini Naidu",
+      "Vijaya Lakshmi Pandit",
+      "Indira Gandhi"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-017",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which body conducts elections to Parliament and state legislatures in India?",
+    "options": [
+      "Election Commission of India",
+      "Union Public Service Commission",
+      "Finance Commission",
+      "NITI Aayog"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-018",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "The Constitution of India was adopted on which date?",
+    "options": [
+      "26 November 1949",
+      "15 August 1947",
+      "26 January 1950",
+      "2 October 1949"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-019",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "The Constitution of India came into force on which date?",
+    "options": [
+      "26 January 1950",
+      "26 November 1949",
+      "15 August 1947",
+      "2 October 1950"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-020",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which Fundamental Right is protected by Article 21?",
+    "options": [
+      "Right to life and personal liberty",
+      "Right to property",
+      "Right to education",
+      "Right against exploitation"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-001",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "What does CPU stand for?",
+    "options": [
+      "Central Processing Unit",
+      "Computer Primary Unit",
+      "Central Program Utility",
+      "Core Processing Utility"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-002",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "Which company developed the Android operating system originally?",
+    "options": [
+      "Android Inc.",
+      "IBM",
+      "Nokia",
+      "Oracle"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-003",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "What does URL stand for?",
+    "options": [
+      "Uniform Resource Locator",
+      "Universal Record Link",
+      "Unified Resource Link",
+      "User Routing Locator"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-004",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "Which technology is commonly used for tap-to-pay transactions?",
+    "options": [
+      "NFC",
+      "FTP",
+      "SMTP",
+      "HDMI"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-005",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What does RAM stand for?",
+    "options": [
+      "Random Access Memory",
+      "Read Access Module",
+      "Rapid Application Memory",
+      "Remote Access Memory"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-006",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "Which programming language was created by Guido van Rossum?",
+    "options": [
+      "Python",
+      "Java",
+      "C#",
+      "Ruby"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-007",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What does HTTPS add to HTTP?",
+    "options": [
+      "Encryption and authentication via TLS",
+      "Faster image loading",
+      "Offline storage",
+      "Compression only"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-008",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "Which database system is known for documents stored in BSON-like format?",
+    "options": [
+      "MongoDB",
+      "MySQL",
+      "SQLite",
+      "PostgreSQL"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-009",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What does GPU stand for?",
+    "options": [
+      "Graphics Processing Unit",
+      "General Processing Utility",
+      "Graphical Program Unit",
+      "Global Processing Unit"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-010",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "Which protocol is primarily used to translate domain names into IP addresses?",
+    "options": [
+      "DNS",
+      "DHCP",
+      "SSH",
+      "FTP"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-011",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is the main purpose of a firewall?",
+    "options": [
+      "Control network traffic based on security rules",
+      "Increase screen resolution",
+      "Store passwords in plain text",
+      "Compress videos"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-012",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "Which cloud service model provides virtual machines and networking resources?",
+    "options": [
+      "IaaS",
+      "SaaS",
+      "PaaS",
+      "DaaS"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-013",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What does SQL stand for?",
+    "options": [
+      "Structured Query Language",
+      "System Query Logic",
+      "Sequential Question Language",
+      "Structured Queue Logic"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-014",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "Which data structure follows LIFO order?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Heap",
+      "Graph"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-015",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is the primary purpose of public-key cryptography?",
+    "options": [
+      "Secure communication using key pairs",
+      "Increase CPU clock speed",
+      "Compress databases",
+      "Render graphics"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-016",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "Which HTTP status code means “Not Found”?",
+    "options": [
+      "404",
+      "200",
+      "301",
+      "500"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-017",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What does API commonly stand for in software development?",
+    "options": [
+      "Application Programming Interface",
+      "Advanced Program Integration",
+      "Application Process Instruction",
+      "Automated Programming Internet"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-018",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "Which file format is commonly used for structured data exchanged by web APIs?",
+    "options": [
+      "JSON",
+      "BMP",
+      "MP3",
+      "EXE"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-019",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What does IoT stand for?",
+    "options": [
+      "Internet of Things",
+      "Integration of Technology",
+      "Internet of Tools",
+      "Interface of Terminals"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-020",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "Which technology is the foundation of cryptocurrencies such as Bitcoin?",
+    "options": [
+      "Blockchain",
+      "Bluetooth",
+      "Virtual Reality",
+      "Optical networking"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-021",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which film won the National Film Award for Best Feature Film in 1959 and was directed by B. R. Panthulu?",
+    "options": [
+      "School Master",
+      "Pathala Bhairavi",
+      "Thyaga Bhoomi",
+      "Mayabazar"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-022",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed the Telugu film 'Sankarabharanam'?",
+    "options": [
+      "K. Viswanath",
+      "K. Balachander",
+      "Bapu",
+      "Dasari Narayana Rao"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-023",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which language was the original language of 'Baahubali: The Beginning'?",
+    "options": [
+      "Telugu",
+      "Kannada",
+      "Malayalam",
+      "Tamil"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-024",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Who composed the music for the 'Baahubali' films?",
+    "options": [
+      "M. M. Keeravani",
+      "Ilaiyaraaja",
+      "Devi Sri Prasad",
+      "A. R. Rahman"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-025",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which Tamil director made 'Roja' in 1992?",
+    "options": [
+      "Vetrimaaran",
+      "Mani Ratnam",
+      "Shankar",
+      "Bala"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-026",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which Malayalam film became India's official entry to the Oscars for 2011?",
+    "options": [
+      "Ustad Hotel",
+      "Traffic",
+      "Abu, Son of Adam",
+      "Drishyam"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-027",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed the Malayalam film 'Drishyam'?",
+    "options": [
+      "Aashiq Abu",
+      "Jeethu Joseph",
+      "Lijo Jose Pellissery",
+      "Blessy"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-028",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which Kannada film is associated with director Upendra and the title 'A'?",
+    "options": [
+      "Kantara",
+      "A",
+      "Lucia",
+      "Kirik Party"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-029",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed 'Kantara'?",
+    "options": [
+      "Prashanth Neel",
+      "Rakshit Shetty",
+      "Hemanth Rao",
+      "Rishab Shetty"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-030",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which actor played the lead role in the Telugu film 'Eega'?",
+    "options": [
+      "Ram Charan",
+      "Allu Arjun",
+      "Rana Daggubati",
+      "Nani"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-031",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed the Telugu film 'Eega'?",
+    "options": [
+      "Sukumar",
+      "Gautham Vasudev Menon",
+      "S. S. Rajamouli",
+      "Trivikram Srinivas"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-032",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which Tamil film introduced the fictional character 'Chitti' the robot?",
+    "options": [
+      "Enthiran",
+      "Anniyan",
+      "I",
+      "Vikram"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-033",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Who composed the music for 'Enthiran'?",
+    "options": [
+      "Yuvan Shankar Raja",
+      "A. R. Rahman",
+      "Harris Jayaraj",
+      "Anirudh Ravichander"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-034",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which actor played the title role in the Malayalam film 'Narasimham'?",
+    "options": [
+      "Mohanlal",
+      "Mammootty",
+      "Dileep",
+      "Prithviraj Sukumaran"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-035",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed the Tamil film 'Pariyerum Perumal'?",
+    "options": [
+      "Karthik Subbaraj",
+      "Mari Selvaraj",
+      "Pa. Ranjith",
+      "Vetrimaaran"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-036",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which Tamil director made 'Super Deluxe'?",
+    "options": [
+      "Thiagarajan Kumararaja",
+      "Lokesh Kanagaraj",
+      "Mysskin",
+      "Ram"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-037",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which Telugu director made 'Arjun Reddy'?",
+    "options": [
+      "Parasuram",
+      "Sandeep Reddy Vanga",
+      "Nag Ashwin",
+      "Vijay Deverakonda"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-038",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Who played the lead in 'Arjun Reddy'?",
+    "options": [
+      "Naga Chaitanya",
+      "Sharwanand",
+      "Nani",
+      "Vijay Deverakonda"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-039",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Which Kannada film won the National Film Award for Best Feature Film in 2019?",
+    "options": [
+      "Peddlers",
+      "KGF: Chapter 1",
+      "Gantumoote",
+      "Kantara"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-040",
+    "category": "South Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed the Kannada film 'Kirik Party'?",
+    "options": [
+      "Hemanth Rao",
+      "Rishab Shetty",
+      "Pawan Kumar",
+      "Rakshit Shetty"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-041",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Malayalam director made 'Kumbalangi Nights'?",
+    "options": [
+      "Lijo Jose Pellissery",
+      "Dileesh Pothan",
+      "Madhu C. Narayanan",
+      "Alphonse Puthren"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-042",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Tamil director made '96'?",
+    "options": [
+      "C. Prem Kumar",
+      "Gautham Vasudev Menon",
+      "M. Manikandan",
+      "Ram"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-043",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which film features the characters Ram and Jaanu?",
+    "options": [
+      "Raja Rani",
+      "OK Kanmani",
+      "Vinnaithaandi Varuvaayaa",
+      "96"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-044",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Who composed the music for the Tamil film '96'?",
+    "options": [
+      "Govind Vasantha",
+      "Santhosh Narayanan",
+      "Anirudh Ravichander",
+      "A. R. Rahman"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-045",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Telugu film is based on the life of boxer P. V. Sindhu?",
+    "options": [
+      "Jersey",
+      "No",
+      "Ghani",
+      "Majili"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-046",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed the Telugu sports drama 'Jersey'?",
+    "options": [
+      "Venkat Atluri",
+      "Nag Ashwin",
+      "Sukumar",
+      "Gowtam Tinnanuri"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-047",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which actor played Arjun in the Telugu film 'Jersey'?",
+    "options": [
+      "Vijay Deverakonda",
+      "Varun Tej",
+      "Rana Daggubati",
+      "Nani"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-048",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Malayalam actor is known for the character 'Georgekutty' in Drishyam?",
+    "options": [
+      "Mohanlal",
+      "Fahadh Faasil",
+      "Dulquer Salmaan",
+      "Mammootty"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-049",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed the Malayalam film 'Premam'?",
+    "options": [
+      "Alphonse Puthren",
+      "Vineeth Sreenivasan",
+      "Aashiq Abu",
+      "Anwar Rasheed"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-050",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Kannada film starred Rakshit Shetty as Karna?",
+    "options": [
+      "Godhi Banna Sadharana Mykattu",
+      "777 Charlie",
+      "Avane Srimannarayana",
+      "Kirik Party"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-051",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed '777 Charlie'?",
+    "options": [
+      "Rakshit Shetty",
+      "Kiranraj K",
+      "Hemanth Rao",
+      "Pawan Kumar"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-052",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Telugu actor played Pushpa Raj?",
+    "options": [
+      "Mahesh Babu",
+      "Ram Charan",
+      "Jr NTR",
+      "Allu Arjun"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-053",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed 'Pushpa: The Rise'?",
+    "options": [
+      "Sukumar",
+      "Koratal Siva",
+      "Trivikram Srinivas",
+      "Boyapati Srinu"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-054",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which film features the song 'Naatu Naatu'?",
+    "options": [
+      "RRR",
+      "Pushpa",
+      "Ala Vaikunthapurramuloo",
+      "Sye"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-055",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed 'RRR'?",
+    "options": [
+      "Koratala Siva",
+      "Sukumar",
+      "V. V. Vinayak",
+      "S. S. Rajamouli"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-056",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which two actors star as the main fictional leads in 'RRR'?",
+    "options": [
+      "Ram Charan and Jr NTR",
+      "Mahesh Babu and Pawan Kalyan",
+      "Allu Arjun and Prabhas",
+      "Nani and Rana Daggubati"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-057",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Malayalam film won the 2022 National Award for Best Feature Film?",
+    "options": [
+      "Ayyappanum Koshiyum",
+      "Rocketry: The Nambi Effect",
+      "The Great Indian Kitchen",
+      "Jallikattu"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-058",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which actor played the title role in 'Ayyappanum Koshiyum'?",
+    "options": [
+      "Mohanlal",
+      "Prithviraj Sukumaran",
+      "Fahadh Faasil",
+      "Dulquer Salmaan"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-059",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed 'Ayyappanum Koshiyum'?",
+    "options": [
+      "Prithviraj Sukumaran",
+      "Sachy",
+      "Blessy",
+      "Jeethu Joseph"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-060",
+    "category": "South Indian Cinema",
+    "difficulty": 2,
+    "text": "Which Tamil actor is associated with the character 'Pondicherry' in 'Aruvi'?",
+    "options": [
+      "Nayanthara",
+      "Andrea Jeremiah",
+      "Sai Pallavi",
+      "Aditi Balan"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-061",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed the Tamil film 'Jai Bhim'?",
+    "options": [
+      "Vetrimaaran",
+      "T. J. Gnanavel",
+      "Pa. Ranjith",
+      "Mari Selvaraj"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-062",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actor played lawyer K. Chandru in 'Jai Bhim'?",
+    "options": [
+      "Vijay",
+      "Karthi",
+      "Suriya",
+      "Dhanush"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-063",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which Tamil film is set around a rural boxing community and stars Pa. Ranjith as director?",
+    "options": [
+      "Kaala",
+      "Kabali",
+      "Sarpatta Parambarai",
+      "Madras"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-064",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Who composed the music for 'Sarpatta Parambarai'?",
+    "options": [
+      "Santhosh Narayanan",
+      "A. R. Rahman",
+      "Yuvan Shankar Raja",
+      "Anirudh Ravichander"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-065",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which Malayalam film was directed by Lijo Jose Pellissery and set around a wedding?",
+    "options": [
+      "Angamaly Diaries",
+      "Ee.Ma.Yau",
+      "Jallikattu",
+      "Churuli"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-066",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed the Kannada film 'Lucia'?",
+    "options": [
+      "Hemanth Rao",
+      "Pawan Kumar",
+      "Rakshit Shetty",
+      "Rishab Shetty"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-067",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which Kannada film stars Rakshit Shetty and a dog named Charlie?",
+    "options": [
+      "Kirik Party",
+      "Avane Srimannarayana",
+      "777 Charlie",
+      "Ulidavaru Kandanthe"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-068",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed the Telugu film 'Mahanati'?",
+    "options": [
+      "Vikram K. Kumar",
+      "Sujeeth",
+      "Sekhar Kammula",
+      "Nag Ashwin"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-069",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actress played Savitri in 'Mahanati'?",
+    "options": [
+      "Anushka Shetty",
+      "Samantha Ruth Prabhu",
+      "Sai Pallavi",
+      "Keerthy Suresh"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-070",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which film tells the story of the Indian actress Savitri?",
+    "options": [
+      "Jersey",
+      "Mahanati",
+      "Nadigaiyar Thilagam",
+      "Sita Ramam"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-071",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Who composed the score for 'Mahanati'?",
+    "options": [
+      "Thaman S",
+      "Mickey J. Meyer",
+      "Devi Sri Prasad",
+      "Gopi Sundar"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-072",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which Tamil director made 'Vikram' (2022)?",
+    "options": [
+      "H. Vinoth",
+      "Atlee",
+      "Lokesh Kanagaraj",
+      "Karthik Subbaraj"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-073",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actor played the lead in 'Vikram' (2022)?",
+    "options": [
+      "Kamal Haasan",
+      "Rajinikanth",
+      "Dhanush",
+      "Vijay"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-074",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which franchise includes the character 'Rolex'?",
+    "options": [
+      "Yash Raj Spy Universe",
+      "Lokesh Cinematic Universe",
+      "Baahubali Universe",
+      "Rohit Shetty Cop Universe"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-075",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Who played Rolex in 'Vikram'?",
+    "options": [
+      "Karthi",
+      "Fahadh Faasil",
+      "Vijay Sethupathi",
+      "Suriya"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-076",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which Malayalam actor played the antagonist in 'Vikram'?",
+    "options": [
+      "Vijay Sethupathi",
+      "Fahadh Faasil",
+      "Prithviraj Sukumaran",
+      "Dulquer Salmaan"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-077",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'K.G.F: Chapter 1'?",
+    "options": [
+      "Rakshit Shetty",
+      "Prashanth Neel",
+      "Rishab Shetty",
+      "Hombale Films"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-078",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actor played Rocky in KGF?",
+    "options": [
+      "Yash",
+      "Dhananjaya",
+      "Sudeep",
+      "Rakshit Shetty"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-079",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Which Kannada film was the first installment of the KGF series?",
+    "options": [
+      "K.G.F: Chapter 1",
+      "Kantara",
+      "Ugramm",
+      "Salaar"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-080",
+    "category": "South Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'Ugramm'?",
+    "options": [
+      "Hemanth Rao",
+      "Prashanth Neel",
+      "Rishab Shetty",
+      "Pawan Kumar"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-081",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which Telugu director made 'Jersey' and later its Hindi remake?",
+    "options": [
+      "Gowtam Tinnanuri",
+      "Sujeeth",
+      "Nag Ashwin",
+      "Sandeep Reddy Vanga"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-082",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which Malayalam film is known for the character Mahesh Bhavana?",
+    "options": [
+      "Joji",
+      "Maheshinte Prathikaaram",
+      "Thondimuthalum Driksakshiyum",
+      "Kumbalangi Nights"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-083",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Maheshinte Prathikaaram'?",
+    "options": [
+      "Lijo Jose Pellissery",
+      "Aashiq Abu",
+      "Dileesh Pothan",
+      "Madhu C. Narayanan"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-084",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which actor played Mahesh Bhavana?",
+    "options": [
+      "Dulquer Salmaan",
+      "Mohanlal",
+      "Fahadh Faasil",
+      "Tovino Thomas"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-085",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which Tamil film was directed by Vetrimaaran and stars Dhanush as Kokila?",
+    "options": [
+      "Asuran",
+      "Vada Chennai",
+      "Aadukalam",
+      "Polladhavan"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-086",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Vada Chennai'?",
+    "options": [
+      "M. Manikandan",
+      "Ram",
+      "Vetrimaaran",
+      "Pa. Ranjith"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-087",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which actor played Anbu in 'Vada Chennai'?",
+    "options": [
+      "Suriya",
+      "Vijay",
+      "Karthi",
+      "Dhanush"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-088",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which Tamil film features the fictional gangster Kabali?",
+    "options": [
+      "Kabali",
+      "Petta",
+      "Kaala",
+      "Darbar"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-089",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Kaala'?",
+    "options": [
+      "Vetrimaaran",
+      "Atlee",
+      "Lokesh Kanagaraj",
+      "Pa. Ranjith"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-090",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which actor played Kaala?",
+    "options": [
+      "Rajinikanth",
+      "Vijay",
+      "Ajith Kumar",
+      "Kamal Haasan"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-091",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which Malayalam film features the character Koshy?",
+    "options": [
+      "Kurup",
+      "Driving Licence",
+      "Ayyappanum Koshiyum",
+      "Lucifer"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-092",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Lucifer'?",
+    "options": [
+      "Jeethu Joseph",
+      "Prithviraj Sukumaran",
+      "Vysakh",
+      "Mohanlal"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-093",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which actor played Stephen Nedumpally in 'Lucifer'?",
+    "options": [
+      "Mammootty",
+      "Mohanlal",
+      "Dulquer Salmaan",
+      "Prithviraj Sukumaran"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "SIC-094",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which Telugu film features the character Rishi?",
+    "options": [
+      "Maharshi",
+      "Srimanthudu",
+      "Spyder",
+      "Bharat Ane Nenu"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "SIC-095",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Who played Rishi in 'Maharshi'?",
+    "options": [
+      "Prabhas",
+      "Allu Arjun",
+      "Nani",
+      "Mahesh Babu"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-096",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed the Telugu film 'Sita Ramam'?",
+    "options": [
+      "Parasuram",
+      "Nag Ashwin",
+      "Hanu Raghavapudi",
+      "Vivek Athreya"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-097",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which actor played Ram in 'Sita Ramam'?",
+    "options": [
+      "Vijay Deverakonda",
+      "Nani",
+      "Naga Chaitanya",
+      "Dulquer Salmaan"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-098",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which Malayalam film stars Tovino Thomas as a superhero named Minnal Murali?",
+    "options": [
+      "Thallumaala",
+      "Kala",
+      "Forensic",
+      "Minnal Murali"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "SIC-099",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Minnal Murali'?",
+    "options": [
+      "Aashiq Abu",
+      "Vineeth Sreenivasan",
+      "Basil Joseph",
+      "Anwar Rasheed"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "SIC-100",
+    "category": "South Indian Cinema",
+    "difficulty": 4,
+    "text": "Which Tamil film is centered on a boxer named Sarpatta Parambarai?",
+    "options": [
+      "Madras",
+      "Irudhi Suttru",
+      "Sarpatta Parambarai",
+      "Jigarthanda"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-021",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed the film 'Sholay'?",
+    "options": [
+      "Ramesh Sippy",
+      "Yash Chopra",
+      "Manmohan Desai",
+      "Prakash Mehra"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-022",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Which actor played Gabbar Singh in 'Sholay'?",
+    "options": [
+      "Amrish Puri",
+      "Amjad Khan",
+      "Pran",
+      "Danny Denzongpa"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-023",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who played Jai in 'Sholay'?",
+    "options": [
+      "Dharmendra",
+      "Amitabh Bachchan",
+      "Shashi Kapoor",
+      "Vinod Khanna"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-024",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who played Veeru in 'Sholay'?",
+    "options": [
+      "Jeetendra",
+      "Rajesh Khanna",
+      "Amitabh Bachchan",
+      "Dharmendra"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-025",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Which film won India's first Academy Award nomination for Best Foreign Language Film?",
+    "options": [
+      "Mughal-e-Azam",
+      "Mother India",
+      "Pather Panchali",
+      "Guide"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-026",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed 'Mother India'?",
+    "options": [
+      "Guru Dutt",
+      "Bimal Roy",
+      "Raj Kapoor",
+      "Mehboob Khan"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-027",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Which filmmaker directed 'Pather Panchali'?",
+    "options": [
+      "Bimal Roy",
+      "Satyajit Ray",
+      "Mrinal Sen",
+      "Ritwik Ghatak"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-028",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Which actor played the title role in 'Mughal-e-Azam'?",
+    "options": [
+      "Raj Kapoor",
+      "Guru Dutt",
+      "Dilip Kumar",
+      "Dev Anand"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-029",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed 'Mughal-e-Azam'?",
+    "options": [
+      "Vijay Bhatt",
+      "Mehboob Khan",
+      "K. Asif",
+      "B. R. Chopra"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-030",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Which film is associated with the song 'Mere Sapno Ki Rani'?",
+    "options": [
+      "Aradhana",
+      "Kati Patang",
+      "Anand",
+      "Amar Prem"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-031",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed 'Anand'?",
+    "options": [
+      "Gulzar",
+      "Hrishikesh Mukherjee",
+      "Basu Chatterjee",
+      "Shakti Samanta"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-032",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Which actor played Anand Sehgal in 'Anand'?",
+    "options": [
+      "Shashi Kapoor",
+      "Dharmendra",
+      "Rajesh Khanna",
+      "Amitabh Bachchan"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-033",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed 'Lagaan'?",
+    "options": [
+      "Ashutosh Gowariker",
+      "Rajkumar Hirani",
+      "Sanjay Leela Bhansali",
+      "Farhan Akhtar"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-034",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Which film was nominated for the Academy Award for Best Foreign Language Film from India in 2002?",
+    "options": [
+      "Swades",
+      "Devdas",
+      "Lagaan",
+      "Dil Chahta Hai"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-035",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who played Bhuvan in 'Lagaan'?",
+    "options": [
+      "Ajay Devgn",
+      "Salman Khan",
+      "Aamir Khan",
+      "Shah Rukh Khan"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-036",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed 'Dil Chahta Hai'?",
+    "options": [
+      "Farhan Akhtar",
+      "Karan Johar",
+      "Zoya Akhtar",
+      "Anurag Kashyap"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-037",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Which film features the characters Akash, Sameer and Siddharth?",
+    "options": [
+      "Zindagi Na Milegi Dobara",
+      "Rock On!!",
+      "3 Idiots",
+      "Dil Chahta Hai"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-038",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed '3 Idiots'?",
+    "options": [
+      "Rakeysh Omprakash Mehra",
+      "Farhan Akhtar",
+      "Sooraj Barjatya",
+      "Rajkumar Hirani"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-039",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Which actor played Rancho in '3 Idiots'?",
+    "options": [
+      "Ranbir Kapoor",
+      "R. Madhavan",
+      "Aamir Khan",
+      "Sharman Joshi"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-040",
+    "category": "Indian Cinema",
+    "difficulty": 1,
+    "text": "Who directed 'Taare Zameen Par'?",
+    "options": [
+      "Shonali Bose",
+      "Aamir Khan",
+      "R. Balki",
+      "Nitesh Tiwari"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-041",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which film features the teacher Ram Shankar Nikumbh?",
+    "options": [
+      "Stanley Ka Dabba",
+      "Black",
+      "Hichki",
+      "Taare Zameen Par"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-042",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed 'Black' (2005)?",
+    "options": [
+      "Vikramaditya Motwane",
+      "Sanjay Leela Bhansali",
+      "R. Balki",
+      "Rakesh Roshan"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-043",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which actress played Michelle McNally in 'Black'?",
+    "options": [
+      "Preity Zinta",
+      "Kajol",
+      "Vidya Balan",
+      "Rani Mukerji"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-044",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed 'Queen'?",
+    "options": [
+      "Anurag Basu",
+      "Shoojit Sircar",
+      "Ayan Mukerji",
+      "Vikas Bahl"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-045",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which actress played Rani in 'Queen'?",
+    "options": [
+      "Vidya Balan",
+      "Deepika Padukone",
+      "Alia Bhatt",
+      "Kangana Ranaut"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-046",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed 'Dangal'?",
+    "options": [
+      "R. Balki",
+      "Nitesh Tiwari",
+      "Shonali Bose",
+      "Kabir Khan"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-047",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which sport is central to 'Dangal'?",
+    "options": [
+      "Wrestling",
+      "Hockey",
+      "Archery",
+      "Boxing"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-048",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who played Mahavir Singh Phogat in 'Dangal'?",
+    "options": [
+      "Akshay Kumar",
+      "Pankaj Tripathi",
+      "Aamir Khan",
+      "Irrfan Khan"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-049",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed 'Chak De! India'?",
+    "options": [
+      "Shimit Amin",
+      "Kabir Khan",
+      "Nikkhil Advani",
+      "Siddharth Anand"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-050",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which sport is central to 'Chak De! India'?",
+    "options": [
+      "Kabaddi",
+      "Cricket",
+      "Football",
+      "Field hockey"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-051",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who played Kabir Khan in 'Chak De! India'?",
+    "options": [
+      "Saif Ali Khan",
+      "Aamir Khan",
+      "Shah Rukh Khan",
+      "Salman Khan"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-052",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed 'Swades'?",
+    "options": [
+      "Ashutosh Gowariker",
+      "Rakeysh Omprakash Mehra",
+      "Mani Ratnam",
+      "Shyam Benegal"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-053",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which actor played Mohan Bhargava in 'Swades'?",
+    "options": [
+      "Aamir Khan",
+      "Shah Rukh Khan",
+      "Ajay Devgn",
+      "Hrithik Roshan"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-054",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed 'Rang De Basanti'?",
+    "options": [
+      "Farhan Akhtar",
+      "Rakeysh Omprakash Mehra",
+      "Ashutosh Gowariker",
+      "Anurag Kashyap"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-055",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which actor played DJ in 'Rang De Basanti'?",
+    "options": [
+      "Saif Ali Khan",
+      "Abhishek Bachchan",
+      "Aamir Khan",
+      "Shah Rukh Khan"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-056",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed 'Rockstar'?",
+    "options": [
+      "Anurag Basu",
+      "Ayan Mukerji",
+      "Vikramaditya Motwane",
+      "Imtiaz Ali"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-057",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who played Janardhan/Jordan in 'Rockstar'?",
+    "options": [
+      "Ranveer Singh",
+      "Shahid Kapoor",
+      "Farhan Akhtar",
+      "Ranbir Kapoor"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-058",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who composed the music for 'Rockstar'?",
+    "options": [
+      "Pritam",
+      "Amit Trivedi",
+      "Shankar-Ehsaan-Loy",
+      "A. R. Rahman"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-059",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Who directed 'Zindagi Na Milegi Dobara'?",
+    "options": [
+      "Farhan Akhtar",
+      "Ayan Mukerji",
+      "Zoya Akhtar",
+      "Reema Kagti"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-060",
+    "category": "Indian Cinema",
+    "difficulty": 2,
+    "text": "Which three friends are central to 'Zindagi Na Milegi Dobara'?",
+    "options": [
+      "Arjun, Kabir and Imran",
+      "Rancho, Raju and Farhan",
+      "Akash, Sameer and Siddharth",
+      "Bunny, Avi and Avi"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-061",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'Gully Boy'?",
+    "options": [
+      "Rohit Shetty",
+      "Karan Johar",
+      "Anurag Kashyap",
+      "Zoya Akhtar"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-062",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Which music culture is central to 'Gully Boy'?",
+    "options": [
+      "Qawwali only",
+      "Western opera",
+      "Hip-hop",
+      "Classical ballet"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-063",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who played Murad in 'Gully Boy'?",
+    "options": [
+      "Vicky Kaushal",
+      "Rajkummar Rao",
+      "Ranveer Singh",
+      "Ayushmann Khurrana"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-064",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'Andhadhun'?",
+    "options": [
+      "Sriram Raghavan",
+      "Sriram Raghavan",
+      "R. Balki",
+      "Neeraj Pandey"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-065",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actor played Akash in 'Andhadhun'?",
+    "options": [
+      "Rajkummar Rao",
+      "Irrfan Khan",
+      "Vicky Kaushal",
+      "Ayushmann Khurrana"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-066",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'Article 15'?",
+    "options": [
+      "Anubhav Sinha",
+      "Anurag Kashyap",
+      "Hansal Mehta",
+      "Nagraj Manjule"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-067",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'Newton'?",
+    "options": [
+      "Anurag Kashyap",
+      "Vikramaditya Motwane",
+      "Shonali Bose",
+      "Amit V Masurkar"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-068",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actor played Newton Kumar?",
+    "options": [
+      "Rajkummar Rao",
+      "Manoj Bajpayee",
+      "Ayushmann Khurrana",
+      "Pankaj Tripathi"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-069",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'Masaan'?",
+    "options": [
+      "Neeraj Ghaywan",
+      "Vikramaditya Motwane",
+      "Shoojit Sircar",
+      "Anurag Kashyap"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-070",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actor played Deepak in 'Masaan'?",
+    "options": [
+      "Vijay Varma",
+      "Vicky Kaushal",
+      "Rajkummar Rao",
+      "Dulquer Salmaan"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-071",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'Uri: The Surgical Strike'?",
+    "options": [
+      "Meghna Gulzar",
+      "Shujit Sircar",
+      "Kabir Khan",
+      "Aditya Dhar"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-072",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Which phrase became associated with 'Uri'?",
+    "options": [
+      "Kitne aadmi the",
+      "Picture abhi baaki hai",
+      "All is well",
+      "How's the josh?"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-073",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'Sardar Udham'?",
+    "options": [
+      "Ritesh Shah",
+      "Meghna Gulzar",
+      "Hansal Mehta",
+      "Shoojit Sircar"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-074",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actor played Sardar Udham?",
+    "options": [
+      "Vicky Kaushal",
+      "Rajkummar Rao",
+      "Manoj Bajpayee",
+      "Irrfan Khan"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-075",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'The Lunchbox'?",
+    "options": [
+      "Konkona Sen Sharma",
+      "Nandita Das",
+      "Ritesh Batra",
+      "Shonali Bose"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-076",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actor played Saajan Fernandes in 'The Lunchbox'?",
+    "options": [
+      "Nawazuddin Siddiqui",
+      "Irrfan Khan",
+      "Manoj Bajpayee",
+      "Pankaj Tripathi"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-077",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'Barfi!'?",
+    "options": [
+      "Ayan Mukerji",
+      "Anurag Basu",
+      "Anurag Kashyap",
+      "R. Balki"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-078",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actor played Barfi?",
+    "options": [
+      "Ranveer Singh",
+      "Shahid Kapoor",
+      "Ayushmann Khurrana",
+      "Ranbir Kapoor"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-079",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Who directed 'Kahaani'?",
+    "options": [
+      "Sriram Raghavan",
+      "Sujit Sircar",
+      "Sujoy Ghosh",
+      "R. Balki"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-080",
+    "category": "Indian Cinema",
+    "difficulty": 3,
+    "text": "Which actress played Vidya Bagchi in 'Kahaani'?",
+    "options": [
+      "Vidya Balan",
+      "Tabu",
+      "Konkona Sen Sharma",
+      "Rani Mukerji"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-081",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Pink'?",
+    "options": [
+      "Shoojit Sircar",
+      "Anubhav Sinha",
+      "Hansal Mehta",
+      "Aniruddha Roy Chowdhury"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-082",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which actor played Deepak Sehgal in 'Pink'?",
+    "options": [
+      "Pankaj Tripathi",
+      "Irrfan Khan",
+      "Amitabh Bachchan",
+      "Manoj Bajpayee"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-083",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Piku'?",
+    "options": [
+      "Sujoy Ghosh",
+      "R. Balki",
+      "Shoojit Sircar",
+      "Vikramaditya Motwane"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-084",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which actor played Bhaskor Banerjee in 'Piku'?",
+    "options": [
+      "Irrfan Khan",
+      "Paresh Rawal",
+      "Anupam Kher",
+      "Amitabh Bachchan"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-085",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Bhaag Milkha Bhaag'?",
+    "options": [
+      "Shonali Bose",
+      "Kabir Khan",
+      "Rakeysh Omprakash Mehra",
+      "Nitesh Tiwari"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-086",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which athlete is the subject of 'Bhaag Milkha Bhaag'?",
+    "options": [
+      "P. T. Usha",
+      "Milkha Singh",
+      "Dhyanchand",
+      "Neeraj Chopra"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-087",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Mary Kom'?",
+    "options": [
+      "Omung Kumar",
+      "Meghna Gulzar",
+      "Hansal Mehta",
+      "Shonali Bose"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-088",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which boxer is the subject of 'Mary Kom'?",
+    "options": [
+      "Mary Kom",
+      "Nikhat Zareen",
+      "P. T. Usha",
+      "Lovlina Borgohain"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-089",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Neerja'?",
+    "options": [
+      "Shonali Bose",
+      "Hansal Mehta",
+      "Ram Madhvani",
+      "Meghna Gulzar"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-090",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which actress played Neerja Bhanot?",
+    "options": [
+      "Alia Bhatt",
+      "Konkona Sen Sharma",
+      "Taapsee Pannu",
+      "Sonam Kapoor"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-091",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Tumbbad'?",
+    "options": [
+      "Rahi Anil Barve",
+      "Aditya Dhar",
+      "Anurag Kashyap",
+      "Vikramaditya Motwane"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-092",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which genre best describes 'Tumbbad'?",
+    "options": [
+      "Horror fantasy",
+      "Romantic comedy",
+      "Courtroom drama",
+      "Sports drama"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-093",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Stree'?",
+    "options": [
+      "Raj Nidimoru",
+      "Vikas Bahl",
+      "Dinesh Vijan",
+      "Amar Kaushik"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-094",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which actress played Stree's female lead?",
+    "options": [
+      "Shraddha Kapoor",
+      "Radhika Apte",
+      "Taapsee Pannu",
+      "Kriti Sanon"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-095",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Drishyam' (Hindi)?",
+    "options": [
+      "Jeethu Joseph",
+      "R. Balki",
+      "Abhishek Pathak",
+      "Nishikant Kamat"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "IC-096",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which actor played Vijay Salgaonkar in the Hindi 'Drishyam'?",
+    "options": [
+      "Akshay Kumar",
+      "Manoj Bajpayee",
+      "Ajay Devgn",
+      "Irrfan Khan"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "IC-098",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which actress played Safeena in 'Gully Boy'?",
+    "options": [
+      "Alia Bhatt",
+      "Konkona Sen Sharma",
+      "Deepika Padukone",
+      "Taapsee Pannu"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "IC-099",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Who directed 'Mulk'?",
+    "options": [
+      "Nandita Das",
+      "Anubhav Sinha",
+      "Hansal Mehta",
+      "Vikramaditya Motwane"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "IC-100",
+    "category": "Indian Cinema",
+    "difficulty": 4,
+    "text": "Which film stars Irrfan Khan and Nawazuddin Siddiqui in a major ensemble about a lunchbox delivery?",
+    "options": [
+      "Hindi Medium",
+      "Haasil",
+      "Paan Singh Tomar",
+      "The Lunchbox"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-021",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Who was the first President of India?",
+    "options": [
+      "Zakir Husain",
+      "Dr. Rajendra Prasad",
+      "V. V. Giri",
+      "Dr. S. Radhakrishnan"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-022",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Who was the first Vice President of India?",
+    "options": [
+      "Dr. Rajendra Prasad",
+      "V. V. Giri",
+      "Dr. S. Radhakrishnan",
+      "Zakir Husain"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-024",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Who chaired the Drafting Committee of the Indian Constitution?",
+    "options": [
+      "Rajendra Prasad",
+      "Jawaharlal Nehru",
+      "Sardar Patel",
+      "B. R. Ambedkar"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-025",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "When did the Constitution of India come into effect?",
+    "options": [
+      "15 August 1947",
+      "26 January 1950",
+      "2 October 1950",
+      "26 November 1949"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-026",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "When was the Constitution of India adopted?",
+    "options": [
+      "26 November 1949",
+      "15 August 1950",
+      "15 August 1947",
+      "26 January 1950"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-027",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Which part of the Constitution contains Fundamental Rights?",
+    "options": [
+      "Part II",
+      "Part IV",
+      "Part V",
+      "Part III"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-028",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Which part contains Directive Principles of State Policy?",
+    "options": [
+      "Part III",
+      "Part V",
+      "Part VI",
+      "Part IV"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-029",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Which article guarantees equality before the law?",
+    "options": [
+      "Article 32",
+      "Article 14",
+      "Article 19",
+      "Article 21"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-030",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Which article protects life and personal liberty?",
+    "options": [
+      "Article 14",
+      "Article 19",
+      "Article 21",
+      "Article 32"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-031",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Which article is associated with constitutional remedies?",
+    "options": [
+      "Article 32",
+      "Article 14",
+      "Article 19",
+      "Article 21"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-032",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Who called Article 32 the 'heart and soul' of the Constitution?",
+    "options": [
+      "Sardar Patel",
+      "B. R. Ambedkar",
+      "Jawaharlal Nehru",
+      "Rajendra Prasad"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-033",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Which house is the upper house of Parliament?",
+    "options": [
+      "Vidhan Sabha",
+      "Rajya Sabha",
+      "Lok Sabha",
+      "Legislative Council"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-034",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Which house is the lower house of Parliament?",
+    "options": [
+      "Lok Sabha",
+      "Vidhan Parishad",
+      "Rajya Sabha",
+      "Legislative Council"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-035",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "What is the maximum constitutional strength of the Lok Sabha?",
+    "options": [
+      "545",
+      "550",
+      "543",
+      "552"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-036",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "What is the normal term of the Lok Sabha?",
+    "options": [
+      "4 years",
+      "5 years",
+      "7 years",
+      "6 years"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-037",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "What is the term of a Rajya Sabha member?",
+    "options": [
+      "4 years",
+      "5 years",
+      "7 years",
+      "6 years"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-038",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "How many Rajya Sabha members retire every two years approximately?",
+    "options": [
+      "One-fifth",
+      "One-half",
+      "One-fourth",
+      "One-third"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-039",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Who presides over the Rajya Sabha?",
+    "options": [
+      "Prime Minister",
+      "Speaker of Lok Sabha",
+      "President of India",
+      "Vice President of India"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-040",
+    "category": "Politics & Indian Polity",
+    "difficulty": 1,
+    "text": "Who presides over the Lok Sabha?",
+    "options": [
+      "Speaker",
+      "Vice President",
+      "Prime Minister",
+      "President"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-041",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Who appoints the Prime Minister of India?",
+    "options": [
+      "Chief Justice of India",
+      "President of India",
+      "Speaker",
+      "Election Commission"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-042",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Who is the constitutional head of a state?",
+    "options": [
+      "Governor",
+      "Speaker",
+      "Chief Justice",
+      "Chief Minister"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-043",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Who is the real executive head of a state government?",
+    "options": [
+      "Chief Secretary",
+      "Governor",
+      "Speaker",
+      "Chief Minister"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-044",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Who appoints the Governor of an Indian state?",
+    "options": [
+      "State Legislature",
+      "Chief Minister",
+      "Prime Minister alone",
+      "President of India"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-045",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Which body conducts elections to Parliament and state legislatures?",
+    "options": [
+      "CAG",
+      "Election Commission of India",
+      "Finance Commission",
+      "UPSC"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-046",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Which constitutional body audits government accounts?",
+    "options": [
+      "Election Commission",
+      "Finance Commission",
+      "Comptroller and Auditor General",
+      "UPSC"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-047",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Which body recommends distribution of tax revenues between Union and states?",
+    "options": [
+      "CAG",
+      "UPSC",
+      "Election Commission",
+      "Finance Commission"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-048",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Which body recruits for many central civil services?",
+    "options": [
+      "Election Commission",
+      "UPSC",
+      "Finance Commission",
+      "CAG"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-049",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Who was the first woman Prime Minister of India?",
+    "options": [
+      "Indira Gandhi",
+      "Sarojini Naidu",
+      "Sushma Swaraj",
+      "Pratibha Patil"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-051",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Who was the first woman Speaker of the Lok Sabha?",
+    "options": [
+      "Pratibha Patil",
+      "Sushma Swaraj",
+      "Meira Kumar",
+      "Sumitra Mahajan"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-052",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Who was the first Indian to become Governor-General of independent India?",
+    "options": [
+      "C. Rajagopalachari",
+      "Jawaharlal Nehru",
+      "Rajendra Prasad",
+      "Sardar Patel"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-053",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Which movement was launched by Gandhi in 1942?",
+    "options": [
+      "Quit India Movement",
+      "Civil Disobedience Movement",
+      "Swadeshi Movement",
+      "Non-Cooperation Movement"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-054",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Which movement began with the Dandi March?",
+    "options": [
+      "Non-Cooperation Movement",
+      "Civil Disobedience Movement",
+      "Quit India Movement",
+      "Khilafat Movement"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-055",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "The Non-Cooperation Movement was launched in which year?",
+    "options": [
+      "1915",
+      "1930",
+      "1942",
+      "1920"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-056",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "The Dandi March took place in which year?",
+    "options": [
+      "1920",
+      "1942",
+      "1927",
+      "1930"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-057",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "The Quit India Movement began in which year?",
+    "options": [
+      "1947",
+      "1942",
+      "1935",
+      "1930"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-058",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Who gave the slogan 'Do or Die' during the Quit India Movement?",
+    "options": [
+      "Mahatma Gandhi",
+      "Sardar Patel",
+      "Subhas Chandra Bose",
+      "Jawaharlal Nehru"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-059",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Who gave the slogan 'Jai Hind'?",
+    "options": [
+      "Lala Lajpat Rai",
+      "Bal Gangadhar Tilak",
+      "Subhas Chandra Bose",
+      "Bhagat Singh"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-060",
+    "category": "Politics & Indian Polity",
+    "difficulty": 2,
+    "text": "Which constitutional amendment lowered the voting age from 21 to 18?",
+    "options": [
+      "73rd Amendment",
+      "42nd Amendment",
+      "44th Amendment",
+      "61st Amendment"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-061",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which amendment is associated with Panchayati Raj?",
+    "options": [
+      "73rd Amendment",
+      "74th Amendment",
+      "42nd Amendment",
+      "61st Amendment"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-062",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which amendment is associated with urban local bodies?",
+    "options": [
+      "74th Amendment",
+      "73rd Amendment",
+      "86th Amendment",
+      "61st Amendment"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-063",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which amendment added the words Socialist, Secular and Integrity to the Preamble?",
+    "options": [
+      "61st Amendment",
+      "42nd Amendment",
+      "44th Amendment",
+      "73rd Amendment"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-064",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which amendment is known for restoring several civil liberties after the Emergency?",
+    "options": [
+      "44th Amendment",
+      "61st Amendment",
+      "42nd Amendment",
+      "52nd Amendment"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-065",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which amendment introduced the anti-defection law?",
+    "options": [
+      "73rd Amendment",
+      "42nd Amendment",
+      "61st Amendment",
+      "52nd Amendment"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-066",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which schedule contains the anti-defection provisions?",
+    "options": [
+      "Ninth Schedule",
+      "Tenth Schedule",
+      "Twelfth Schedule",
+      "Eighth Schedule"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-067",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which schedule lists recognized languages of India?",
+    "options": [
+      "Ninth Schedule",
+      "Seventh Schedule",
+      "Tenth Schedule",
+      "Eighth Schedule"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-068",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "How many languages are currently listed in the Eighth Schedule?",
+    "options": [
+      "20",
+      "24",
+      "22",
+      "18"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-069",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which schedule distributes powers between Union, State and Concurrent lists?",
+    "options": [
+      "Sixth Schedule",
+      "Eighth Schedule",
+      "Tenth Schedule",
+      "Seventh Schedule"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-070",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which list contains subjects of national importance such as defence?",
+    "options": [
+      "Concurrent List",
+      "Union List",
+      "State List",
+      "Local List"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-071",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which list includes police and public order?",
+    "options": [
+      "Residuary List",
+      "Union List",
+      "State List",
+      "Concurrent List"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-072",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Which list includes education and forests?",
+    "options": [
+      "State List",
+      "Union List",
+      "Concurrent List",
+      "Residuary List"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-073",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Who is the nominal executive of the Union?",
+    "options": [
+      "President",
+      "Speaker",
+      "Prime Minister",
+      "Chief Justice"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-074",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Who is the head of government at the Union level?",
+    "options": [
+      "Vice President",
+      "Prime Minister",
+      "President",
+      "Speaker"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-075",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Who is the guardian of the Constitution through judicial review?",
+    "options": [
+      "CAG",
+      "Supreme Court",
+      "Election Commission",
+      "Parliament"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-076",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "What is the highest court in India?",
+    "options": [
+      "Supreme Court",
+      "District Court",
+      "High Court",
+      "Constitutional Court"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-077",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "Who appoints the Chief Justice of India?",
+    "options": [
+      "Vice President",
+      "Prime Minister alone",
+      "Parliament",
+      "President of India"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-078",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "What is the minimum age to become President of India?",
+    "options": [
+      "30 years",
+      "25 years",
+      "35 years",
+      "40 years"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-079",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "What is the minimum age to become a Lok Sabha member?",
+    "options": [
+      "25 years",
+      "21 years",
+      "30 years",
+      "18 years"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-080",
+    "category": "Politics & Indian Polity",
+    "difficulty": 3,
+    "text": "What is the minimum age to become a Rajya Sabha member?",
+    "options": [
+      "30 years",
+      "28 years",
+      "25 years",
+      "35 years"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-081",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "What is the minimum voting age in India?",
+    "options": [
+      "18 years",
+      "25 years",
+      "21 years",
+      "16 years"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-082",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which institution is called the permanent house of Parliament?",
+    "options": [
+      "Legislative Assembly",
+      "Lok Sabha",
+      "Rajya Sabha",
+      "Vidhan Parishad"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-083",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Who has the power to dissolve the Lok Sabha?",
+    "options": [
+      "Chief Justice",
+      "Speaker alone",
+      "President, on advice of the Council of Ministers",
+      "Election Commission"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-084",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "A Money Bill can be introduced only in which house?",
+    "options": [
+      "Either House",
+      "Rajya Sabha",
+      "State Assembly only",
+      "Lok Sabha"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-085",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Who certifies a bill as a Money Bill in the Lok Sabha?",
+    "options": [
+      "President",
+      "Rajya Sabha Chairman",
+      "Speaker of the Lok Sabha",
+      "Finance Minister"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-086",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which constitutional article deals with President's Rule in a state?",
+    "options": [
+      "Article 360",
+      "Article 365",
+      "Article 352",
+      "Article 356"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-087",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which article deals with National Emergency?",
+    "options": [
+      "Article 356",
+      "Article 370",
+      "Article 360",
+      "Article 352"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-088",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which article deals with Financial Emergency?",
+    "options": [
+      "Article 356",
+      "Article 365",
+      "Article 360",
+      "Article 352"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-089",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Who appoints the Chief Election Commissioner?",
+    "options": [
+      "President of India",
+      "Parliament",
+      "Prime Minister",
+      "Supreme Court"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-090",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which commission recommends delimitation of constituencies?",
+    "options": [
+      "Law Commission",
+      "Delimitation Commission",
+      "Finance Commission",
+      "Election Commission alone"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-091",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "What is the normal term of a state Legislative Assembly?",
+    "options": [
+      "6 years",
+      "4 years",
+      "7 years",
+      "5 years"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-092",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Who is the ex-officio Chairman of the Rajya Sabha?",
+    "options": [
+      "Prime Minister",
+      "Speaker",
+      "Vice President of India",
+      "President"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-093",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which body is the supreme law-making institution at the Union level?",
+    "options": [
+      "Parliament",
+      "Supreme Court",
+      "UPSC",
+      "Election Commission"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "POL-094",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which chamber represents the states and Union Territories in Parliament?",
+    "options": [
+      "Legislative Council",
+      "Rajya Sabha",
+      "Vidhan Sabha",
+      "Lok Sabha"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-095",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which chamber is directly elected by the people?",
+    "options": [
+      "Legislative Council",
+      "Lok Sabha",
+      "Rajya Sabha",
+      "State Assembly only"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-096",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Who was India's first Chief Election Commissioner?",
+    "options": [
+      "S. P. Sen-Verma",
+      "Sukumar Sen",
+      "K. V. K. Sundaram",
+      "T. N. Seshan"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "POL-097",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which body makes the final decision on disputes about presidential and vice-presidential elections?",
+    "options": [
+      "Parliament",
+      "High Court",
+      "Election Commission",
+      "Supreme Court of India"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-098",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Which constitutional body protects and promotes financial relations between Union and states through recommendations?",
+    "options": [
+      "Election Commission",
+      "NITI Aayog",
+      "Finance Commission",
+      "UPSC"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "POL-099",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "What is the minimum age to become a Governor of an Indian state?",
+    "options": [
+      "25 years",
+      "40 years",
+      "30 years",
+      "35 years"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "POL-100",
+    "category": "Politics & Indian Polity",
+    "difficulty": 4,
+    "text": "Who was the first Speaker of the Lok Sabha?",
+    "options": [
+      "Ananthasayanam Ayyangar",
+      "Balram Jakhar",
+      "Meira Kumar",
+      "G. V. Mavalankar"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-023",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "What does ROM stand for?",
+    "options": [
+      "Read-Only Memory",
+      "Random Only Memory",
+      "Read Open Memory",
+      "Rapid Output Memory"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-024",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "Which device is primarily used to connect a computer to a network?",
+    "options": [
+      "Capture card",
+      "Sound card",
+      "Network interface card",
+      "Graphics card"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-026",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "What does HTTP stand for?",
+    "options": [
+      "Hypertext Transfer Protocol",
+      "Hyperlink Transmission Process",
+      "High Transfer Text Protocol",
+      "Hypertext Transport Program"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-028",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "What does DNS translate?",
+    "options": [
+      "Files to folders",
+      "Images to pixels",
+      "Domain names to IP addresses",
+      "Passwords to usernames"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-029",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "What does IP stand for in IP address?",
+    "options": [
+      "Internal Process",
+      "Internet Protocol",
+      "Internet Port",
+      "Interface Protocol"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-030",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "Which protocol is commonly used to send email?",
+    "options": [
+      "FTP",
+      "SSH",
+      "SMTP",
+      "DNS"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-031",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "Which protocol is commonly used to securely access a remote server?",
+    "options": [
+      "SMTP",
+      "SSH",
+      "POP3",
+      "HTTP"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-033",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "Which language is primarily used to style web pages?",
+    "options": [
+      "CSS",
+      "JSON",
+      "HTML",
+      "SQL"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-034",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "Which language structures content on web pages?",
+    "options": [
+      "HTML",
+      "CSS",
+      "SQL",
+      "Python"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-035",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "Which language is commonly used to add interactivity to web pages?",
+    "options": [
+      "JavaScript",
+      "SQL",
+      "HTML",
+      "CSS"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-036",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "What does JSON stand for?",
+    "options": [
+      "JavaScript Object Notation",
+      "Java Object Syntax Node",
+      "Joint Script Object Name",
+      "Java Source Object Network"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-037",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "What does API stand for?",
+    "options": [
+      "Applied Programming Input",
+      "Application Programming Interface",
+      "Advanced Program Internet",
+      "Application Process Integration"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-038",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "What does IDE stand for?",
+    "options": [
+      "Internet Development Engine",
+      "Integrated Development Environment",
+      "Internal Design Environment",
+      "Integrated Data Editor"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-039",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "What does Git primarily track?",
+    "options": [
+      "Changes to source code",
+      "Printer ink",
+      "CPU temperature",
+      "Internet traffic"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-040",
+    "category": "Technology",
+    "difficulty": 1,
+    "text": "What is GitHub primarily used for?",
+    "options": [
+      "Hosting and collaborating on code repositories",
+      "Online payments",
+      "Email hosting",
+      "Video streaming"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-041",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is a database?",
+    "options": [
+      "An organized collection of data",
+      "A graphics card",
+      "A web browser",
+      "A network cable"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-042",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is a primary key in a database?",
+    "options": [
+      "A table name",
+      "A password",
+      "A backup file",
+      "A field that uniquely identifies a record"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-043",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is an SQL JOIN used for?",
+    "options": [
+      "Encrypting disks",
+      "Combining related rows from tables",
+      "Starting a server",
+      "Compressing images"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-044",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What does NoSQL generally refer to?",
+    "options": [
+      "Network-only storage",
+      "New SQL syntax only",
+      "Non-relational database systems",
+      "No server databases"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-045",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is cloud computing?",
+    "options": [
+      "On-demand computing resources over a network",
+      "Using only local disks",
+      "A type of printer",
+      "A weather service"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-046",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "Which service model provides virtual machines and infrastructure?",
+    "options": [
+      "DaaS",
+      "SaaS",
+      "IaaS",
+      "PaaS"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-047",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "Which service model provides a platform for application development?",
+    "options": [
+      "LAN",
+      "IaaS",
+      "SaaS",
+      "PaaS"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-048",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "Which service model delivers software as an online service?",
+    "options": [
+      "BIOS",
+      "PaaS",
+      "IaaS",
+      "SaaS"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-049",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is virtualization?",
+    "options": [
+      "Creating virtual versions of computing resources",
+      "Deleting software",
+      "Printing remotely",
+      "Increasing screen size"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-050",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is a container in software?",
+    "options": [
+      "An isolated package of application and dependencies",
+      "A physical server rack",
+      "A database table",
+      "A keyboard driver"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-051",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "Which platform is known for container orchestration?",
+    "options": [
+      "Git",
+      "Apache",
+      "SQLite",
+      "Kubernetes"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-052",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is Docker commonly used for?",
+    "options": [
+      "Building and running containers",
+      "Editing photos",
+      "Managing email",
+      "Writing spreadsheets"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-053",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is a firewall used for?",
+    "options": [
+      "Controlling network traffic based on rules",
+      "Cooling a CPU",
+      "Storing passwords",
+      "Rendering video"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-054",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is encryption?",
+    "options": [
+      "Deleting data",
+      "Compressing images only",
+      "Converting data into a protected form",
+      "Increasing bandwidth"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-055",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is multi-factor authentication?",
+    "options": [
+      "Using multiple usernames",
+      "Using two or more authentication factors",
+      "Changing a password weekly",
+      "Using two browsers"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-056",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is phishing?",
+    "options": [
+      "A file format",
+      "A database query",
+      "A fraudulent attempt to obtain sensitive information",
+      "A graphics technique"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-057",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is malware?",
+    "options": [
+      "A storage device",
+      "A programming language",
+      "A network standard",
+      "Malicious software"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-058",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is ransomware?",
+    "options": [
+      "A browser extension",
+      "Malware that typically demands payment after restricting access to data",
+      "Antivirus software",
+      "A backup system"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-059",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is a VPN?",
+    "options": [
+      "A variable program number",
+      "A video processing node",
+      "A virtual private network",
+      "A virtual printer network"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-060",
+    "category": "Technology",
+    "difficulty": 2,
+    "text": "What is latency?",
+    "options": [
+      "Screen brightness",
+      "CPU core count",
+      "Storage capacity",
+      "Delay between an action and its response"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-061",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is bandwidth?",
+    "options": [
+      "CPU temperature",
+      "Data transfer capacity of a connection",
+      "Screen resolution",
+      "Battery life"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-062",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is an SSD?",
+    "options": [
+      "Secure System Device",
+      "Solid-state drive",
+      "Solid Signal Driver",
+      "Serial Storage Disk"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-063",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is an HDD?",
+    "options": [
+      "High Data Device",
+      "Hardware Data Disk",
+      "Hard disk drive",
+      "Hybrid Digital Drive"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-064",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "Which storage medium has no moving mechanical parts?",
+    "options": [
+      "SSD",
+      "Magnetic tape",
+      "HDD",
+      "Floppy disk"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-066",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "GPUs are especially well suited to what type of work?",
+    "options": [
+      "Keyboard input",
+      "Paper printing",
+      "Single-file text editing",
+      "Parallel computation"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-067",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is machine learning?",
+    "options": [
+      "A file compression format",
+      "A network cable",
+      "A type of monitor",
+      "A method where systems learn patterns from data"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-068",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is deep learning?",
+    "options": [
+      "A type of firewall",
+      "A storage protocol",
+      "A database language",
+      "Machine learning using multi-layer neural networks"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-069",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is an algorithm?",
+    "options": [
+      "A defined procedure for solving a problem",
+      "A storage disk",
+      "A computer screen",
+      "A network address"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-070",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is an operating system?",
+    "options": [
+      "A database row",
+      "A web page",
+      "Software that manages computer hardware and applications",
+      "A graphics file"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-071",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "Which operating system is developed by Microsoft for PCs?",
+    "options": [
+      "Windows",
+      "iOS",
+      "Ubuntu",
+      "Android"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-072",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "Which operating system is based on the Linux kernel and used widely on phones?",
+    "options": [
+      "macOS",
+      "Android",
+      "Windows",
+      "DOS"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-073",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "Which company develops macOS?",
+    "options": [
+      "Google",
+      "Microsoft",
+      "IBM",
+      "Apple"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-074",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "Which operating system is open-source and based on the Linux kernel?",
+    "options": [
+      "Linux",
+      "DOS",
+      "Windows",
+      "iOS"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-075",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is open-source software?",
+    "options": [
+      "Software that is always free of cost",
+      "Software that only runs online",
+      "Software without documentation",
+      "Software whose source code is available under a license allowing specified reuse and modification"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-076",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is an IP address used for?",
+    "options": [
+      "Naming a file",
+      "Formatting a disk",
+      "Identifying a device/interface on an IP network",
+      "Encrypting a password"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-077",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is IPv6?",
+    "options": [
+      "A USB version",
+      "A graphics API",
+      "The newer version of the Internet Protocol using 128-bit addresses",
+      "A Wi-Fi standard"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-078",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is Wi-Fi?",
+    "options": [
+      "Wireless networking technology based on IEEE 802.11 standards",
+      "A programming language",
+      "A storage format",
+      "A type of Ethernet cable"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-079",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What is Bluetooth primarily used for?",
+    "options": [
+      "Long-distance fiber links",
+      "Satellite TV",
+      "Hard-disk storage",
+      "Short-range wireless communication"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-080",
+    "category": "Technology",
+    "difficulty": 3,
+    "text": "What does USB stand for?",
+    "options": [
+      "Universal Serial Bus",
+      "User Serial Base",
+      "Unified System Bridge",
+      "Universal Storage Block"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-081",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What does HDMI carry?",
+    "options": [
+      "Only power",
+      "Digital audio and video",
+      "Only keyboard signals",
+      "Only analog audio"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-082",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is QR code?",
+    "options": [
+      "A video codec",
+      "A file system",
+      "A database server",
+      "A two-dimensional machine-readable code"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-083",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What does AI stand for?",
+    "options": [
+      "Algorithmic Interface",
+      "Applied Information",
+      "Artificial Intelligence",
+      "Automated Internet"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-084",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is generative AI designed to do?",
+    "options": [
+      "Only route network packets",
+      "Only scan hardware",
+      "Only store files",
+      "Generate new content from learned patterns"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-085",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is an LLM?",
+    "options": [
+      "Logical Learning Module",
+      "Local Link Manager",
+      "Large Language Model",
+      "Low-Level Machine"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-086",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is a neural network inspired by?",
+    "options": [
+      "A database table",
+      "The interconnected structure of biological neurons",
+      "A network cable",
+      "A hard drive"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-087",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is an API endpoint?",
+    "options": [
+      "A keyboard shortcut",
+      "A monitor port only",
+      "A database password",
+      "A network-accessible interface location for a specific operation/resource"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-088",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is REST commonly associated with?",
+    "options": [
+      "Web APIs using resource-oriented HTTP interactions",
+      "Disk partitioning",
+      "CPU scheduling",
+      "Image editing"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-089",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is a cache?",
+    "options": [
+      "A virus",
+      "A display driver",
+      "A power supply",
+      "Stored data kept for faster future access"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-090",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is a cookie in a web browser?",
+    "options": [
+      "A hardware chip",
+      "Small data stored by a website in the browser",
+      "A password manager",
+      "A video codec"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-091",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is a browser?",
+    "options": [
+      "A compiler",
+      "A database",
+      "A network cable",
+      "Software used to access and display web content"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-092",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is a compiler?",
+    "options": [
+      "A browser",
+      "Software that translates source code into another form such as machine code",
+      "A firewall",
+      "A database"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-093",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is debugging?",
+    "options": [
+      "Finding and fixing software defects",
+      "Installing hardware",
+      "Compressing files",
+      "Encrypting a disk"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-094",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is version control?",
+    "options": [
+      "A network protocol",
+      "A video format",
+      "A system for tracking changes to files over time",
+      "A database index"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-095",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is an SSL/TLS certificate used for?",
+    "options": [
+      "Compressing images",
+      "Increasing RAM",
+      "Formatting drives",
+      "Helping authenticate a website and establish encrypted connections"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "TECH-096",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is two-factor authentication commonly abbreviated as?",
+    "options": [
+      "2FA",
+      "2TB",
+      "2G",
+      "2PC"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-097",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is a backup?",
+    "options": [
+      "A network attack",
+      "A separate copy of data for recovery",
+      "A browser tab",
+      "A CPU mode"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "TECH-098",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is disaster recovery?",
+    "options": [
+      "A graphics technique",
+      "A storage cable",
+      "Planning and processes for restoring systems after disruption",
+      "A programming syntax"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "TECH-099",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is a CDN?",
+    "options": [
+      "Content Delivery Network",
+      "Computer Delivery Network",
+      "Central Data Node",
+      "Content Data Namespace"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "TECH-100",
+    "category": "Technology",
+    "difficulty": 4,
+    "text": "What is edge computing?",
+    "options": [
+      "A database backup format",
+      "Only using cloud storage",
+      "A type of monitor",
+      "Processing data closer to where it is generated or consumed"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "GK-101",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which is the largest planet in the Solar System?",
+    "options": [
+      "Jupiter",
+      "Saturn",
+      "Neptune",
+      "Earth"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-102",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which planet is known as the Red Planet?",
+    "options": [
+      "Mars",
+      "Jupiter",
+      "Venus",
+      "Mercury"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-103",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "What is the chemical symbol for gold?",
+    "options": [
+      "Go",
+      "Ag",
+      "Au",
+      "Gd"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-104",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "What is the chemical symbol for sodium?",
+    "options": [
+      "So",
+      "Sn",
+      "Na",
+      "Sd"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-105",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which gas do plants primarily absorb for photosynthesis?",
+    "options": [
+      "Carbon dioxide",
+      "Hydrogen",
+      "Nitrogen",
+      "Oxygen"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-106",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which organ pumps blood around the human body?",
+    "options": [
+      "Kidney",
+      "Heart",
+      "Lung",
+      "Liver"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-107",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "How many bones are in the typical adult human body?",
+    "options": [
+      "226",
+      "216",
+      "196",
+      "206"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "GK-108",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which is the largest ocean?",
+    "options": [
+      "Atlantic Ocean",
+      "Pacific Ocean",
+      "Arctic Ocean",
+      "Indian Ocean"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-109",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which is the highest mountain above sea level?",
+    "options": [
+      "Lhotse",
+      "K2",
+      "Kangchenjunga",
+      "Mount Everest"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "GK-110",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which Indian state has the longest coastline?",
+    "options": [
+      "Andhra Pradesh",
+      "Gujarat",
+      "Tamil Nadu",
+      "Maharashtra"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-111",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which river is often called the longest river in India?",
+    "options": [
+      "Narmada",
+      "Godavari",
+      "Yamuna",
+      "Ganga"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "GK-112",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which city is known as the Pink City of India?",
+    "options": [
+      "Bikaner",
+      "Udaipur",
+      "Jaipur",
+      "Jodhpur"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-113",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which Indian monument was built by Shah Jahan in memory of Mumtaz Mahal?",
+    "options": [
+      "Qutub Minar",
+      "Taj Mahal",
+      "Humayun's Tomb",
+      "Red Fort"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-114",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which classical dance form originated in Kerala?",
+    "options": [
+      "Kathak",
+      "Manipuri",
+      "Kathakali",
+      "Odissi"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-115",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which classical dance form is associated with Tamil Nadu?",
+    "options": [
+      "Bharatanatyam",
+      "Kathak",
+      "Odissi",
+      "Kathakali"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-116",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Who wrote the Indian national anthem?",
+    "options": [
+      "Rabindranath Tagore",
+      "Subramania Bharati",
+      "Sarojini Naidu",
+      "Bankim Chandra Chattopadhyay"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-117",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Who wrote 'Vande Mataram'?",
+    "options": [
+      "Bankim Chandra Chattopadhyay",
+      "Rabindranath Tagore",
+      "Sarojini Naidu",
+      "Sri Aurobindo"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-118",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which is the smallest Indian state by area?",
+    "options": [
+      "Goa",
+      "Tripura",
+      "Sikkim",
+      "Haryana"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-119",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which is the largest Indian state by area?",
+    "options": [
+      "Uttar Pradesh",
+      "Madhya Pradesh",
+      "Rajasthan",
+      "Maharashtra"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-120",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which Indian city is known as the Silicon Valley of India?",
+    "options": [
+      "Chennai",
+      "Hyderabad",
+      "Pune",
+      "Bengaluru"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "GK-121",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which planet is closest to the Sun?",
+    "options": [
+      "Mercury",
+      "Mars",
+      "Earth",
+      "Venus"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-122",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "What is the SI unit of electric current?",
+    "options": [
+      "Watt",
+      "Volt",
+      "Ampere",
+      "Ohm"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-123",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "What is the SI unit of force?",
+    "options": [
+      "Newton",
+      "Watt",
+      "Pascal",
+      "Joule"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-124",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which vitamin is produced in the skin with sunlight exposure?",
+    "options": [
+      "Vitamin A",
+      "Vitamin C",
+      "Vitamin D",
+      "Vitamin K"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-125",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which continent is the Sahara Desert located in?",
+    "options": [
+      "Australia",
+      "Africa",
+      "South America",
+      "Asia"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-126",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which country is known as the Land of the Rising Sun?",
+    "options": [
+      "China",
+      "Japan",
+      "Thailand",
+      "South Korea"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-127",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "How many players are there in a cricket team on the field?",
+    "options": [
+      "11",
+      "9",
+      "10",
+      "12"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-128",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which sport uses the terms love, deuce and ace?",
+    "options": [
+      "Hockey",
+      "Football",
+      "Basketball",
+      "Tennis"
+    ],
+    "answer": 3
+  },
+  {
+    "id": "GK-129",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Which instrument measures atmospheric pressure?",
+    "options": [
+      "Thermometer",
+      "Barometer",
+      "Anemometer",
+      "Hygrometer"
+    ],
+    "answer": 1
   }
 ]

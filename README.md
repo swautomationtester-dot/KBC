@@ -92,3 +92,7 @@ Set `PUBLIC_URL=https://quiz.vrqaacademy.co.in` after the custom domain is conne
 - When the Fastest Finger winner enters the live quiz, the registration heading, room/name/register-number inputs, and Register & Join button are hidden.
 - The live quiz area remains visible, including the contestant name, question, answers, and lifelines.
 - The registration area is restored for waiting/non-contestant states.
+
+
+## Expanded KBC Bank
+The current `questions.json` contains 520 unique questions across South Indian Cinema, Indian Cinema, Politics & Indian Polity, Technology, and General Knowledge. The server tracks used question IDs per room to avoid repeats across contestants.
