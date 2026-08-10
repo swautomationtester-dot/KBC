@@ -41,3 +41,351 @@
 .cardMatchPage .gaCardLogo{height:42px!important;width:155px!important;object-fit:contain}.cardMatchPage .cmBrand{gap:9px;color:#075056}.cardMatchPage .cmBrand>b{color:#075056}
 
 .cardMatchPage .gaCardLogo{object-fit:contain!important}
+
+/* =========================================================
+   CARD MATCH LAYOUT FOUNDATION
+   Fixes all game screens appearing at once / stretched UI.
+   ========================================================= */
+
+.cardMatchPage{
+  margin:0;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+.cardMatchPage .sitebar{
+  width:100%;
+  height:76px;
+  padding:0 30px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.cardMatchPage .cmBrand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  color:#075056;
+  text-decoration:none;
+  font-size:15px;
+}
+
+.cardMatchPage .cmBrand .brand{
+  display:block;
+  height:44px;
+  width:auto;
+  max-width:245px;
+  object-fit:contain;
+}
+
+.cardMatchPage .cmBrand b{
+  white-space:nowrap;
+  font-size:14px;
+  letter-spacing:.2px;
+}
+
+.cardMatchPage .chip{
+  flex:none;
+  white-space:nowrap;
+}
+
+.cardMatchPage .cmWrap{
+  width:100%;
+  max-width:1280px;
+  min-height:calc(100vh - 76px);
+  margin:0 auto;
+  padding:44px 28px 34px;
+  display:flex;
+  flex-direction:column;
+}
+
+.cardMatchPage .cmScreen{
+  display:none !important;
+  width:100%;
+  flex:0 0 auto;
+}
+
+.cardMatchPage .cmScreen.active{
+  display:block !important;
+}
+
+.cardMatchPage .cmHero{
+  width:min(920px,100%);
+  margin:15px auto 0;
+  text-align:center;
+}
+
+.cardMatchPage .cmHero label,
+.cardMatchPage .cmPanel > label,
+.cardMatchPage .cmGameTop label{
+  display:block;
+  color:#f1cc5d;
+  font-size:12px;
+  font-weight:950;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+.cardMatchPage .cmHero h1{
+  margin:18px 0 14px;
+  font-size:clamp(48px,7vw,88px);
+  line-height:.92;
+  letter-spacing:-3px;
+  text-align:left;
+}
+
+.cardMatchPage .cmHero h1 em{
+  font-style:normal;
+}
+
+.cardMatchPage .cmHero p{
+  margin:0 auto 28px;
+  max-width:700px;
+  color:#c4dedb;
+  font-size:16px;
+  line-height:1.55;
+}
+
+.cardMatchPage .cmHeroBtns{
+  width:min(680px,100%);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.cardMatchPage .primary,
+.cardMatchPage .cmSecondary{
+  min-height:52px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:900;
+}
+
+.cardMatchPage .primary.big,
+.cardMatchPage .cmSecondary.big{
+  width:100%;
+  padding:15px 18px;
+}
+
+.cardMatchPage .cmSecondary{
+  background:#075056;
+  color:#fff;
+  border:1px solid #39b2b555;
+}
+
+.cardMatchPage .cmPanel{
+  width:min(620px,100%);
+  margin:20px auto 0;
+  padding:32px;
+  border:1px solid #39b2b555;
+  border-radius:22px;
+  text-align:center;
+}
+
+.cardMatchPage .cmPanel h2{
+  margin:9px 0 8px;
+  font-size:clamp(28px,4vw,44px);
+}
+
+.cardMatchPage .cmPanel p{
+  line-height:1.5;
+}
+
+.cardMatchPage .cmCode{
+  margin:13px 0 5px;
+  font-size:clamp(48px,8vw,76px);
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:10px;
+}
+
+.cardMatchPage .cmQr{
+  width:190px;
+  min-height:190px;
+  margin:18px auto;
+  padding:12px;
+  background:#fff;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.cardMatchPage .cmQr img,
+.cardMatchPage .cmQr canvas{
+  max-width:100%;
+  height:auto;
+}
+
+.cardMatchPage .cmUrl{
+  max-width:100%;
+  margin:8px auto 18px;
+  color:#b8d4d1;
+  font-size:11px;
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+
+.cardMatchPage .cmPlayers{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin:16px 0;
+  text-align:left;
+}
+
+.cardMatchPage .cmPlayers > *{
+  padding:13px;
+  border:1px solid #39b2b555;
+  border-radius:12px;
+  background:#075056aa;
+}
+
+.cardMatchPage .wide{
+  width:100%;
+  margin-top:8px;
+}
+
+.cardMatchPage .cmPanel input{
+  display:block;
+  width:100%;
+  min-height:52px;
+  margin:0 0 12px;
+  border-radius:12px;
+  padding:14px 15px;
+}
+
+.cardMatchPage .cmGame{
+  max-width:1120px;
+  margin:0 auto;
+}
+
+.cardMatchPage .cmGameTop{
+  width:100%;
+  margin:0 0 12px;
+}
+
+.cardMatchPage .cmGameTop h2{
+  margin:6px 0 0;
+}
+
+.cardMatchPage .turnStrip,
+.cardMatchPage .cmScores{
+  width:100%;
+}
+
+.cardMatchPage .cmBoard{
+  width:min(760px,100%);
+  margin:16px auto 0;
+}
+
+.cardMatchPage .cmFoot{
+  width:min(760px,100%);
+}
+
+.cardMatchPage .gaFooter{
+  width:100%;
+  margin:34px auto 0;
+  padding:16px 4px 0;
+  border-top:1px solid #39b2b533;
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  color:#9bc0bd;
+  font-size:12px;
+}
+
+.cardMatchPage #winner .cmPanel h1{
+  margin:8px 0 20px;
+}
+
+.cardMatchPage .trophy{
+  font-size:56px;
+  margin-bottom:8px;
+}
+
+/* Never allow hidden game screens to reserve layout space. */
+.cardMatchPage .cmScreen:not(.active){
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  overflow:hidden !important;
+  clip:rect(0 0 0 0) !important;
+  clip-path:inset(50%) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+  padding:0 !important;
+  margin:-1px !important;
+}
+
+@media (max-width:760px){
+  .cardMatchPage .sitebar{
+    height:64px;
+    padding:0 14px;
+  }
+  .cardMatchPage .cmBrand .brand{
+    height:36px;
+    max-width:190px;
+  }
+  .cardMatchPage .cmBrand b{
+    display:none;
+  }
+  .cardMatchPage .cmWrap{
+    min-height:calc(100vh - 64px);
+    padding:28px 14px 24px;
+  }
+  .cardMatchPage .cmHero{
+    margin-top:8px;
+  }
+  .cardMatchPage .cmHero h1{
+    font-size:clamp(44px,15vw,70px);
+    letter-spacing:-2px;
+  }
+  .cardMatchPage .cmHeroBtns{
+    grid-template-columns:1fr;
+  }
+  .cardMatchPage .cmPanel{
+    padding:24px 18px;
+    border-radius:18px;
+  }
+  .cardMatchPage .cmPlayers{
+    grid-template-columns:1fr;
+  }
+  .cardMatchPage .cmGameTop{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .cardMatchPage .cmTvControls{
+    width:100%;
+  }
+  .cardMatchPage .cmControl{
+    flex:1;
+  }
+  .cardMatchPage .cmBoard{
+    gap:7px;
+  }
+  .cardMatchPage .cmFace{
+    border-radius:11px;
+  }
+  .cardMatchPage .gaFooter{
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+}
+
+@media (min-width:761px) and (max-height:800px){
+  .cardMatchPage .cmWrap{
+    padding-top:28px;
+  }
+  .cardMatchPage .cmHero{
+    margin-top:0;
+  }
+}
