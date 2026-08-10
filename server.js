@@ -164,7 +164,10 @@ async function startFastest(r, keepPool=false){
  r.fastestSequence=Array.from({length:5},()=>Math.floor(Math.random()*4));
  r.fastestToken=crypto.randomBytes(12).toString("base64url");
  const roomCode=[...rooms.entries()].find(([,room])=>room===r)?.[0]||"";
- r.fastestJoinUrl=`${getPublicUrlForSocket(s)}/join.html?room=${encodeURIComponent(roomCode)}&game=${encodeURIComponent(r.fastestToken)}`;
+ // startFastest receives a room, not a socket. Use the room's public join URL
+  // so Randomly Select 7 cannot crash with "s is not defined".
+  const publicBase = r.joinUrl ? new URL(r.joinUrl).origin : (PUBLIC_URL || "");
+  r.fastestJoinUrl=`${publicBase}/join.html?room=${encodeURIComponent(roomCode)}&game=${encodeURIComponent(r.fastestToken)}`;
  r.fastestJoinQr=await QRCode.toDataURL(r.fastestJoinUrl,{margin:1,width:280});
  if(!r.pool.length){r.phase="finished";return}
  r.pool.forEach(u=>u.inPool=true);
@@ -343,7 +346,23 @@ io.on("connection",s=>{
     },800);
    }
  });
- s.on("host:create",async()=>{let code;do code=String(Math.floor(1000+Math.random()*9000));while(rooms.has(code));const r=makeRoom();r.host=s.id;r.questions=[];rooms.set(code,r);s.join(code);s.data.room=code;s.data.role="host";const joinUrl=`${getPublicUrlForSocket(s)}/join.html?room=${code}`;r.joinUrl=joinUrl;r.joinQr=await QRCode.toDataURL(joinUrl);r.screenToken=crypto.randomBytes(14).toString("base64url");r.screenUrl=`${getPublicUrlForSocket(s)}/screen/${r.screenToken}`;r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});r.audiencePollUrl=`${getPublicUrlForSocket(s)}/audience.html?room=${code}`;r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});s.emit("room",{code,joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});emitState(code)});
+ s.on("host:resume",({token}={})=>{
+ const wanted=String(token||"").trim();
+ if(!wanted)return;
+ for(const [code,r] of rooms){
+   if(r.hostToken!==wanted)continue;
+   if(r.hostDisconnectTimer){clearTimeout(r.hostDisconnectTimer);r.hostDisconnectTimer=null}
+   r.host=s.id;s.join(code);s.data.room=code;s.data.role="host";
+   s.emit("room",{code,hostToken:r.hostToken,joinUrl:r.joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});
+   emitState(code);
+   return;
+ }
+});
+s.on("host:create",async()=>{
+ let code;do code=String(Math.floor(1000+Math.random()*9000));while(rooms.has(code));
+ const r=makeRoom();r.host=s.id;r.hostToken=crypto.randomBytes(24).toString("hex");r.hostDisconnectTimer=null;r.questions=[];
+ rooms.set(code,r);s.join(code);s.data.room=code;s.data.role="host";
+ const joinUrl=`${getPublicUrlForSocket(s)}/join.html?room=${code}`;r.joinUrl=joinUrl;r.joinQr=await QRCode.toDataURL(joinUrl);r.screenToken=crypto.randomBytes(14).toString("base64url");r.screenUrl=`${getPublicUrlForSocket(s)}/screen/${r.screenToken}`;r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});r.audiencePollUrl=`${getPublicUrlForSocket(s)}/audience.html?room=${code}`;r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});s.emit("room",{code,hostToken:r.hostToken,joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});emitState(code)});
  s.on("join",({code,name,employeeCode,role="player",game})=>{code=String(code||"").trim();const r=rooms.get(code);if(!/^\d{4}$/.test(code))return s.emit("errorMsg","Room code must be exactly 4 digits.");if(!r)return s.emit("errorMsg","Room not found. Ask the host for a new code.");
  if(game){const ec=String(employeeCode||"").trim();if(game!==r.fastestToken)return s.emit("errorMsg","This Fastest Finger QR is no longer active.");if(!/^\d+$/.test(ec))return s.emit("errorMsg","Register number must contain numbers only.");if(!r.pool.some(p=>p.employeeCode===ec))return s.emit("errorMsg","You are not selected for this Fastest Finger round.");}
  s.join(code);s.data.room=code;s.data.role=role;if(role==="audience"||role==="tv"||role==="roster"){s.emit("joined",{name:role==="tv"?"TV Screen":role==="roster"?"Roster Viewer":"Audience"});emitState(code);return}name=String(name||"").trim();employeeCode=String(employeeCode||"").trim();if(!/^[A-Za-z]+(?:[ ][A-Za-z]+)*$/.test(name))return s.emit("errorMsg","Name must contain alphabets only.");if(!/^\d+$/.test(employeeCode))return s.emit("errorMsg","Register number must contain numbers only.");if([...r.users.values()].some(u=>u.employeeCode===employeeCode))return s.emit("errorMsg","This register number is already registered.");r.users.set(s.id,{id:s.id,name,employeeCode,score:0,status:"active",inPool:false,lifelinesUsed:{"5050":false,"audience":false,"phone":false},registeredAt:Date.now()});s.emit("joined",{name,employeeCode});emitState(code)});
@@ -655,6 +674,24 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
    emitState(s.data.room);
  }
 });
- s.on("disconnect",()=>{const r=rooms.get(s.data.room);if(!r)return;if(r.host===s.id){clearTimeout(r.timer);io.to(s.data.room).emit("errorMsg","Host disconnected. Room closed.");rooms.delete(s.data.room)}});
+ s.on("disconnect",()=>{
+ const roomCode=s.data.room,r=rooms.get(roomCode);
+ if(!r)return;
+ if(r.host===s.id){
+   // Keep the room alive during transient proxy/Wi-Fi/socket reconnects.
+   // The host can resume using the token stored in the browser.
+   r.host=null;
+   if(r.hostDisconnectTimer)clearTimeout(r.hostDisconnectTimer);
+   r.hostDisconnectTimer=setTimeout(()=>{
+     const x=rooms.get(roomCode);
+     if(x && !x.host){
+       clearTimeout(x.timer);
+       io.to(roomCode).emit("errorMsg","Host disconnected. Room closed.");
+       rooms.delete(roomCode);
+     }
+   },90000);
+   io.to(roomCode).emit("hostConnection","Host reconnecting…");
+ }
+});
 });
 initDb().then(()=>server.listen(PORT,"0.0.0.0",()=>console.log(`Perficient Office Quiz Arena v4 listening on 0.0.0.0:${PORT}`))).catch(e=>{console.error("Startup error:",e);process.exit(1)});
