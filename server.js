@@ -3,7 +3,17 @@ const {Server}=require("socket.io"),QRCode=require("qrcode"),mysql=require("mysq
 const independenceBank=require("./questions.json");
 const app=express(),server=http.createServer(app),io=new Server(server,{cors:{origin:true}});
 const PORT=Number(process.env.PORT)||10000;
-const PUBLIC_URL=(process.env.PUBLIC_URL||`http://localhost:${PORT}`).replace(/\/$/,"");
+const PUBLIC_URL=(process.env.PUBLIC_URL||"").replace(/\/$/,"");
+function getPublicUrlForSocket(s){
+  const configured=String(PUBLIC_URL||"").trim();
+  const configuredIsLocal=!configured || /localhost|127\\.0\\.0\\.1/i.test(configured);
+  if(!configuredIsLocal)return configured;
+  const h=s.handshake?.headers||{};
+  const proto=String(h["x-forwarded-proto"]||h["x-forwarded-scheme"]||"http").split(",")[0].trim().replace(/:$/,"");
+  const host=String(h["x-forwarded-host"]||h.host||"").split(",")[0].trim();
+  if(host && !/localhost|127\\.0\\.0\\.1/i.test(host)) return `${proto}://${host}`;
+  return `http://localhost:${PORT}`;
+}
 const ADMIN_USERNAME=process.env.ADMIN_USERNAME||"admin";
 const ADMIN_PASSWORD=process.env.ADMIN_PASSWORD||"change-me";
 const adminSessions=new Map();
@@ -41,7 +51,7 @@ async function questions(){
 // Questions progress from easy to hard and never repeat the same source fact
 // within a game. Options are shuffled so the correct answer is not always
 // in the same position.
-const GAME_POINTS=[1000,2000,5000,10000,50000];
+const GAME_POINTS=[10,20,30,40,50];
 const GAME_DIFFICULTY=[1,2,3,4,5];
 const TOTAL_QUESTIONS=5;
 const QUESTION_BANK_VERSION="INDIA-INDEPENDENCE-10-v1";
@@ -84,7 +94,7 @@ function pollCounts(poll){
   return c;
 }
 
-function makeRoom(){return{host:null,users:new Map(),questions:[],current:-1,phase:"lobby",pool:[],winner:null,completed:new Set(),played:new Set(),failed:new Set(),answers:new Map(),pendingAnswer:null,pendingPollRequest:null,poll:new Map(),lifelines:new Set(),fiftyFiftyRemoved:new Map(),timer:null,fastestSize:7,fastestStartAt:0,fastestDurationMs:15000,fastestSequence:[],fastestTimes:new Map(),fastestProgress:new Map(),fastestToken:"",fastestJoinUrl:"",fastestJoinQr:"",screenToken:"",screenUrl:"",screenQr:"",audiencePollUrl:"",audiencePollQr:"",pollActive:false,winnerCelebrationUntil:0,contestantId:null,eliminatedContestant:null,ladder:[1000,2000,5000,10000,50000]}}
+function makeRoom(){return{host:null,users:new Map(),questions:[],current:-1,phase:"lobby",pool:[],winner:null,completed:new Set(),played:new Set(),failed:new Set(),answers:new Map(),pendingAnswer:null,pendingPollRequest:null,poll:new Map(),lifelines:new Set(),fiftyFiftyRemoved:new Map(),timer:null,fastestSize:7,fastestStartAt:0,fastestDurationMs:15000,fastestSequence:[],fastestTimes:new Map(),fastestProgress:new Map(),fastestToken:"",fastestJoinUrl:"",fastestJoinQr:"",screenToken:"",screenUrl:"",screenQr:"",audiencePollUrl:"",audiencePollQr:"",pollActive:false,winnerCelebrationUntil:0,contestantId:null,eliminatedContestant:null,ladder:[10,20,30,40,50]}}
 function active(r){return [...r.users.values()].filter(u=>u.status==="active")}
 function emitState(code){
  const r=rooms.get(code);if(!r)return;
@@ -154,7 +164,7 @@ async function startFastest(r, keepPool=false){
  r.fastestSequence=Array.from({length:5},()=>Math.floor(Math.random()*4));
  r.fastestToken=crypto.randomBytes(12).toString("base64url");
  const roomCode=[...rooms.entries()].find(([,room])=>room===r)?.[0]||"";
- r.fastestJoinUrl=`${PUBLIC_URL}/join.html?room=${encodeURIComponent(roomCode)}&game=${encodeURIComponent(r.fastestToken)}`;
+ r.fastestJoinUrl=`${getPublicUrlForSocket(s)}/join.html?room=${encodeURIComponent(roomCode)}&game=${encodeURIComponent(r.fastestToken)}`;
  r.fastestJoinQr=await QRCode.toDataURL(r.fastestJoinUrl,{margin:1,width:280});
  if(!r.pool.length){r.phase="finished";return}
  r.pool.forEach(u=>u.inPool=true);
@@ -250,12 +260,36 @@ app.post("/api/questions",requireAdmin,async(req,res)=>{
 
 // ===== Card Match mini-game =====
 const cardMatchRooms=new Map();
-const CM_ICONS=["🍎","🚀","🐼","🌈","⚽","🍕","🦊","🎸","🌟","🐸","🍩","🦄"];
-function cmDeck(){const a=CM_ICONS.slice(0,8);return [...a,...a].map((icon,id)=>({id,icon,matched:false})).sort(()=>Math.random()-0.5)}
+const CM_CARDS=[
+ {key:"apple",image:"/assets/cardmatch/apple.svg"},
+ {key:"rocket",image:"/assets/cardmatch/rocket.svg"},
+ {key:"panda",image:"/assets/cardmatch/panda.svg"},
+ {key:"rainbow",image:"/assets/cardmatch/rainbow.svg"},
+ {key:"football",image:"/assets/cardmatch/football.svg"},
+ {key:"pizza",image:"/assets/cardmatch/pizza.svg"},
+ {key:"fox",image:"/assets/cardmatch/fox.svg"},
+ {key:"guitar",image:"/assets/cardmatch/guitar.svg"}
+];
+const CM_COLORS=["#ff5c7a","#5c8dff","#20c997","#ffb020"];
+function cmDeck(){
+ const pairs=CM_CARDS.flatMap(x=>[x,x]);
+ return pairs.map((x,id)=>({id,key:x.key,image:x.image,matched:false})).sort(()=>Math.random()-0.5);
+}
 function cmCode(){let c;do c=String(Math.floor(1000+Math.random()*9000));while(cardMatchRooms.has(c));return c}
-function cmState(r){return {code:r.code,status:r.status,turn:r.turn,flipped:r.flipped,deck:r.deck,players:r.players.map(p=>({id:p.id,name:p.name,color:p.color,score:p.score})),winner:r.winner}}
+function cmNextIndex(r){return r.players.length?((r.turn+1)%r.players.length):0}
+function cmState(r){
+ const next=r.status==="playing"&&r.players.length>1?cmNextIndex(r):null;
+ return {
+  code:r.code,status:r.status,turn:r.turn,nextTurn:next,flipped:r.flipped,deck:r.deck,
+  players:r.players.map(p=>({id:p.id,name:p.name,color:p.color,score:p.score})),
+  winner:r.winner
+ };
+}
 function cmBroadcast(r){io.to(r.channel).emit("cm:state",cmState(r))}
-function cmReset(r){r.deck=cmDeck();r.flipped=[];r.turn=0;r.status="playing";r.winner=[];r.players.forEach(p=>p.score=0)}
+function cmReset(r,keepScores=false){
+ r.deck=cmDeck();r.flipped=[];r.turn=0;r.status="playing";r.winner=[];
+ if(!keepScores)r.players.forEach(p=>p.score=0);
+}
 io.on("connection",s=>{
  s.on("cm:create",()=>{
    const code=cmCode(),channel="cardmatch-"+code;
@@ -268,41 +302,48 @@ io.on("connection",s=>{
    const r=cardMatchRooms.get(String(code||""));if(!r)return s.emit("cm:error",{message:"Room not found."});
    if(r.status!=="lobby")return s.emit("cm:error",{message:"Game already started."});
    if(r.players.length>=4)return s.emit("cm:error",{message:"Room is full."});
-   const p={id:s.id,name:String(name||"Player").trim().slice(0,18),score:0,color:["#ff5c7a","#5c8dff","#20c997","#ffb020"][r.players.length]};
+   const p={id:s.id,name:String(name||"Player").trim().slice(0,18),score:0,color:CM_COLORS[r.players.length%CM_COLORS.length]};
    r.players.push(p);s.join(r.channel);s.data.cmRoom=r.code;s.data.cmRole="player";s.emit("cm:joined",{playerId:p.id,code:r.code});cmBroadcast(r);
  });
  s.on("cm:start",({code}={})=>{
-   const roomCode=String(code||s.data.cmRoom||"").trim();
-   const r=cardMatchRooms.get(roomCode);
+   const roomCode=String(code||s.data.cmRoom||"").trim(),r=cardMatchRooms.get(roomCode);
    if(!r)return s.emit("cm:error",{message:"The game room is no longer available. Create a new game."});
    if(s.id!==r.tv)return s.emit("cm:error",{message:"Only the TV that created this room can start the match."});
    if(r.players.length<2)return s.emit("cm:error",{message:"At least 2 players must join before starting."});
    cmReset(r);cmBroadcast(r);
  });
  s.on("cm:restart",({code}={})=>{
-   const roomCode=String(code||s.data.cmRoom||"").trim();
-   const r=cardMatchRooms.get(roomCode);
+   const roomCode=String(code||s.data.cmRoom||"").trim(),r=cardMatchRooms.get(roomCode);
    if(!r)return s.emit("cm:error",{message:"The game room is no longer available."});
    if(s.id!==r.tv)return s.emit("cm:error",{message:"Only the TV can restart the match."});
    if(r.players.length<2)return s.emit("cm:error",{message:"At least 2 players must join before restarting."});
-   cmReset(r);cmBroadcast(r);
+   cmReset(r,false);cmBroadcast(r);
+ });
+ s.on("cm:refresh",({code}={})=>{
+   const roomCode=String(code||s.data.cmRoom||"").trim(),r=cardMatchRooms.get(roomCode);
+   if(!r)return s.emit("cm:error",{message:"The game room is no longer available."});
+   if(s.id!==r.tv)return s.emit("cm:error",{message:"Only the TV can refresh the game."});
+   if(r.players.length<2)return s.emit("cm:error",{message:"At least 2 players must be in the game."});
+   cmReset(r,true);cmBroadcast(r);
  });
  s.on("cm:flip",({cardId}={})=>{
    const r=cardMatchRooms.get(String(s.data.cmRoom||""));if(!r||r.status!=="playing")return;
    const idx=r.players.findIndex(p=>p.id===s.id);if(idx!==r.turn||r.flipped.length>=2)return;
    const c=r.deck.find(x=>x.id===Number(cardId));if(!c||c.matched||r.flipped.includes(c.id))return;
    r.flipped.push(c.id);cmBroadcast(r);
-   if(r.flipped.length===2){const a=r.deck.find(x=>x.id===r.flipped[0]),b=r.deck.find(x=>x.id===r.flipped[1]);
-     setTimeout(()=>{if(!cardMatchRooms.has(r.code))return;
-       if(a.icon===b.icon){a.matched=b.matched=true;r.players[r.turn].score++}else r.turn=(r.turn+1)%r.players.length;
-       r.flipped=[];
-       if(r.deck.every(x=>x.matched)){r.status="finished";const max=Math.max(...r.players.map(p=>p.score));r.winner=r.players.filter(p=>p.score===max).map(p=>p.name)}
-       cmBroadcast(r);
-     },800);
+   if(r.flipped.length===2){
+    const a=r.deck.find(x=>x.id===r.flipped[0]),b=r.deck.find(x=>x.id===r.flipped[1]);
+    setTimeout(()=>{
+      if(!cardMatchRooms.has(r.code))return;
+      if(a.key===b.key){a.matched=b.matched=true;r.players[r.turn].score++}
+      else r.turn=(r.turn+1)%r.players.length;
+      r.flipped=[];
+      if(r.deck.every(x=>x.matched)){r.status="finished";const max=Math.max(...r.players.map(p=>p.score));r.winner=r.players.filter(p=>p.score===max).map(p=>p.name)}
+      cmBroadcast(r);
+    },800);
    }
  });
-
- s.on("host:create",async()=>{let code;do code=String(Math.floor(1000+Math.random()*9000));while(rooms.has(code));const r=makeRoom();r.host=s.id;r.questions=[];rooms.set(code,r);s.join(code);s.data.room=code;s.data.role="host";const joinUrl=`${PUBLIC_URL}/join.html?room=${code}`;r.joinUrl=joinUrl;r.joinQr=await QRCode.toDataURL(joinUrl);r.screenToken=crypto.randomBytes(14).toString("base64url");r.screenUrl=`${PUBLIC_URL}/screen/${r.screenToken}`;r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});r.audiencePollUrl=`${PUBLIC_URL}/audience.html?room=${code}`;r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});s.emit("room",{code,joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});emitState(code)});
+ s.on("host:create",async()=>{let code;do code=String(Math.floor(1000+Math.random()*9000));while(rooms.has(code));const r=makeRoom();r.host=s.id;r.questions=[];rooms.set(code,r);s.join(code);s.data.room=code;s.data.role="host";const joinUrl=`${getPublicUrlForSocket(s)}/join.html?room=${code}`;r.joinUrl=joinUrl;r.joinQr=await QRCode.toDataURL(joinUrl);r.screenToken=crypto.randomBytes(14).toString("base64url");r.screenUrl=`${getPublicUrlForSocket(s)}/screen/${r.screenToken}`;r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});r.audiencePollUrl=`${getPublicUrlForSocket(s)}/audience.html?room=${code}`;r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});s.emit("room",{code,joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});emitState(code)});
  s.on("join",({code,name,employeeCode,role="player",game})=>{code=String(code||"").trim();const r=rooms.get(code);if(!/^\d{4}$/.test(code))return s.emit("errorMsg","Room code must be exactly 4 digits.");if(!r)return s.emit("errorMsg","Room not found. Ask the host for a new code.");
  if(game){const ec=String(employeeCode||"").trim();if(game!==r.fastestToken)return s.emit("errorMsg","This Fastest Finger QR is no longer active.");if(!/^\d+$/.test(ec))return s.emit("errorMsg","Register number must contain numbers only.");if(!r.pool.some(p=>p.employeeCode===ec))return s.emit("errorMsg","You are not selected for this Fastest Finger round.");}
  s.join(code);s.data.room=code;s.data.role=role;if(role==="audience"||role==="tv"||role==="roster"){s.emit("joined",{name:role==="tv"?"TV Screen":role==="roster"?"Roster Viewer":"Audience"});emitState(code);return}name=String(name||"").trim();employeeCode=String(employeeCode||"").trim();if(!/^[A-Za-z]+(?:[ ][A-Za-z]+)*$/.test(name))return s.emit("errorMsg","Name must contain alphabets only.");if(!/^\d+$/.test(employeeCode))return s.emit("errorMsg","Register number must contain numbers only.");if([...r.users.values()].some(u=>u.employeeCode===employeeCode))return s.emit("errorMsg","This register number is already registered.");r.users.set(s.id,{id:s.id,name,employeeCode,score:0,status:"active",inPool:false,lifelinesUsed:{"5050":false,"audience":false,"phone":false},registeredAt:Date.now()});s.emit("joined",{name,employeeCode});emitState(code)});
