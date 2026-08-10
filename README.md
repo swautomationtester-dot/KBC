@@ -96,3 +96,10 @@ Set `PUBLIC_URL=https://quiz.vrqaacademy.co.in` after the custom domain is conne
 
 ## Expanded KBC Bank
 The current `questions.json` contains 520 unique questions across South Indian Cinema, Indian Cinema, Politics & Indian Polity, Technology, and General Knowledge. The server tracks used question IDs per room to avoid repeats across contestants.
+
+
+## KBC Bank Update — No Bollywood / Easier Politics
+- The Indian Cinema/Bollywood category has been removed.
+- Politics & Indian Polity now keeps only easier questions (difficulty 1–2).
+- The bank contains 509 unique questions across South Indian Cinema, Technology, General Knowledge, and easier Indian Polity.
+- Safe Quit is available at ₹20 and ₹40, but the contestant's request must be approved by the Host.

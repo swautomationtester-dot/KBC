@@ -157,7 +157,7 @@ function pollCounts(poll){
   return c;
 }
 
-function makeRoom(){return{host:null,users:new Map(),questions:[],current:-1,phase:"lobby",pool:[],winner:null,completed:new Set(),played:new Set(),failed:new Set(),answers:new Map(),pendingAnswer:null,pendingPollRequest:null,poll:new Map(),lifelines:new Set(),fiftyFiftyRemoved:new Map(),timer:null,fastestSize:7,fastestStartAt:0,fastestDurationMs:15000,fastestSequence:[],fastestTimes:new Map(),fastestProgress:new Map(),fastestToken:"",fastestJoinUrl:"",fastestJoinQr:"",screenToken:"",screenUrl:"",screenQr:"",audiencePollUrl:"",audiencePollQr:"",pollActive:false,winnerCelebrationUntil:0,contestantId:null,eliminatedContestant:null,ladder:[10,20,30,40,50],safeHavens:[20,40],contestantQuit:null,usedQuestionIds:new Set()}}
+function makeRoom(){return{host:null,users:new Map(),questions:[],current:-1,phase:"lobby",pool:[],winner:null,completed:new Set(),played:new Set(),failed:new Set(),answers:new Map(),pendingAnswer:null,pendingPollRequest:null,poll:new Map(),lifelines:new Set(),fiftyFiftyRemoved:new Map(),timer:null,fastestSize:7,fastestStartAt:0,fastestDurationMs:15000,fastestSequence:[],fastestTimes:new Map(),fastestProgress:new Map(),fastestToken:"",fastestJoinUrl:"",fastestJoinQr:"",screenToken:"",screenUrl:"",screenQr:"",audiencePollUrl:"",audiencePollQr:"",pollActive:false,winnerCelebrationUntil:0,contestantId:null,eliminatedContestant:null,ladder:[10,20,30,40,50],safeHavens:[20,40],contestantQuit:null,pendingQuit:null,usedQuestionIds:new Set()}}
 function active(r){return [...r.users.values()].filter(u=>u.status==="active")}
 function emitState(code){
  const r=rooms.get(code);if(!r)return;
@@ -170,7 +170,7 @@ function emitState(code){
   users:[...r.users.values()].map(u=>({id:u.id,name:u.name,employeeCode:u.employeeCode,score:u.score,status:u.status,assuredMoney:Number(u.assuredMoney||0),prizeWon:Number(u.prizeWon||0)})),
   registered:r.users.size,active:active(r).length,contestantId:r.contestantId||null,
   pool:r.pool.map(u=>({id:u.id,name:u.name,employeeCode:u.employeeCode})),
-  winner:r.winner?{name:r.winner.name,employeeCode:r.winner.employeeCode,time:r.winner.time}:null,contestant:r.winner?{id:r.winner.id,name:r.winner.name,employeeCode:r.winner.employeeCode}:null,eliminatedContestant:r.eliminatedContestant||null,contestantQuit:r.contestantQuit||null,safeHavens:r.safeHavens||[20,40],currentAnswer:r.answers.size?[...r.answers.values()][0]:null,pendingAnswer:r.pendingAnswer||null,pendingPollRequest:r.pendingPollRequest||null,
+  winner:r.winner?{name:r.winner.name,employeeCode:r.winner.employeeCode,time:r.winner.time}:null,contestant:r.winner?{id:r.winner.id,name:r.winner.name,employeeCode:r.winner.employeeCode}:null,contestantAssuredMoney:r.winner?Number(r.users.get(r.winner.id)?.assuredMoney||0):0,eliminatedContestant:r.eliminatedContestant||null,contestantQuit:r.contestantQuit||null,pendingQuit:r.pendingQuit||null,safeHavens:r.safeHavens||[20,40],currentAnswer:r.answers.size?[...r.answers.values()][0]:null,pendingAnswer:r.pendingAnswer||null,pendingPollRequest:r.pendingPollRequest||null,
   fastestStartAt:r.fastestStartAt,
   fastestDurationMs:r.fastestDurationMs,
   fastestRemaining:remaining,
@@ -412,9 +412,12 @@ io.on("connection",s=>{
  s.on("cm:refresh",({code}={})=>{
    const roomCode=String(code||s.data.cmRoom||"").trim(),r=cardMatchRooms.get(roomCode);
    if(!r)return s.emit("cm:error",{message:"The game room is no longer available."});
-   if(s.id!==r.tv)return s.emit("cm:error",{message:"Only the TV can refresh the game."});
-   if(r.players.length<2)return s.emit("cm:error",{message:"At least 2 players must be in the game."});
-   cmReset(r,true);cmBroadcast(r);
+   if(s.id!==r.tv)return s.emit("cm:error",{message:"Only the TV can sync the game board."});
+   if(r.status!=="playing")return cmBroadcast(r);
+   // Refresh means re-sync the authoritative board. Do NOT shuffle or close
+   // already matched cards and do NOT reset scores. "New Game" is the action
+   // that intentionally creates a fresh board.
+   cmBroadcast(r);
  });
  s.on("cm:flip",({cardId}={})=>{
    const r=cardMatchRooms.get(String(s.data.cmRoom||""));if(!r||r.status!=="playing")return;
@@ -637,7 +640,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  const bank=await questions();
  r.questions=buildGameQuestions(bank,r.usedQuestionIds);
  r.questions.forEach(q=>r.usedQuestionIds.add(q.id));
- r.phase="question";r.current=0;r.answers.clear();r.pendingAnswer=null;r.pendingPollRequest=null;r.poll.clear();r.lifelines.clear();r.fiftyFiftyRemoved.clear();r.eliminatedContestant=null;r.contestantQuit=null;if(r.winner){
+ r.phase="question";r.current=0;r.answers.clear();r.pendingAnswer=null;r.pendingQuit=null;r.pendingPollRequest=null;r.poll.clear();r.lifelines.clear();r.fiftyFiftyRemoved.clear();r.eliminatedContestant=null;r.contestantQuit=null;if(r.winner){
    r.winner.lifelinesUsed={"5050":false,"audience":false,"phone":false};
    const contestantUser=r.users.get(r.winner.id);
    if(contestantUser){contestantUser.lifelinesUsed={"5050":false,"audience":false,"phone":false};contestantUser.assuredMoney=0;contestantUser.prizeWon=0;}
@@ -648,6 +651,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  s.on("host:restartFastest",async()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;if(!r.pool.length)return;await restartFastest(r);emitState(s.data.room)});
  s.on("host:nextQuestion",()=>{
  const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question")return;
+ if(r.pendingQuit){s.emit("errorMsg","Approve or reject the pending Safe Quit request before moving to the next question.");return;}
  r.current++;
  r.answers.clear();r.pendingAnswer=null;r.pendingPollRequest=null;r.poll.clear();r.lifelines.clear();
  if(r.current>=TOTAL_QUESTIONS||r.current>=r.questions.length){
@@ -662,12 +666,12 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  }else r.phase="question";
  emitState(s.data.room);
 });
- s.on("host:restartEvent",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;for(const u of r.users.values()){u.score=0;u.assuredMoney=0;u.prizeWon=0;u.status="active";u.inPool=false;u.lifelinesUsed={"5050":false,"audience":false,"phone":false}}r.contestantId=null;r.failed.clear();r.completed.clear();r.played.clear();r.pool=[];r.usedQuestionIds.clear();r.winner=null;r.current=-1;r.fiftyFiftyRemoved.clear();r.eliminatedContestant=null;r.contestantQuit=null;r.phase="registration";emitState(s.data.room)});
+ s.on("host:restartEvent",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;for(const u of r.users.values()){u.score=0;u.assuredMoney=0;u.prizeWon=0;u.status="active";u.inPool=false;u.lifelinesUsed={"5050":false,"audience":false,"phone":false}}r.contestantId=null;r.failed.clear();r.completed.clear();r.played.clear();r.pool=[];r.usedQuestionIds.clear();r.winner=null;r.current=-1;r.fiftyFiftyRemoved.clear();r.eliminatedContestant=null;r.contestantQuit=null;r.pendingQuit=null;r.phase="registration";emitState(s.data.room)});
  s.on("player:answer",({choice})=>{
   const r=rooms.get(s.data.room);if(!r||r.phase!=="question")return;
   const u=r.users.get(s.id);
   if(!u||u.status!=="active"||!r.winner||r.winner.id!==s.id)return;
-  if(r.pendingAnswer)return;
+  if(r.pendingAnswer||r.pendingQuit)return;
   const q=r.questions[r.current],picked=Number(choice);
   if(picked<0||picked>3)return;
   r.pendingAnswer={playerId:s.id,name:u.name,employeeCode:u.employeeCode,choice:picked,option:q.options[picked],lockedAt:Date.now()};
@@ -783,15 +787,44 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
   const u=r.users.get(s.id);
   if(!u||u.status!=="active"||!r.winner||r.winner.id!==s.id)return;
   if(r.pendingAnswer){s.emit("errorMsg","Your answer is already locked. The Host must reveal it first.");return;}
+  if(r.pendingQuit){s.emit("errorMsg","Your Safe Quit request is already waiting for Host approval.");return;}
   const amount=Number(u.assuredMoney||0);
-  if(amount<=0){s.emit("errorMsg","Reach the ₹20 or ₹40 safe haven before using Quit & Take.");return;}
-  u.prizeWon=amount; u.status="quit";
+  if(amount!==20&&amount!==40){
+    s.emit("errorMsg","Safe Quit is available only after securing ₹20 or ₹40.");
+    return;
+  }
+  r.pendingQuit={playerId:u.id,id:u.id,name:u.name,employeeCode:u.employeeCode,amount,requestedAt:Date.now()};
+  io.to(s.data.room).emit("quitRequested",{contestant:{id:u.id,name:u.name,employeeCode:u.employeeCode},amount});
+  io.to(u.id).emit("quitPending",{amount});
+  emitState(s.data.room);
+ });
+
+ s.on("host:approveQuit",()=>{
+  const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question"||!r.pendingQuit)return;
+  const pending=r.pendingQuit,u=r.users.get(pending.playerId);
+  if(!u){r.pendingQuit=null;emitState(s.data.room);return;}
+  const amount=Number(u.assuredMoney||0);
+  if(amount!==20&&amount!==40){
+    r.pendingQuit=null;
+    io.to(u.id).emit("quitRejected",{reason:"The Safe Quit amount is no longer available."});
+    emitState(s.data.room);return;
+  }
+  u.prizeWon=amount;u.status="quit";
   r.contestantQuit={id:u.id,name:u.name,employeeCode:u.employeeCode,amount,at:Date.now()};
+  r.pendingQuit=null;
   io.to(s.data.room).emit("contestantQuit",{contestant:{name:u.name,employeeCode:u.employeeCode},amount});
   io.to(u.id).emit("quitAccepted",{amount});
-  r.pendingAnswer=null; r.pendingPollRequest=null; r.poll.clear();
+  r.pendingAnswer=null;r.pendingPollRequest=null;r.poll.clear();
   nextContestant(s.data.room);
   setTimeout(()=>{const x=rooms.get(s.data.room);if(x&&x.contestantQuit&&x.contestantQuit.employeeCode===u.employeeCode){x.contestantQuit=null;emitState(s.data.room);}},5000);
+ });
+
+ s.on("host:rejectQuit",()=>{
+  const r=rooms.get(s.data.room);if(!r||r.host!==s.id||!r.pendingQuit)return;
+  const pending=r.pendingQuit;r.pendingQuit=null;
+  io.to(pending.playerId).emit("quitRejected",{reason:"Host rejected the Safe Quit request. You can continue the game."});
+  io.to(s.data.room).emit("quitRejected",{contestant:{name:pending.name,employeeCode:pending.employeeCode}});
+  emitState(s.data.room);
  });
 
  s.on("host:rejectAnswer",()=>{

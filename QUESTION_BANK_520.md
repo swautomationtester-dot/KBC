@@ -1,17 +1,21 @@
-# GamesArena KBC Question Bank — 520 Questions
+# GamesArena KBC Question Bank — 509 Questions
 
-The bundled `questions.json` now contains 520 unique question texts.
+The current `questions.json` contains 509 unique questions.
 
 ## Categories
-- South Indian Cinema: 100
-- Indian Cinema: 99
-- Politics & Indian Polity: 98
-- Technology: 94
-- Kids General Knowledge: 129
+- South Indian Cinema: 149
+- Technology: 133
+- Kids General Knowledge: 159
+- Politics & Indian Polity: 68 (easy only; difficulty 1–2)
 
-The server's existing `usedQuestionIds` room-level set prevents the same
-question ID from being selected again in the same room until the host starts
-a New Game/reset. Options are shuffled for each selected question.
+## Removed
+- Indian Cinema / Bollywood: removed.
+- Hard political questions (difficulty 3–4): removed.
 
-The bank is intentionally based on stable facts rather than rapidly changing
-political office-holder/news information.
+## No-repeat
+The server tracks used question IDs per room, so a question is not selected
+again in the same room until the host starts a fresh event/reset.
+
+## Safe Quit
+Contestants can request Safe Quit only after securing ₹20 or ₹40. The Host
+must approve the request before the contestant leaves with the guaranteed amount.
