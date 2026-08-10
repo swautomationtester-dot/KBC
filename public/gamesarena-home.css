@@ -1,0 +1,20 @@
+
+:root{--ga-teal:#075056;--ga-teal2:#0b7479;--ga-deep:#032d32;--ga-gold:#f1cc5d;--ga-muted:#a9c7c4}
+.gaHome{background:radial-gradient(circle at 50% 0,#147176 0,#075056 35%,#03383d 70%,#022b30 100%);min-height:100vh}
+.gaHeader{height:76px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:0 3px 18px #001e2344}
+.gaHeaderLogo{display:block;width:245px;height:58px}.gaHeaderLogo img{width:100%;height:100%;object-fit:contain}
+.gaChip{background:#075056;color:#fff;border-radius:999px;padding:10px 17px;font-size:11px;font-weight:950;letter-spacing:1.4px}
+.gaHero{text-align:center;padding:44px 20px 20px}
+.gaEyebrow{color:var(--ga-gold);font-size:12px;font-weight:950;letter-spacing:2px}
+.gaHeroLogo{display:block;width:min(430px,78vw);height:auto;margin:12px auto 0;filter:drop-shadow(0 14px 28px #001e2340)}
+.gaHero h1{font-size:clamp(45px,6.5vw,82px);line-height:.98;letter-spacing:-3px;margin:6px 0 12px;color:#fff}.gaHero h1 span{color:var(--ga-gold)}
+.gaHero p{margin:0;color:#d3e7e4;font-size:18px;font-weight:600}
+.gaTiles{max-width:1210px;margin:28px auto 0;padding:0 20px;display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.gaTile{min-height:225px;display:flex;flex-direction:column;align-items:center;text-align:center;text-decoration:none;color:#fff;padding:22px 16px 16px;border:1px solid #39b2b555;border-radius:17px;background:linear-gradient(180deg,#0c656a99,#07484d99);box-shadow:inset 0 1px 0 #ffffff12;transition:.2s ease}
+.gaTile:hover{transform:translateY(-5px);border-color:#55c9cc;box-shadow:0 12px 32px #001e2344}
+.gaTile.gaFeatured{border-color:var(--ga-gold);background:linear-gradient(180deg,#0d656a,#075056);box-shadow:0 0 0 1px #f1cc5d44,0 12px 34px #001e2344}
+.gaIcon{font-size:34px;line-height:1;margin:0 0 14px}.gaTile b{font-size:16px;margin-bottom:8px}.gaTile small{color:#c4dedb;line-height:1.45;min-height:48px;font-size:12px}.gaAction{margin-top:auto;width:100%;padding:10px 12px;border:1px solid #36c4c6;border-radius:999px;background:#0a7277;font-weight:900;font-size:13px}.gaFeatured .gaAction{background:linear-gradient(135deg,#f1cc5d,#ffe18a);border-color:#f1cc5d;color:#17373a}
+.gaRibbon{max-width:1210px;margin:30px auto 0;padding:13px 20px;border-top:1px solid #3baeb244;border-bottom:1px solid #3baeb244;display:flex;align-items:center;justify-content:center;gap:15px;color:#e7f3f1}.gaRibbon span{font-size:20px}.gaRibbon i{color:#7bb7b5;font-style:normal}.gaRibbon em{margin-left:auto;color:#8db9b7;font-size:11px;font-style:normal}
+.gaFooter{max-width:1210px;margin:auto;padding:18px 20px 28px;display:flex;justify-content:space-between;color:#8db9b7;font-size:11px}
+@media(max-width:1050px){.gaTiles{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.gaHeader{height:66px;padding:0 15px}.gaHeaderLogo{width:190px}.gaChip{font-size:9px;padding:8px 10px}.gaHero{padding-top:30px}.gaHeroLogo{width:min(360px,90vw)}.gaHero h1{font-size:44px;letter-spacing:-2px}.gaHero p{font-size:15px}.gaTiles{grid-template-columns:1fr 1fr;padding:0 13px}.gaTile{min-height:210px;padding:18px 10px}.gaRibbon{margin-top:22px;flex-wrap:wrap;gap:9px}.gaRibbon em{width:100%;margin:0;text-align:center}.gaFooter{flex-direction:column;gap:6px;text-align:center}}

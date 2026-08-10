@@ -27,7 +27,7 @@ function playQuestionAudio(questionIndex){
     questionAudio.play().catch(()=>{});
   }catch(e){}
 }
-const prizes=[1000,2000,5000,10000,50000];
+const prizes=[10,20,30,40,50];
 function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
 
@@ -141,7 +141,7 @@ function wrong(){tone(180,.35,"sawtooth",.06);tone(110,.5,"sawtooth",.05,.18)}
 function tick(){tone(700,.06,"square",.025)}
 function renderLadder(current){
  const ladder=$("prizeLadder");if(!ladder)return;
- const five=[1000,2000,5000,10000,50000];
+ const five=[10,20,30,40,50];
  ladder.innerHTML=five.slice().reverse().map((v,ri)=>{
    const i=five.length-1-ri;
    return `<div class="ladderRow ${i===current?"active":""} ${i<current?"reached":""}">
@@ -321,7 +321,7 @@ s.on("state",x=>{ latestTvState=x;try{
  const e=x.eliminatedContestant;
  $("tvmain").innerHTML=`<div class=elimination><div class=tvkicker>CONTESTANT ELIMINATED</div><div class=wrongX>✕</div><h1>WRONG ANSWER</h1><h2>${e?e.name:"Contestant"}</h2><p>Well played!</p><div class=securedPoints>POINTS SECURED <b>₹${Number(e?.pointsEarned||0).toLocaleString("en-IN")}</b></div><div class=nextBadge>NEXT: FASTEST FINGER</div></div>`;return}
  if(x.phase==="question"&&x.question){if(lastQuestion!==x.current){playQuestionAudio(x.current);transition("NEW CONTESTANT GAME",`QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}`);setTimeout(()=>{
-   $("tvmain").innerHTML=`<div class="questionScreen ${x.current===4?"finalQuestion":""}"><div class=qmeta><span>QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}</span><span>₹${x.question.points.toLocaleString("en-IN")}</span></div>${x.current===4?'<div class="finalBadge">🏆 FINAL QUESTION • ₹50,000</div>':""}<h1>${x.question.text}</h1><div class=tvopts>${x.question.options.map((o,i)=>`<div><b>${String.fromCharCode(65+i)}</b><span>${o}</span></div>`).join("")}</div></div>`;
+   $("tvmain").innerHTML=`<div class="questionScreen ${x.current===4?"finalQuestion":""}"><div class=qmeta><span>QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}</span><span>₹${x.question.points.toLocaleString("en-IN")}</span></div>${x.current===4?'<div class="finalBadge">🏆 FINAL QUESTION • ₹50</div>':""}<h1>${x.question.text}</h1><div class=tvopts>${x.question.options.map((o,i)=>`<div><b>${String.fromCharCode(65+i)}</b><span>${o}</span></div>`).join("")}</div></div>`;
    tone(440,.18);tone(660,.22,"sine",.05,.18);
    // The delayed question transition used to overwrite the audience-poll
    // overlay about 650ms after the poll opened. Always restore the poll after
@@ -338,7 +338,7 @@ s.on("state",x=>{ latestTvState=x;try{
     <div class="winnerCheck">ANSWER CHECK</div>
     <h1 class="winnerName">${winner.name||"Champion"}</h1>
     <p class="winnerCongrats">ALL 5 ANSWERS CORRECT</p>
-    <div class="winnerPoints">₹50,000</div>
+    <div class="winnerPoints">₹50</div>
     <div class="winnerCountdown" id="winnerCountdown">30</div>
     <button class="soundPrompt" id="winnerSoundBtn">🔊 PLAY CELEBRATION MUSIC</button>
   </div>`;

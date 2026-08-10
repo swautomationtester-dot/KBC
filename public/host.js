@@ -10,8 +10,8 @@ const demoSteps=[
  {title:"Audience Poll",text:"The contestant requests the poll. Host approves it. Votes update live on the contestant, host and TV."},
  {title:"Lock & Approve",text:"Contestant locks an answer. Host approves/rejects. The TV highlights the selected answer and reveals green/red."},
  {title:"Wrong Answer",text:"Wrong answer shows the contestant, secured points and Well Played before the next Fastest Finger round."},
- {title:"Final Question",text:"Question 5 is the ₹50,000 final. A correct final answer triggers the champion celebration."},
- {title:"Complete",text:"All five answers correct: champion name, ₹50,000 and celebration screen with theme music."}
+ {title:"Final Question",text:"Question 5 is the ₹50 final. A correct final answer triggers the champion celebration."},
+ {title:"Complete",text:"All five answers correct: champion name, ₹50 and celebration screen with theme music."}
 ];
 let demoIndex=0;
 function openDemo(){demoIndex=0;$("demoModal")?.classList.remove("hidden");renderDemo()}
@@ -135,7 +135,7 @@ s.on("state",x=>{ audiencePollOpen=!!x.pollActive;renderHostAudiencePoll(x);upda
  $("fastResults").innerHTML=x.fastestTimes?.length?
    `<h3>Fastest Finger Times</h3>`+x.fastestTimes.sort((a,b)=>a.time-b.time).map(v=>`<div class=row><span>${v.name} <small>${v.employeeCode}</small></span><b>${v.status==="COMPLETED"?v.time.toFixed(0)+" ms":v.status}</b></div>`).join(""):"";
 
- const fixedLadder=[1000,2000,5000,10000,50000];
+ const fixedLadder=[10,20,30,40,50];
 $("hostLadder").innerHTML=fixedLadder.map((v,i)=>`<div class="row ${i===x.current?"ladderActive":""}"><span>Q${i+1}</span><b>₹${v.toLocaleString("en-IN")}</b></div>`).join("");
  $("board").innerHTML=x.users.filter(u=>u.status!=="eliminated").sort((a,b)=>b.score-a.score).map((u,i)=>`<div class="row participantStatusRow"><span>#${i+1} ${u.name}</span><b>${u.score}</b><em class="statusPill ${String(u.status||"waiting").toLowerCase()}">${String(u.status||"WAITING").toUpperCase()}</em></div>`).join("");
 });

@@ -10,7 +10,7 @@ function playQuestionAudio(questionIndex){
     questionAudio.play().catch(()=>{});
   }catch(e){}
 }
-const prizeLadder=[1000,2000,5000,10000,50000];
+const prizeLadder=[10,20,30,40,50];
 function playerScore(users){const u=(users||[]).find(v=>v.employeeCode===me);return u?Number(u.score||0):0}
 function renderPlayerLadder(users){ /* hidden in the live player view */ }
 function clearAnswerResult(){if($("result"))$("result").innerHTML="";}
@@ -238,7 +238,7 @@ $("life").innerHTML=`<button onclick="life('5050')" ${lock5050?"disabled":""}>${
       <h1>CONGRATULATIONS</h1>
       <h2>${x.winner.name||"Champion"}</h2>
       <p>ALL 5 ANSWERS CORRECT</p>
-      <strong>₹50,000</strong>
+      <strong>₹50</strong>
       <div class="winnerCountdown" id="playerWinnerCountdown">30</div>
       <button class="primary" id="playerWinnerSound">🔊 PLAY CELEBRATION MUSIC</button>
     </div>`;
