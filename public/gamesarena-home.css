@@ -18,3 +18,69 @@
 .gaFooter{max-width:1210px;margin:auto;padding:18px 20px 28px;display:flex;justify-content:space-between;color:#8db9b7;font-size:11px}
 @media(max-width:1050px){.gaTiles{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:650px){.gaHeader{height:66px;padding:0 15px}.gaHeaderLogo{width:190px}.gaChip{font-size:9px;padding:8px 10px}.gaHero{padding-top:30px}.gaHeroLogo{width:min(360px,90vw)}.gaHero h1{font-size:44px;letter-spacing:-2px}.gaHero p{font-size:15px}.gaTiles{grid-template-columns:1fr 1fr;padding:0 13px}.gaTile{min-height:210px;padding:18px 10px}.gaRibbon{margin-top:22px;flex-wrap:wrap;gap:9px}.gaRibbon em{width:100%;margin:0;text-align:center}.gaFooter{flex-direction:column;gap:6px;text-align:center}}
+
+/* ===== GamesArena home visibility / viewport fix ===== */
+html,body.gaHome{width:100%;min-height:100%;overflow-x:hidden}
+.gaHome{min-height:100svh;height:auto}
+.gaHome main{min-height:calc(100svh - 76px);display:flex;flex-direction:column}
+.gaHero{padding:clamp(24px,4vh,44px) 20px clamp(12px,2vh,20px);flex:0 0 auto}
+.gaHeroLogo{width:min(390px,60vw);max-height:125px;object-fit:contain}
+.gaHero h1{font-size:clamp(40px,5.4vw,76px);margin:clamp(4px,1vh,10px) 0 10px}
+.gaHero p{font-size:clamp(14px,1.25vw,18px)}
+.gaTiles{margin:clamp(16px,2.5vh,28px) auto 0;width:min(1210px,calc(100% - 40px));padding:0;gap:10px}
+.gaTile{min-height:190px;padding:18px 13px 13px}
+.gaIcon{font-size:30px;margin-bottom:10px}
+.gaTile b{font-size:15px;margin-bottom:6px}
+.gaTile small{font-size:11px;min-height:42px}
+.gaAction{padding:9px 10px;font-size:12px}
+.gaRibbon{width:min(1210px,calc(100% - 40px));margin:clamp(16px,2.5vh,30px) auto 0;padding:10px 15px}
+.gaFooter{width:min(1210px,calc(100% - 40px));padding:13px 0 18px;margin:auto}
+.gaHeaderLogo{width:255px;overflow:visible}
+.gaHeaderLogo img{display:block;width:100%;height:100%;object-fit:contain}
+
+/* Short laptop screens: keep every primary control visible without zooming. */
+@media (min-width:900px) and (max-height:850px){
+  .gaHero{padding-top:20px;padding-bottom:8px}
+  .gaHeroLogo{width:300px;max-height:92px}
+  .gaHero h1{font-size:clamp(38px,5vw,62px)}
+  .gaHero p{font-size:14px}
+  .gaTiles{margin-top:14px}
+  .gaTile{min-height:158px;padding:13px 10px 10px}
+  .gaIcon{font-size:25px;margin-bottom:7px}
+  .gaTile b{font-size:13px}
+  .gaTile small{font-size:10px;min-height:34px}
+  .gaAction{padding:7px 9px;font-size:11px}
+  .gaRibbon{margin-top:12px;padding:8px 12px}
+  .gaFooter{padding:8px 0 10px;font-size:10px}
+}
+
+/* Very short displays: reduce decoration rather than clipping game navigation. */
+@media (min-width:900px) and (max-height:700px){
+  .gaHero{padding-top:10px}
+  .gaEyebrow{font-size:10px}
+  .gaHeroLogo{width:245px;max-height:70px}
+  .gaHero h1{font-size:42px}
+  .gaHero p{font-size:12px}
+  .gaTiles{margin-top:8px}
+  .gaTile{min-height:130px}
+  .gaIcon{font-size:22px}
+  .gaRibbon{display:none}
+}
+
+/* Ensure the six cards remain usable instead of becoming six unreadable columns. */
+@media (max-width:1150px) and (min-width:651px){
+  .gaTiles{grid-template-columns:repeat(3,1fr)}
+  .gaTile{min-height:185px}
+}
+@media(max-width:650px){
+  .gaHome main{min-height:calc(100svh - 66px)}
+  .gaHeaderLogo{width:190px}
+  .gaHeroLogo{width:min(340px,88vw);max-height:100px}
+  .gaTiles{width:calc(100% - 26px);grid-template-columns:1fr 1fr}
+  .gaTile{min-height:190px}
+  .gaRibbon{width:calc(100% - 26px)}
+  .gaFooter{width:calc(100% - 26px)}
+}
+
+.gaHeaderLogo img{object-fit:contain!important}
+.gaHeroLogo{object-fit:contain!important}

@@ -39,3 +39,5 @@
 .cardMatchPage .cmCode{color:#f1cc5d!important}
 .cardMatchPage .cmQr{box-shadow:0 10px 30px #001e2344}
 .cardMatchPage .gaCardLogo{height:42px!important;width:155px!important;object-fit:contain}.cardMatchPage .cmBrand{gap:9px;color:#075056}.cardMatchPage .cmBrand>b{color:#075056}
+
+.cardMatchPage .gaCardLogo{object-fit:contain!important}

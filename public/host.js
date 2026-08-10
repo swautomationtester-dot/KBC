@@ -1,6 +1,10 @@
-const s=io({transports:["websocket","polling"]}),$=id=>document.getElementById(id);
+const s=io({transports:["polling","websocket"],reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:500,reconnectionDelayMax:3000,timeout:10000}),$=id=>document.getElementById(id);
+let hostRoomToken=localStorage.getItem("gamesarena_host_token")||"";
+s.on("connect",()=>{
+  if(hostRoomToken) s.emit("host:resume",{token:hostRoomToken});
+});
 let fastInterval=null,audiencePollOpen=false;
-function createRoom(){s.emit("host:create")}
+function createRoom(){hostRoomToken="";localStorage.removeItem("gamesarena_host_token");s.emit("host:create")}
 const demoSteps=[
  {title:"Registration",text:"Open Registration and display the room QR/code on the TV. Audience and contestants can join."},
  {title:"Fastest Finger",text:"Pick 7 players. The TV animates the selection, then gives the contestants a 5-second ready countdown."},
@@ -41,7 +45,12 @@ function drawTimer(x){
  tick();fastInterval=setInterval(tick,50);
 }
 function letters(seq){return (seq||[]).map(n=>String.fromCharCode(65+n)).join(" ")}
-s.on("room",d=>{$("code").textContent=d.code;$("url").textContent=d.joinUrl;$("qr").src=d.qr;$("screenUrl").innerHTML=`📺 TV URL: <a href="${d.screenUrl}" target="_blank" rel="noopener">${d.screenUrl}</a>`;$("area").classList.remove("hidden");$("create").disabled=true});
+s.on("room",d=>{
+  if(d.hostToken){hostRoomToken=d.hostToken;localStorage.setItem("gamesarena_host_token",d.hostToken)}
+  $("code").textContent=d.code;$("url").textContent=d.joinUrl;$("qr").src=d.qr;$("screenUrl").innerHTML=`📺 TV URL: <a href="${d.screenUrl}" target="_blank" rel="noopener">${d.screenUrl}</a>`;$("area").classList.remove("hidden");$("create").disabled=true});
+s.on("disconnect",()=>{$("status").innerHTML="🔄 <b>Connection interrupted — reconnecting…</b>";});
+s.on("connect",()=>{if($("status")&&$("code")?.textContent&&$("code").textContent!=="----")$("status").innerHTML="🟢 <b>Connected</b>";});
+s.on("connect_error",()=>{if($("status"))$("status").innerHTML="🔄 <b>Reconnecting to GamesArena…</b>";});
 s.on("errorMsg",alert);
 s.on("answerLocked",a=>{
  $("answerReview").classList.remove("hidden");
