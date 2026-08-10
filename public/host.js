@@ -1,10 +1,37 @@
 const s=io({transports:["polling","websocket"],reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:500,reconnectionDelayMax:3000,timeout:10000}),$=id=>document.getElementById(id);
 let hostRoomToken=localStorage.getItem("gamesarena_host_token")||"";
+let createRoomPending=false;
 s.on("connect",()=>{
-  if(hostRoomToken) s.emit("host:resume",{token:hostRoomToken});
+  if(hostRoomToken) {
+    s.emit("host:resume",{token:hostRoomToken});
+  } else if(createRoomPending) {
+    createRoomPending=false;
+    createRoom();
+  }
 });
 let fastInterval=null,audiencePollOpen=false;
-function createRoom(){hostRoomToken="";localStorage.removeItem("gamesarena_host_token");s.emit("host:create")}
+function createRoom(){
+  if(createRoomPending)return;
+
+  // A click always means "give me a fresh room". Do not resume the
+  // previous room from localStorage after this action.
+  hostRoomToken="";
+  localStorage.removeItem("gamesarena_host_token");
+
+  if(!s.connected){
+    createRoomPending=true;
+    $("createStatus").innerHTML="🔄 <b>Connecting to GamesArena… a new room will be created automatically.</b>";
+    const btn=$("create");
+    if(btn){btn.disabled=true;btn.textContent="⏳ Waiting for connection…";}
+    return;
+  }
+
+  createRoomPending=true;
+  const btn=$("create");
+  if(btn){btn.disabled=true;btn.textContent="⏳ Creating New Room…";}
+  $("createStatus").innerHTML="⏳ <b>Creating a fresh game room…</b>";
+  s.emit("host:create");
+}
 const demoSteps=[
  {title:"Registration",text:"Open Registration and display the room QR/code on the TV. Audience and contestants can join."},
  {title:"Fastest Finger",text:"Pick 7 players. The TV animates the selection, then gives the contestants a 5-second ready countdown."},
@@ -46,10 +73,27 @@ function drawTimer(x){
 }
 function letters(seq){return (seq||[]).map(n=>String.fromCharCode(65+n)).join(" ")}
 s.on("room",d=>{
-  if(d.hostToken){hostRoomToken=d.hostToken;localStorage.setItem("gamesarena_host_token",d.hostToken)}
-  $("code").textContent=d.code;$("url").textContent=d.joinUrl;$("qr").src=d.qr;$("screenUrl").innerHTML=`📺 TV URL: <a href="${d.screenUrl}" target="_blank" rel="noopener">${d.screenUrl}</a>`;$("area").classList.remove("hidden");$("create").disabled=true});
-s.on("disconnect",()=>{$("status").innerHTML="🔄 <b>Connection interrupted — reconnecting…</b>";});
-s.on("connect",()=>{if($("status")&&$("code")?.textContent&&$("code").textContent!=="----")$("status").innerHTML="🟢 <b>Connected</b>";});
+  if(d.hostToken){
+    hostRoomToken=d.hostToken;
+    localStorage.setItem("gamesarena_host_token",d.hostToken);
+  }
+
+  $("code").textContent=d.code;
+  $("url").textContent=d.joinUrl;
+  $("qr").src=d.qr;
+  $("screenUrl").innerHTML=`📺 TV URL: <a href="${d.screenUrl}" target="_blank" rel="noopener">${d.screenUrl}</a>`;
+  $("area").classList.remove("hidden");
+
+  createRoomPending=false;
+  const btn=$("create");
+  if(btn){
+    btn.disabled=false;
+    btn.textContent="＋ Create New Room";
+  }
+  $("createStatus").innerHTML="🟢 <b>Room "+d.code+" is ready.</b> Create New Room will generate a completely new code.";
+});
+s.on("disconnect",()=>{$("createStatus").innerHTML="🔄 <b>Connection interrupted — reconnecting…</b>";if($("status"))$("status").innerHTML="🔄 <b>Connection interrupted — reconnecting…</b>";});
+s.on("connect",()=>{if($("createStatus")&&$("code")?.textContent==="----")$("createStatus").innerHTML="🟢 <b>Connected — ready to create a room.</b>";if($("status")&&$("code")?.textContent&&$("code").textContent!=="----")$("status").innerHTML="🟢 <b>Connected</b>";});
 s.on("connect_error",()=>{if($("status"))$("status").innerHTML="🔄 <b>Reconnecting to GamesArena…</b>";});
 s.on("errorMsg",alert);
 s.on("answerLocked",a=>{

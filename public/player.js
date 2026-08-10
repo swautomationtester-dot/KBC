@@ -1,4 +1,4 @@
-const s=io({transports:["websocket","polling"],reconnection:true,timeout:10000}),$=id=>document.getElementById(id);
+const s=io({transports:["polling","websocket"],upgrade:true,reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:500,reconnectionDelayMax:4000,timeout:15000}),$=id=>document.getElementById(id);
 let me="",gameToken="",tvUniqueUrl="",hasJoined=false,fastSeq=[],fastIndex=0,fastTimer=null,fastStarted=false,eliminationTimer=null,eliminationUntil=0,audiencePollCounts={},audiencePollActive=false,currentQuestion=null,fiftyFiftyRemoved=[];
 let questionAudio=null,lastQuestionAudioIndex=-1;
 function playQuestionAudio(questionIndex){
@@ -21,13 +21,25 @@ function setQuizActive(active){
 
 const q=new URLSearchParams(location.search);if(q.get("room"))$("room").value=q.get("room").replace(/\D/g,"").slice(0,4);gameToken=q.get("game")||"";
 function redirectToTV(){const room=$("room").value.trim().toUpperCase();if(tvUniqueUrl)location.href=tvUniqueUrl;else if(room)location.href=`/tv.html?room=${encodeURIComponent(room)}`}
-s.on("connect",()=>{$("connection").textContent="🟢 Connected to game server";$("connection").className="box status ok"});
+s.on("connect",()=>{
+  $("connection").textContent="🟢 Connected to game server";
+  $("connection").className="box status ok";
+  if(hasJoined){
+    const room=$("room")?.value.trim(), name=$("name")?.value.trim(), employeeCode=me;
+    if(/^\d{4}$/.test(room) && name && employeeCode){
+      $("connection").textContent="🔄 Reconnecting your game session…";
+      s.emit("player:resume",{code:room,name,employeeCode,game:gameToken});
+    }
+  }
+});
 s.on("disconnect",()=>{$("connection").textContent="🔴 Connection lost — reconnecting…";$("connection").className="box status bad"});
 s.on("connect_error",()=>{$("connection").textContent="🔴 Could not connect to game server";$("connection").className="box status bad"});
 
 ["room","emp"].forEach(id=>{const el=$(id);if(el)el.addEventListener("input",()=>{el.value=el.value.replace(/\\D/g,"").slice(0,id==="room"?4:12);});});
+
+try{const saved=JSON.parse(sessionStorage.getItem("gamesarena_player_session")||"null");if(saved&&q.get("room")&&String(saved.room)===String(q.get("room"))){$("room").value=saved.room;$("name").value=saved.name;$("emp").value=saved.employeeCode;me=saved.employeeCode;hasJoined=true;gameToken=q.get("game")||saved.game||"";}}catch(e){}
 const nameInput=$("name");if(nameInput)nameInput.addEventListener("input",()=>{nameInput.value=nameInput.value.replace(/[^A-Za-z ]/g,"").replace(/\\s+/g," ").replace(/^ /,"");});
-function join(){const room=$("room").value.trim(),name=$("name").value.trim();me=$("emp").value.trim();if(!/^\d{4}$/.test(room))return alert("Enter the 4-digit room code.");if(!/^[A-Za-z]+(?:[ ][A-Za-z]+)*$/.test(name))return alert("Name must contain alphabets only.");if(!/^\d+$/.test(me))return alert("Register number must contain numbers only.");if(!name)return alert("Enter your full name.");if(!me)return alert("Enter employee code.");$("connection").textContent="⏳ Registering…";s.emit("join",{code:room,name,employeeCode:me,role:"player",game:gameToken})}
+function join(){const room=$("room").value.trim(),name=$("name").value.trim();me=$("emp").value.trim();sessionStorage.setItem("gamesarena_player_session",JSON.stringify({room,name,employeeCode:me,game:gameToken}));if(!/^\d{4}$/.test(room))return alert("Enter the 4-digit room code.");if(!/^[A-Za-z]+(?:[ ][A-Za-z]+)*$/.test(name))return alert("Name must contain alphabets only.");if(!/^\d+$/.test(me))return alert("Register number must contain numbers only.");if(!name)return alert("Enter your full name.");if(!me)return alert("Enter employee code.");$("connection").textContent="⏳ Registering…";s.emit("join",{code:room,name,employeeCode:me,role:"player",game:gameToken})}
 function answer(i){
  if(answerLocked)return;
  answerLocked=true;
@@ -80,6 +92,7 @@ s.on("fastestProgressResult",r=>{
 });
 s.on("joined",d=>{
   hasJoined=true;
+  try{sessionStorage.setItem("gamesarena_player_session",JSON.stringify({room:$("room").value.trim(),name:d.name||$("name").value.trim(),employeeCode:d.employeeCode||me,game:gameToken}));}catch(e){}
   me=d.employeeCode||me;
   if($("playerName"))$("playerName").textContent=d.name||"Player";
   $("connection").classList.add("hidden");
