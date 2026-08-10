@@ -247,6 +247,7 @@ app.post("/api/questions",requireAdmin,async(req,res)=>{
  res.json({ok:true});
 });
 
+
 // ===== Card Match mini-game =====
 const cardMatchRooms=new Map();
 const CM_ICONS=["🍎","🚀","🐼","🌈","⚽","🍕","🦊","🎸","🌟","🐸","🍩","🦄"];
@@ -255,13 +256,41 @@ function cmCode(){let c;do c=String(Math.floor(1000+Math.random()*9000));while(c
 function cmState(r){return {code:r.code,status:r.status,turn:r.turn,flipped:r.flipped,deck:r.deck,players:r.players.map(p=>({id:p.id,name:p.name,color:p.color,score:p.score})),winner:r.winner}}
 function cmBroadcast(r){io.to(r.channel).emit("cm:state",cmState(r))}
 function cmReset(r){r.deck=cmDeck();r.flipped=[];r.turn=0;r.status="playing";r.winner=[];r.players.forEach(p=>p.score=0)}
-
 io.on("connection",s=>{
-  socket.on("cm:create",()=>{const code=cmCode(),channel="cardmatch-"+code,r={code,channel,tv:socket.id,players:[],deck:[],flipped:[],turn:0,status:"lobby",winner:[]};cardMatchRooms.set(code,r);socket.join(channel);socket.data.cmRoom=code;socket.data.cmRole="tv";const proto=socket.handshake.headers["x-forwarded-proto"]||"http",host=socket.handshake.headers.host;socket.emit("cm:room",{code,joinUrl:`${proto}://${host}/card-match.html?join=${code}`});cmBroadcast(r)});
-  socket.on("cm:join",({code,name}={})=>{const r=cardMatchRooms.get(String(code||""));if(!r)return socket.emit("cm:error",{message:"Room not found."});if(r.status!=="lobby")return socket.emit("cm:error",{message:"Game already started."});if(r.players.length>=4)return socket.emit("cm:error",{message:"Room is full."});const p={id:socket.id,name:String(name||"Player").trim().slice(0,18),score:0,color:["#ff5c7a","#5c8dff","#20c997","#ffb020"][r.players.length]};r.players.push(p);socket.join(r.channel);socket.data.cmRoom=r.code;socket.data.cmRole="player";socket.emit("cm:joined",{playerId:p.id,code:r.code});cmBroadcast(r)});
-  socket.on("cm:start",()=>{const r=cardMatchRooms.get(String(socket.data.cmRoom||""));if(!r||socket.id!==r.tv)return;if(r.players.length<2)return socket.emit("cm:error",{message:"At least 2 players must join."});cmReset(r);cmBroadcast(r)});
-  socket.on("cm:restart",()=>{const r=cardMatchRooms.get(String(socket.data.cmRoom||""));if(!r||socket.id!==r.tv)return;cmReset(r);cmBroadcast(r)});
-  socket.on("cm:flip",({cardId}={})=>{const r=cardMatchRooms.get(String(socket.data.cmRoom||""));if(!r||r.status!=="playing")return;const idx=r.players.findIndex(p=>p.id===socket.id);if(idx!==r.turn||r.flipped.length>=2)return;const c=r.deck.find(x=>x.id===Number(cardId));if(!c||c.matched||r.flipped.includes(c.id))return;r.flipped.push(c.id);cmBroadcast(r);if(r.flipped.length===2){const a=r.deck.find(x=>x.id===r.flipped[0]),b=r.deck.find(x=>x.id===r.flipped[1]);setTimeout(()=>{if(!cardMatchRooms.has(r.code))return;if(a.icon===b.icon){a.matched=b.matched=true;r.players[r.turn].score++}else r.turn=(r.turn+1)%r.players.length;r.flipped=[];if(r.deck.every(x=>x.matched)){r.status="finished";const max=Math.max(...r.players.map(p=>p.score));r.winner=r.players.filter(p=>p.score===max).map(p=>p.name)}cmBroadcast(r)},800)}});
+ s.on("cm:create",()=>{
+   const code=cmCode(),channel="cardmatch-"+code;
+   const r={code,channel,tv:s.id,players:[],deck:[],flipped:[],turn:0,status:"lobby",winner:[]};
+   cardMatchRooms.set(code,r);s.join(channel);s.data.cmRoom=code;s.data.cmRole="tv";
+   const proto=s.handshake.headers["x-forwarded-proto"]||"http",host=s.handshake.headers.host;
+   s.emit("cm:room",{code,joinUrl:`${proto}://${host}/card-match.html?join=${code}`});cmBroadcast(r);
+ });
+ s.on("cm:join",({code,name}={})=>{
+   const r=cardMatchRooms.get(String(code||""));if(!r)return s.emit("cm:error",{message:"Room not found."});
+   if(r.status!=="lobby")return s.emit("cm:error",{message:"Game already started."});
+   if(r.players.length>=4)return s.emit("cm:error",{message:"Room is full."});
+   const p={id:s.id,name:String(name||"Player").trim().slice(0,18),score:0,color:["#ff5c7a","#5c8dff","#20c997","#ffb020"][r.players.length]};
+   r.players.push(p);s.join(r.channel);s.data.cmRoom=r.code;s.data.cmRole="player";s.emit("cm:joined",{playerId:p.id,code:r.code});cmBroadcast(r);
+ });
+ s.on("cm:start",()=>{
+   const r=cardMatchRooms.get(String(s.data.cmRoom||""));if(!r||s.id!==r.tv)return;
+   if(r.players.length<2)return s.emit("cm:error",{message:"At least 2 players must join."});
+   cmReset(r);cmBroadcast(r);
+ });
+ s.on("cm:restart",()=>{const r=cardMatchRooms.get(String(s.data.cmRoom||""));if(!r||s.id!==r.tv)return;cmReset(r);cmBroadcast(r)});
+ s.on("cm:flip",({cardId}={})=>{
+   const r=cardMatchRooms.get(String(s.data.cmRoom||""));if(!r||r.status!=="playing")return;
+   const idx=r.players.findIndex(p=>p.id===s.id);if(idx!==r.turn||r.flipped.length>=2)return;
+   const c=r.deck.find(x=>x.id===Number(cardId));if(!c||c.matched||r.flipped.includes(c.id))return;
+   r.flipped.push(c.id);cmBroadcast(r);
+   if(r.flipped.length===2){const a=r.deck.find(x=>x.id===r.flipped[0]),b=r.deck.find(x=>x.id===r.flipped[1]);
+     setTimeout(()=>{if(!cardMatchRooms.has(r.code))return;
+       if(a.icon===b.icon){a.matched=b.matched=true;r.players[r.turn].score++}else r.turn=(r.turn+1)%r.players.length;
+       r.flipped=[];
+       if(r.deck.every(x=>x.matched)){r.status="finished";const max=Math.max(...r.players.map(p=>p.score));r.winner=r.players.filter(p=>p.score===max).map(p=>p.name)}
+       cmBroadcast(r);
+     },800);
+   }
+ });
 
  s.on("host:create",async()=>{let code;do code=String(Math.floor(1000+Math.random()*9000));while(rooms.has(code));const r=makeRoom();r.host=s.id;r.questions=[];rooms.set(code,r);s.join(code);s.data.room=code;s.data.role="host";const joinUrl=`${PUBLIC_URL}/join.html?room=${code}`;r.joinUrl=joinUrl;r.joinQr=await QRCode.toDataURL(joinUrl);r.screenToken=crypto.randomBytes(14).toString("base64url");r.screenUrl=`${PUBLIC_URL}/screen/${r.screenToken}`;r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});r.audiencePollUrl=`${PUBLIC_URL}/audience.html?room=${code}`;r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});s.emit("room",{code,joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});emitState(code)});
  s.on("join",({code,name,employeeCode,role="player",game})=>{code=String(code||"").trim();const r=rooms.get(code);if(!/^\d{4}$/.test(code))return s.emit("errorMsg","Room code must be exactly 4 digits.");if(!r)return s.emit("errorMsg","Room not found. Ask the host for a new code.");
