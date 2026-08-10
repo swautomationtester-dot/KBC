@@ -1,0 +1,1302 @@
+[
+  {
+    "id": "GK-001",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Capital of India?",
+    "options": [
+      "Mumbai",
+      "New Delhi",
+      "Kolkata",
+      "Chennai"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-002",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "King of the Jungle?",
+    "options": [
+      "Tiger",
+      "Elephant",
+      "Lion",
+      "Bear"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-003",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Days in a week?",
+    "options": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-004",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Planet we live on?",
+    "options": [
+      "Mars",
+      "Earth",
+      "Venus",
+      "Jupiter"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-005",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Colors in a rainbow?",
+    "options": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-006",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "National animal of India?",
+    "options": [
+      "Lion",
+      "Elephant",
+      "Tiger",
+      "Peacock"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-007",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "National bird of India?",
+    "options": [
+      "Parrot",
+      "Peacock",
+      "Eagle",
+      "Sparrow"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-008",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Largest land animal?",
+    "options": [
+      "Giraffe",
+      "Elephant",
+      "Rhino",
+      "Hippo"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-009",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Fruit with a yellow peel?",
+    "options": [
+      "Apple",
+      "Banana",
+      "Grapes",
+      "Orange"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-010",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "How many legs does a spider have?",
+    "options": [
+      "6",
+      "8",
+      "10",
+      "12"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-011",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Star that gives Earth light and heat?",
+    "options": [
+      "Moon",
+      "Mars",
+      "Sun",
+      "Venus"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-012",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "What do bees make?",
+    "options": [
+      "Milk",
+      "Honey",
+      "Butter",
+      "Juice"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-013",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Fastest land animal?",
+    "options": [
+      "Lion",
+      "Horse",
+      "Cheetah",
+      "Tiger"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-014",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Months in a year?",
+    "options": [
+      "10",
+      "11",
+      "12",
+      "13"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-015",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Animal that commonly gives us milk?",
+    "options": [
+      "Cow",
+      "Tiger",
+      "Lion",
+      "Wolf"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-016",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Usual color of grass?",
+    "options": [
+      "Blue",
+      "Green",
+      "Red",
+      "Purple"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-017",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Organ used for seeing?",
+    "options": [
+      "Ear",
+      "Nose",
+      "Eye",
+      "Hand"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-018",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Organ used for hearing?",
+    "options": [
+      "Eye",
+      "Ear",
+      "Nose",
+      "Mouth"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-019",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Fingers on one hand?",
+    "options": [
+      "4",
+      "5",
+      "6",
+      "10"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-020",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Animal famous for its long neck?",
+    "options": [
+      "Elephant",
+      "Giraffe",
+      "Zebra",
+      "Deer"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-021",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Red Planet?",
+    "options": [
+      "Venus",
+      "Mars",
+      "Jupiter",
+      "Saturn"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-022",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "National flower of India?",
+    "options": [
+      "Rose",
+      "Lotus",
+      "Sunflower",
+      "Jasmine"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-023",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Festival of Lights?",
+    "options": [
+      "Holi",
+      "Diwali",
+      "Eid",
+      "Christmas"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-024",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Festival of Colors?",
+    "options": [
+      "Diwali",
+      "Holi",
+      "Pongal",
+      "Onam"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-025",
+    "category": "Kids General Knowledge",
+    "difficulty": 1,
+    "text": "Sport played with a bat and ball?",
+    "options": [
+      "Cricket",
+      "Swimming",
+      "Boxing",
+      "Running"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-026",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Wheels on a normal bicycle?",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-027",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Shape with three sides?",
+    "options": [
+      "Square",
+      "Circle",
+      "Triangle",
+      "Rectangle"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-028",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Round shape?",
+    "options": [
+      "Square",
+      "Triangle",
+      "Circle",
+      "Rectangle"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-029",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Used to write on a blackboard?",
+    "options": [
+      "Chalk",
+      "Spoon",
+      "Brush",
+      "Fork"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-030",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Man's best friend?",
+    "options": [
+      "Cat",
+      "Dog",
+      "Horse",
+      "Cow"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-031",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Largest planet?",
+    "options": [
+      "Earth",
+      "Mars",
+      "Jupiter",
+      "Venus"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-032",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Planet famous for rings?",
+    "options": [
+      "Mars",
+      "Saturn",
+      "Mercury",
+      "Earth"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-033",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Smallest planet?",
+    "options": [
+      "Mercury",
+      "Mars",
+      "Venus",
+      "Neptune"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-034",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Earth's natural satellite?",
+    "options": [
+      "Sun",
+      "Moon",
+      "Mars",
+      "Venus"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-035",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Hours in one day?",
+    "options": [
+      "12",
+      "18",
+      "24",
+      "30"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-036",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Minutes in one hour?",
+    "options": [
+      "30",
+      "45",
+      "60",
+      "100"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-037",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Seconds in one minute?",
+    "options": [
+      "30",
+      "50",
+      "60",
+      "100"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-038",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Gas humans need to breathe?",
+    "options": [
+      "Carbon dioxide",
+      "Oxygen",
+      "Hydrogen",
+      "Helium"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-039",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Plant part that absorbs water?",
+    "options": [
+      "Flower",
+      "Leaf",
+      "Root",
+      "Fruit"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-040",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Green plant part that makes food?",
+    "options": [
+      "Root",
+      "Leaf",
+      "Seed",
+      "Fruit"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-041",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "National fruit of India?",
+    "options": [
+      "Apple",
+      "Mango",
+      "Banana",
+      "Orange"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-042",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "National tree of India?",
+    "options": [
+      "Neem",
+      "Banyan",
+      "Mango",
+      "Coconut"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-043",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "National aquatic animal of India?",
+    "options": [
+      "Shark",
+      "Dolphin",
+      "Ganges River Dolphin",
+      "Whale"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-044",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Largest ocean?",
+    "options": [
+      "Indian Ocean",
+      "Atlantic Ocean",
+      "Pacific Ocean",
+      "Arctic Ocean"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-045",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Continent containing India?",
+    "options": [
+      "Europe",
+      "Asia",
+      "Africa",
+      "Australia"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-046",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Country famous for Eiffel Tower?",
+    "options": [
+      "Italy",
+      "France",
+      "Germany",
+      "Spain"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-047",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Country shaped somewhat like a boot?",
+    "options": [
+      "India",
+      "Italy",
+      "Japan",
+      "Brazil"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-048",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Capital of Japan?",
+    "options": [
+      "Beijing",
+      "Seoul",
+      "Tokyo",
+      "Bangkok"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-049",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Capital of France?",
+    "options": [
+      "London",
+      "Paris",
+      "Rome",
+      "Madrid"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-050",
+    "category": "Kids General Knowledge",
+    "difficulty": 2,
+    "text": "Country famous for Great Wall?",
+    "options": [
+      "India",
+      "China",
+      "Japan",
+      "Egypt"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-051",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Father of the Nation in India?",
+    "options": [
+      "Mahatma Gandhi",
+      "Jawaharlal Nehru",
+      "Sardar Patel",
+      "Subhas Chandra Bose"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-052",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "First Prime Minister of independent India?",
+    "options": [
+      "Mahatma Gandhi",
+      "Jawaharlal Nehru",
+      "Sardar Patel",
+      "Dr. Rajendra Prasad"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-053",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Iron Man of India?",
+    "options": [
+      "Bhagat Singh",
+      "Sardar Vallabhbhai Patel",
+      "Subhas Chandra Bose",
+      "Bal Gangadhar Tilak"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-054",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Who is known as Netaji?",
+    "options": [
+      "Mahatma Gandhi",
+      "Subhas Chandra Bose",
+      "Jawaharlal Nehru",
+      "Bhagat Singh"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-055",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "India's Independence Day?",
+    "options": [
+      "26 January",
+      "15 August",
+      "2 October",
+      "14 November"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-056",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "India's Republic Day?",
+    "options": [
+      "15 August",
+      "26 January",
+      "2 October",
+      "5 September"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-057",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Gandhi Jayanti?",
+    "options": [
+      "15 August",
+      "26 January",
+      "2 October",
+      "14 November"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-058",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Children's Day in India?",
+    "options": [
+      "14 November",
+      "5 September",
+      "15 August",
+      "26 January"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-059",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Teachers' Day in India?",
+    "options": [
+      "2 October",
+      "5 September",
+      "14 November",
+      "26 January"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-060",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Currency of India?",
+    "options": [
+      "Dollar",
+      "Rupee",
+      "Pound",
+      "Yen"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-061",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Instrument that measures temperature?",
+    "options": [
+      "Barometer",
+      "Thermometer",
+      "Compass",
+      "Ruler"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-062",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Instrument used to find directions?",
+    "options": [
+      "Clock",
+      "Compass",
+      "Microscope",
+      "Telescope"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-063",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Instrument for seeing very small objects?",
+    "options": [
+      "Telescope",
+      "Microscope",
+      "Compass",
+      "Camera"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-064",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Instrument for seeing distant space objects?",
+    "options": [
+      "Microscope",
+      "Telescope",
+      "Thermometer",
+      "Ruler"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-065",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "H2O is commonly called?",
+    "options": [
+      "Salt",
+      "Water",
+      "Oxygen",
+      "Hydrogen"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-066",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Gas plants take in from air?",
+    "options": [
+      "Oxygen",
+      "Carbon dioxide",
+      "Helium",
+      "Nitrogen"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-067",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Process plants use to make food?",
+    "options": [
+      "Digestion",
+      "Photosynthesis",
+      "Respiration",
+      "Germination"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-068",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Sense organ for smell?",
+    "options": [
+      "Eye",
+      "Ear",
+      "Nose",
+      "Tongue"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-069",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Sense organ for taste?",
+    "options": [
+      "Tongue",
+      "Eye",
+      "Ear",
+      "Skin"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-070",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Hardest natural substance?",
+    "options": [
+      "Gold",
+      "Iron",
+      "Diamond",
+      "Silver"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-071",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Animal that can change color to hide?",
+    "options": [
+      "Chameleon",
+      "Elephant",
+      "Cow",
+      "Horse"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-072",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Animal with black and white stripes?",
+    "options": [
+      "Zebra",
+      "Giraffe",
+      "Tiger",
+      "Panda"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-073",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Animal that carries its baby in a pouch?",
+    "options": [
+      "Kangaroo",
+      "Elephant",
+      "Tiger",
+      "Penguin"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-074",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Bird that cannot fly but swims very well?",
+    "options": [
+      "Eagle",
+      "Penguin",
+      "Sparrow",
+      "Crow"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-075",
+    "category": "Kids General Knowledge",
+    "difficulty": 3,
+    "text": "Animal known for a trunk?",
+    "options": [
+      "Lion",
+      "Elephant",
+      "Horse",
+      "Deer"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-076",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Ship of the Desert?",
+    "options": [
+      "Horse",
+      "Camel",
+      "Elephant",
+      "Donkey"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-077",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Largest mammal?",
+    "options": [
+      "Elephant",
+      "Blue whale",
+      "Giraffe",
+      "Rhino"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-078",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Baby dog is called?",
+    "options": [
+      "Kitten",
+      "Puppy",
+      "Calf",
+      "Cub"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-079",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Baby cat is called?",
+    "options": [
+      "Puppy",
+      "Kitten",
+      "Calf",
+      "Foal"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-080",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Baby cow is called?",
+    "options": [
+      "Cub",
+      "Calf",
+      "Foal",
+      "Chick"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-081",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Baby horse is called?",
+    "options": [
+      "Foal",
+      "Calf",
+      "Puppy",
+      "Cub"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-082",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Tallest animal?",
+    "options": [
+      "Elephant",
+      "Giraffe",
+      "Horse",
+      "Camel"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-083",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Bird famous for mimicking human speech?",
+    "options": [
+      "Parrot",
+      "Penguin",
+      "Ostrich",
+      "Peacock"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-084",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Largest living bird?",
+    "options": [
+      "Eagle",
+      "Ostrich",
+      "Peacock",
+      "Penguin"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-085",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Animal famous for building dams?",
+    "options": [
+      "Beaver",
+      "Rabbit",
+      "Fox",
+      "Deer"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-086",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Insect with colorful wings that starts as a caterpillar?",
+    "options": [
+      "Ant",
+      "Butterfly",
+      "Bee",
+      "Mosquito"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-087",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Insect known for living and working in colonies?",
+    "options": [
+      "Ant",
+      "Butterfly",
+      "Dragonfly",
+      "Cricket"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-088",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Animal that produces wool?",
+    "options": [
+      "Sheep",
+      "Tiger",
+      "Dog",
+      "Elephant"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-089",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Food made from milk often put on pizza?",
+    "options": [
+      "Rice",
+      "Cheese",
+      "Bread",
+      "Apple"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-090",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Meal usually eaten first in the day?",
+    "options": [
+      "Dinner",
+      "Lunch",
+      "Breakfast",
+      "Supper"
+    ],
+    "answer": 2
+  },
+  {
+    "id": "GK-091",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Device used to tell time?",
+    "options": [
+      "Clock",
+      "Ruler",
+      "Compass",
+      "Scale"
+    ],
+    "answer": 0
+  },
+  {
+    "id": "GK-092",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Month after March?",
+    "options": [
+      "February",
+      "April",
+      "May",
+      "June"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-093",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Month with 28 days in a normal year?",
+    "options": [
+      "January",
+      "February",
+      "March",
+      "April"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-094",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Day after Friday?",
+    "options": [
+      "Thursday",
+      "Saturday",
+      "Sunday",
+      "Monday"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-095",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Sides of a square?",
+    "options": [
+      "3",
+      "4",
+      "5",
+      "6"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-096",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Sides of a pentagon?",
+    "options": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-097",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Colors in India's national flag?",
+    "options": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-098",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Person who flies an airplane?",
+    "options": [
+      "Sailor",
+      "Pilot",
+      "Driver",
+      "Captain"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-099",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Vehicle that travels on railway tracks?",
+    "options": [
+      "Bus",
+      "Train",
+      "Car",
+      "Bicycle"
+    ],
+    "answer": 1
+  },
+  {
+    "id": "GK-100",
+    "category": "Kids General Knowledge",
+    "difficulty": 4,
+    "text": "Which animal is known for its ability to sleep standing up?",
+    "options": [
+      "Horse",
+      "Rabbit",
+      "Dog",
+      "Monkey"
+    ],
+    "answer": 0
+  }
+]
