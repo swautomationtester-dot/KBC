@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Host Console</title>
+<link rel="stylesheet" href="/style.css?v=65">
+</head>
+<body>
+<header class="sitebar">
+  <img src="/assets/logo-dark.png" class="brand">
+  <span class="chip">HOST CONSOLE</span>
+</header>
+
+<main class="hostPage">
+  <div class="hostHeader">
+    <div>
+      <div class="eyebrow">GAME CONTROL</div>
+      <h1>Run the Arena</h1>
+      <p class="hostSub">Control registration, Fastest Finger, questions and lifelines from one place.</p>
+    </div>
+    <a class="homeLink" href="/">Home</a>
+  </div>
+
+  <button id="create" class="primary big createRoomBtn" onclick="createRoom()">＋ Create Game Room</button>
+
+  <div id="area" class="hidden">
+    <div class="hostGrid">
+      <div class="hostMain">
+
+        <div class="room">
+          <div>
+            <div class="eyebrow">ROOM CODE</div>
+            <strong id="code">----</strong>
+            <p id="url" class="muted"></p>
+            <p id="screenUrl" class="screenLink"></p>
+          </div>
+          <img id="qr" class="qr" alt="Registration QR">
+        </div>
+
+        <div class="stats statsModern">
+          <div><span>REGISTERED</span><b id="reg">0</b><small>Players in room</small></div>
+          <div><span>WAITING</span><b id="waiting">0</b><small>Eligible for next Fastest Finger</small></div>
+          <div><span>PLAYED</span><b id="played">0</b><small>Already entered quiz</small></div>
+          <div><span>ELIMINATED</span><b id="eliminated">0</b><small>Out of current event</small></div>
+        </div>
+
+        <section class="controlCard hostFlowCard">
+          <div class="sectionHead">
+            <div>
+              <h2>Game control</h2>
+              <p>Follow the numbered stages. Controls become available automatically when the game reaches the correct stage.</p>
+            </div>
+            <div id="flowState" class="flowState">SETUP</div>
+          </div>
+
+          <section class="flowSection">
+            <div class="flowHeading">
+              <span>1</span>
+              <div><h3>Setup &amp; Registration</h3><small>Open the room and let players register.</small></div>
+            </div>
+            <div class="flowButtons">
+              <button id="openRegBtn" onclick="openReg()">📝 Open Registration</button>
+              <button onclick="participants()">👥 Registered Participants</button>
+            </div>
+          </section>
+
+          <section class="flowSection">
+            <div class="flowHeading">
+              <span>2</span>
+              <div><h3>Fastest Finger</h3><small>Select the next group of up to 7 eligible players.</small></div>
+            </div>
+            <div class="flowButtons">
+              <button id="pick7Btn" class="primary" onclick="pick7()">⚡ Random Pick 7</button>
+              <button id="restartFastestBtn" onclick="restartFastest()" disabled>↻ Restart Same 7</button>
+              <button id="next7Btn" onclick="next7()" disabled>➡️ Select Next 7</button>
+            </div>
+            <div id="fastTimer" class="fastTimer">Waiting for selection…</div>
+          </section>
+
+          <section class="flowSection">
+            <div class="flowHeading">
+              <span>3</span>
+              <div><h3>Main Quiz</h3><small>Start only after a Fastest Finger winner is announced.</small></div>
+            </div>
+            <div class="flowButtons">
+              <button id="startQuizBtn" class="primary" onclick="startQuiz()" disabled>▶️ Start Quiz</button>
+              <button id="nextQuestionBtn" onclick="nextQ()" disabled>Next Question ➜</button>
+            </div>
+            <div id="hostQuestion"></div>
+            <div id="status" class="box">Waiting…</div>
+            <div id="answerReview" class="answerReview hidden"></div>
+          </section>
+
+          <section class="flowSection">
+            <div class="flowHeading">
+              <span>4</span>
+              <div><h3>Audience &amp; Lifelines</h3><small>Use the audience poll while a question is active.</small></div>
+            </div>
+            <div class="flowButtons">
+              <button id="audiencePollBtn" onclick="toggleAudiencePoll()" disabled>🗳️ Ask Audience Poll</button>
+            </div>
+            <section id="hostAudiencePoll" class="hostAudiencePoll hidden">
+              <div class="pollPanelTitle">🗳️ LIVE AUDIENCE POLL</div>
+              <div id="hostAudiencePollQuestion" class="pollPanelQuestion"></div>
+              <div id="hostAudiencePollResults"></div>
+            </section>
+          </section>
+
+          <section class="flowSection flowTools">
+            <div class="flowHeading">
+              <span>5</span>
+              <div><h3>Event Tools</h3><small>Testing and full-event reset.</small></div>
+            </div>
+            <div class="flowButtons">
+              <button onclick="openDemo()">🧪 Demo / Test Game</button>
+              <button class="danger" onclick="restartEvent()">↻ Restart Event</button>
+            </div>
+          </section>
+
+          <div id="fastResults"></div>
+
+          <div id="fastQrBox" class="fastQrBox hidden">
+            <b>Current Fastest Finger QR</b>
+            <small>Only the selected 7 can enter this round.</small>
+            <img id="fastQr" class="qr" alt="Fastest Finger QR">
+          </div>
+
+          <section class="selectedPanel">
+            <h2>Selected for Fastest Finger</h2>
+            <div id="pool"></div>
+          </section>
+
+          <h2>Leaderboard</h2>
+          <div id="board"></div>
+        </section>
+
+      </div>
+
+      <aside class="hostSide">
+        <section class="hostPrizeCard" aria-label="Prize ladder">
+          <div class="sideTitle">
+            <span>💰</span>
+            <div><h3>Prize Ladder</h3><small>5 questions • ₹50,000 total</small></div>
+          </div>
+          <div id="hostLadder"></div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <div id="demoModal" class="demoModal hidden">
+    <div class="demoCard">
+      <button class="demoClose" onclick="closeDemo()">×</button>
+      <div class="eyebrow">HOST TRAINING MODE</div>
+      <h2>🧪 Demo Game</h2>
+      <p>Preview the complete game-show flow without changing the live room.</p>
+      <div id="demoStage" class="demoStage"></div>
+      <div class="demoControls">
+        <button onclick="demoPrev()">← Previous</button>
+        <button class="primary" onclick="demoNext()">Next →</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/host.js?v=65"></script>
+</body>
+</html>

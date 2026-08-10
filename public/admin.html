@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Quiz Admin Login</title>
+<link rel=stylesheet href=style.css>
+</head>
+<body>
+<header class=sitebar>
+  <img src="/assets/logo-dark.png" class=brand>
+  <span class=chip>ADMIN PORTAL</span>
+</header>
+<main class="wrap narrow">
+  <div class=eyebrow>SECURE ADMIN ACCESS</div>
+  <h1>Quiz Administration</h1>
+
+  <section id=login class="adminLogin box">
+    <p class=muted>Sign in to manage the question bank.</p>
+    <label for=username>Admin username</label>
+    <input id=username autocomplete=username placeholder="Username">
+    <label for=pass>Password</label>
+    <input id=pass type=password autocomplete=current-password placeholder="Password">
+    <button id=loginBtn class="primary big">Login</button>
+    <div id=loginError class="errorText"></div>
+  </section>
+
+  <section id=admin class=hidden>
+    <div class=adminHeader>
+      <div>
+        <div class=eyebrow>QUESTION BANK</div>
+        <h2>Manage Questions</h2>
+      </div>
+      <button id=logout>Logout</button>
+    </div>
+    <div class=adminForm>
+      <input id=qt placeholder=Question>
+      <input id=a placeholder="Option A">
+      <input id=b placeholder="Option B">
+      <input id=c placeholder="Option C">
+      <input id=d placeholder="Option D">
+      <select id=ans>
+        <option value=0>Correct: A</option>
+        <option value=1>Correct: B</option>
+        <option value=2>Correct: C</option>
+        <option value=3>Correct: D</option>
+      </select>
+      <input id=pts type=number value=100 min=0>
+      <button id=addBtn class="primary">Add Question</button>
+    </div>
+    <div id=list></div>
+  </section>
+</main>
+<script src=admin.js></script>
+</body>
+</html>

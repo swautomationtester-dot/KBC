@@ -1,0 +1,45 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Quiz TV</title><link rel="stylesheet" href="/style.css?v=65"></head><body class=tv><header class="tvtop">
+      <img src="/assets/logo-white.png">
+      <div class="tvtools"><span id=roomLabel>LIVE</span><button id=fullscreen>⛶</button><button id=soundToggle>🔊</button></div>
+    </header>
+    <noscript><div style="padding:20px;background:#8b0000;color:#fff;font:700 18px system-ui">JavaScript is disabled. Enable JavaScript for the Quiz TV.</div></noscript>
+    <main id="tvmain">
+      <section id="qrStage" class="qrStage hidden">
+        <div id="qrKicker" class="tvkicker">SCAN TO OPEN QUIZ TV</div>
+        <h1 id="qrTitle">Live TV Screen</h1>
+        <div class="registrationLobbyLayout">
+          <div class="registrationQrCard">
+            <div class="centralQrFrame"><img id="centralQr" alt="QR code"></div>
+            <div id="qrRoom" class="centralRoom"></div>
+            <p id="qrHint">Scan this QR code with your phone.</p>
+          </div>
+          <div class="registrationRosterCard">
+            <div class="rosterKicker">REGISTERED PLAYERS</div>
+            <div id="registrationGrid" class="registrationGrid"></div>
+          </div>
+        </div>
+      </section>
+      <div class="tvwait">
+        <div class="tvkicker">PERFICIENT OFFICE QUIZ</div>
+        <h1>Waiting for the Host</h1>
+        
+      </div>
+    </main>
+    <section id="pollStage" class="pollStage hidden tvAudiencePoll" aria-live="polite">
+      <div class="tvkicker">🗳️ AUDIENCE POLL</div>
+      <h1 id="pollQuestionTitle">Help the Contestant</h1>
+      <div class="pollLiveLayout">
+        <div class="pollQrFrame"><div id="pollUrl" class="pollUrl"></div><img id="pollQr" alt="Audience poll QR code"></div>
+        <div class="pollResults" id="pollResults"></div>
+      </div>
+      <p class="pollHint">Scan to vote • Results update live</p>
+    </section>
+    <aside id="tvSideRail">
+      <section class="tvPrizeCard" aria-label="Prize ladder"><div class="tvPrizeTitle">💰 PRIZE LADDER</div><div class="tvPrizeSub">5 questions • ₹50,000 total</div><section id="prizeLadder"></section></section>
+      <section id="participantPanel" class="hidden">
+        <div class="participantTitle">PARTICIPANTS</div>
+        <div id="participantGrid"></div>
+      </section>
+    </aside>
+    <div id="toast"></div>
+    <footer id=ladder></footer><script src=/socket.io/socket.io.js></script><script src="/tv.js?v=65"></script></body></html>
