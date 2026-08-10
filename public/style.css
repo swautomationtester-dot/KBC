@@ -1440,5 +1440,3 @@ body.tv #tvSideRail #prizeLadder .ladderRow.active{
 
 /* v66: make the ready-to-start action unmistakable */
 #startQuizBtn:not(:disabled){box-shadow:0 0 0 2px #e3c66a55,0 8px 25px #0003}
-
-.status{transition:.2s}.status.bad{background:#4b2427!important}.status.ok{background:#07575c!important}

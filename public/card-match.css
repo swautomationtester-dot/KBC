@@ -1,391 +1,162 @@
 
-/* ===== Card Match enhanced UI ===== */
-.cardMatchPage{background:radial-gradient(circle at 50% -15%,#29224b 0,#080a10 52%);color:#f7f8fb}
-.cmHeroBtns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-.cmGameTop{width:min(1000px,100%);margin:0 auto 10px;display:flex;justify-content:space-between;align-items:center;gap:18px}
-.cmGameTop h2{margin:5px 0;font-size:clamp(26px,3vw,42px);letter-spacing:-1px}
-.cmTvControls{display:flex;gap:8px}.cmControl{border:1px solid #30394e;background:#121724;color:#fff;border-radius:10px;padding:10px 13px;font-weight:850;cursor:pointer}.primarySmall{background:#f1d36f!important;color:#112b30!important;border-color:#f1d36f!important}
-.turnMeta{color:#aab2c0;font-size:13px;margin-top:7px}.nowPill,.nextPill{font-size:9px;font-weight:950;letter-spacing:1px;padding:4px 6px;border-radius:5px;margin-right:5px}.nowPill{background:#20c997;color:#092d27}.nextPill{background:#30384c;color:#dbe0ea}.arrow{margin:0 7px;color:#657088}
-.turnStrip{width:min(1000px,100%);margin:0 auto 10px;display:flex;gap:7px;overflow:auto;padding:3px 1px 7px}
-.turnPlayer{display:flex;align-items:center;gap:7px;white-space:nowrap;padding:8px 11px;border:1px solid #2a3245;background:#101521;border-radius:10px;font-weight:800;font-size:12px}.turnPlayer small{font-size:8px;color:#8993a8;letter-spacing:.6px}.turnPlayer.now{border-color:var(--player);box-shadow:0 0 0 1px color-mix(in srgb,var(--player),transparent 65%),0 0 18px color-mix(in srgb,var(--player),transparent 82%)}.turnPlayer.next{border-style:dashed}
-.playerDot,.scoreDot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--player);box-shadow:0 0 10px color-mix(in srgb,var(--player),transparent 45%)}
-.cmScores{width:min(1000px,100%);margin:0 auto 12px;display:flex;gap:7px;flex-wrap:wrap}.cmScore{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #2a3245;background:#121724;border-radius:10px;min-width:145px}.cmScore.active{border-color:var(--player);box-shadow:inset 3px 0 0 var(--player)}.cmScore div{flex:1}.cmScore small{display:block;color:#8993a8;font-size:8px;letter-spacing:.7px;margin-top:2px}.cmScore strong{font-size:20px}
-.cmBoard{width:min(820px,100%);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.cmCard{appearance:none;border:0;padding:0;background:none;aspect-ratio:1;perspective:1200px;cursor:pointer;min-width:0}.cmCard:disabled{cursor:default}.cmInner{display:block;width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .42s cubic-bezier(.2,.8,.2,1)}.cmCard.open .cmInner,.cmCard.matched .cmInner{transform:rotateY(180deg)}
-.cmFace{position:absolute;inset:0;border-radius:17px;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.cmBack{background:linear-gradient(145deg,#222b40,#121826);border:1px solid #39445c;box-shadow:inset 0 1px 0 #ffffff0d,0 9px 24px #0004}.backMark{font-size:32px;color:#78849d}
-.cmFront{transform:rotateY(180deg);background:#f8f9fb;border:1px solid #ffffff;box-shadow:0 9px 28px #0005}.cmFront img{width:100%;height:100%;display:block;object-fit:cover}
-.cmCard.matched .cmFront{box-shadow:0 0 0 3px #20d6a0,0 0 30px #20d6a033}.cmCard:focus-visible .cmFace{outline:3px solid #f1d36f;outline-offset:3px}
-.cmFoot{width:min(820px,100%);margin:12px auto 0;display:flex;justify-content:space-between;color:#9ba5b8;font-size:12px}.cmPlayer{display:flex;align-items:center;gap:9px}.cmPlayer .playerDot{flex:none}
-.cmPanel .expired{border-color:#ff647c!important}.cmHint{color:#8993a8;font-size:13px;margin:0 0 12px}
-.cardMatchPage #toast{position:fixed!important;left:50%!important;top:auto!important;right:auto!important;bottom:24px!important;width:max-content!important;max-width:min(92vw,520px)!important;height:auto!important;min-height:0!important;margin:0!important;padding:12px 18px!important;box-sizing:border-box!important;display:block!important;white-space:normal!important;overflow:hidden!important;border-radius:999px!important;background:#fff!important;color:#111!important;font:800 14px/1.25 Arial,sans-serif!important;text-align:center!important;z-index:99999!important;opacity:0;transform:translate(-50%,20px)!important;pointer-events:none;transition:opacity .2s ease,transform .2s ease!important}
-.cardMatchPage #toast.show{opacity:1!important;transform:translate(-50%,0)!important}
-@media(max-width:700px){.cmGameTop{display:block}.cmTvControls{margin-top:10px}.cmControl{flex:1}.turnStrip{margin-top:5px}.cmBoard{gap:7px}.cmFace{border-radius:11px}.cmScores{display:grid;grid-template-columns:1fr 1fr}.cmScore{min-width:0}.cmFoot{font-size:11px}}
-
-/* GamesArena visual system */
-.cardMatchPage{background:radial-gradient(circle at 50% 0,#147176 0,#075056 35%,#03383d 72%,#022b30 100%)!important;color:#f8fcfb}
-.cardMatchPage .sitebar{background:#fff!important;box-shadow:0 3px 18px #001e2344}
-.cardMatchPage .sitebar .chip{background:#075056!important}
-.cardMatchPage .cmHero h1 em{color:#f1cc5d!important}
-.cardMatchPage .cmPanel{background:linear-gradient(180deg,#0b555aee,#063b40ee)!important;border-color:#39b2b555!important;box-shadow:0 16px 45px #001e2344}
-.cardMatchPage .cmBack{background:linear-gradient(145deg,#0b686d,#064348)!important;border-color:#39b2b555!important}
-.cardMatchPage .cmFront{background:#f8fbfa!important;border-color:#f1cc5d!important}
-.cardMatchPage .cmScore,.cardMatchPage .turnPlayer{background:#075056cc!important;border-color:#39b2b555!important}
-.cardMatchPage .cmScore.active{border-color:var(--player)!important}
-.cardMatchPage .cmControl{background:#075056!important;border-color:#39b2b555!important}
-.cardMatchPage .primarySmall{background:linear-gradient(135deg,#f1cc5d,#ffe18a)!important;border-color:#f1cc5d!important}
-.cardMatchPage .cmSecondary{background:#075056!important;border-color:#39b2b555!important}
-.cardMatchPage .cmHero p,.cardMatchPage .cmHint{color:#c4dedb!important}
-.cardMatchPage .cmCode{color:#f1cc5d!important}
-.cardMatchPage .cmQr{box-shadow:0 10px 30px #001e2344}
-.cardMatchPage .gaCardLogo{height:42px!important;width:155px!important;object-fit:contain}.cardMatchPage .cmBrand{gap:9px;color:#075056}.cardMatchPage .cmBrand>b{color:#075056}
-
-.cardMatchPage .gaCardLogo{object-fit:contain!important}
+/* GamesArena Card Match — polished TV / mobile UI */
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body.cardMatchPage{background:radial-gradient(circle at 50% -10%,#0d666b 0,#06494e 38%,#022f34 72%,#01272b 100%);color:#f5fbfa;min-height:100vh}
+.cmHeader{height:70px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 34px;border-bottom:1px solid #d7e2e1;box-shadow:0 3px 18px #001e2338}
+.cmHeaderBrand{display:flex;align-items:center;gap:14px;text-decoration:none;color:#075056}.cmHeaderBrand img{width:170px;height:58px;object-fit:contain}.cmHeaderTitle{font-size:16px;border-left:1px solid #d2dedd;padding-left:14px}.cmWelcome{background:#075056;color:#fff;border-radius:999px;padding:11px 17px;font-size:11px;font-weight:900;letter-spacing:1px}
+.cmApp{width:min(1600px,100%);margin:0 auto;padding:28px 34px 14px}.cmScreen{display:none}.cmScreen.active{display:block}
+.cmHomeGrid{display:grid;grid-template-columns:310px minmax(470px,1fr) 360px;gap:28px;align-items:center;min-height:450px}
+.cmGameTitle{display:flex;align-items:center;gap:13px;margin-bottom:18px}.playingCards{font-size:42px}.cmGameTitle b{display:block;font-size:25px;letter-spacing:.5px}.cmGameTitle small{display:block;font-size:11px;color:#a8c9c6;margin-top:3px;letter-spacing:1px}
+.cmInfoBox,.cmPlayersPanel,.cmJoinBox,.cmSidePanel{border:1px solid #1da4a766;background:linear-gradient(180deg,#07575bcc,#043e43d9);border-radius:15px;box-shadow:inset 0 1px #ffffff0d,0 14px 35px #001f2444}
+.cmInfoBox{padding:22px}.cmRule{display:flex;align-items:center;gap:12px;font-size:21px;margin:0 0 14px}.cmRule span{font-size:22px}.cmRule.gold{color:#f2cf61;font-style:italic}.cmInfoBox p{color:#d0e3e1;line-height:1.5;font-size:14px;margin:20px 0 0}
+.cmCenterHero{text-align:center}.cmCenterHero>label,.cmLobbyPanel>label{color:#f1cc5d;font-weight:950;letter-spacing:2px;font-size:12px}.cmHeroLogo{width:280px;height:110px;object-fit:contain;display:block;margin:0 auto -2px;filter:drop-shadow(0 12px 20px #001f2438)}.cmCenterHero h1{font-size:36px;margin:0 0 8px;letter-spacing:-1px}.cmCenterHero p{margin:0 0 15px;color:#c4dcda}.cmJoinBox{display:grid;grid-template-columns:1fr 1fr;max-width:470px;margin:0 auto;padding:16px 18px;text-align:center}.cmJoinBox>div:first-child{border-right:1px solid #3a8586;display:flex;align-items:center;justify-content:center;flex-direction:column}.cmJoinBox small{font-size:10px;color:#a8c9c6;letter-spacing:1px;font-weight:900}.cmJoinBox strong{font-size:50px;line-height:1.05;color:#f2cf61;letter-spacing:4px}.copyMini{background:#075056;border:1px solid #1cc4c7;color:#fff;border-radius:7px;padding:7px 10px;cursor:pointer}.joinQrMini{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px}.joinQrMini #homeQr{width:100px;height:100px;background:#fff;border-radius:7px;padding:5px}.joinQrMini #homeQr img{width:100%;height:100%}
+.cmHeroActions{display:flex;justify-content:center;gap:10px;margin-top:15px}.cmGoldBtn,.cmTealBtn{border-radius:11px;padding:12px 20px;font-weight:950;font-size:13px;cursor:pointer;min-height:43px}.cmGoldBtn{background:linear-gradient(135deg,#f0c958,#ffe28b);color:#133538;border:1px solid #f4d978;box-shadow:0 7px 20px #0002}.cmTealBtn{background:#07575c;color:#fff;border:1px solid #22aeb1}.cmGoldBtn:hover,.cmTealBtn:hover{transform:translateY(-1px);filter:brightness(1.04)}button:disabled{opacity:.5;cursor:not-allowed}.wide{width:100%;margin-top:9px}
+.cmPlayersPanel{padding:17px}.panelHeading{font-size:13px;color:#f1cc5d;font-weight:950;margin-bottom:12px}.cmPlayerRow{height:46px;background:#06454a;border-radius:10px;margin:7px 0;padding:0 12px;display:flex;align-items:center;gap:10px;border:1px solid #14686d}.playerAvatar{width:28px;height:28px;border-radius:50%;background:var(--player);display:grid;place-items:center}.cmPlayerRow b{flex:1}.cmPlayerRow small{font-size:9px;font-weight:950;padding:6px 9px;border-radius:999px;background:#0d783e;color:#d7ffe8}.cmPlayerRow.next small{background:#075aa0}
+.cmTurnBanner{margin-top:16px;border-top:1px solid #15878b;border-bottom:1px solid #15878b;padding:12px 10px;display:flex;justify-content:center;gap:150px;color:#d8e9e7;font-size:13px}.cmTurnBanner strong{color:#fff}.cmTurnBanner span:first-child{color:#a9e45e}.cmTurnBanner span:last-child{color:#5db4ff}
+.cmLobbyPanel{max-width:540px;margin:40px auto;padding:34px;background:linear-gradient(180deg,#07575c,#043c41);border:1px solid #28a8ab77;border-radius:20px;text-align:center;box-shadow:0 18px 50px #001e2355}.cmCode{font-size:65px;font-weight:950;letter-spacing:8px;color:#f2cf61;margin:8px 0}.cmQr{background:#fff;border-radius:12px;padding:10px;width:max-content;margin:15px auto}.cmUrl{font-size:10px;color:#a7c6c4;word-break:break-all}.cmPlayers{margin:16px 0}.cmLobbyPanel input{display:block;width:100%;margin:9px 0;padding:13px 14px;border-radius:10px;border:1px solid #207d81;background:#023439;color:#fff;outline:none}.cmLobbyPanel h2{font-size:28px}.cmHint{color:#b8d0ce}
+.cmGameTop{display:flex;justify-content:space-between;align-items:center;gap:20px;width:min(1120px,100%);margin:0 auto 14px}.cmGameTop label{font-size:11px;color:#f1cc5d;font-weight:950;letter-spacing:2px}.cmGameTop h2{font-size:32px;margin:4px 0}.cmTvControls{display:flex;gap:8px}.turnMeta{color:#b4cecc;font-size:12px}
+.cmGameLayout{display:grid;grid-template-columns:245px minmax(500px,1fr) 280px;gap:18px;width:min(1450px,100%);margin:auto}.cmSidePanel{padding:16px;margin-bottom:14px}.cmSidePanel h3{font-size:12px;color:#f1cc5d;letter-spacing:1px;margin:0 0 12px}.infoLine{display:grid;grid-template-columns:25px 1fr auto;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid #ffffff0d;font-size:12px}.infoLine b{color:#fff}.cmSidePanel p{font-size:11px;line-height:1.5;color:#c4dcda}.cmBoardArea{min-width:0}.turnStrip{display:flex;gap:7px;justify-content:center;margin-bottom:9px;overflow:auto}.turnPlayer{padding:7px 11px;border-radius:9px;background:#06474c;border:1px solid #166e73;font-size:11px;white-space:nowrap}.turnPlayer.now{border-color:var(--player);box-shadow:0 0 16px color-mix(in srgb,var(--player),transparent 70%)}.turnPlayer small{display:block;color:#91b3b0;font-size:8px}.cmScores{display:none}.cmBoard{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:720px;margin:auto}.cmCard{border:2px solid #e9c957;border-radius:10px;background:none;padding:0;aspect-ratio:1;perspective:900px;cursor:pointer}.cmInner{width:100%;height:100%;display:block;position:relative;transform-style:preserve-3d;transition:transform .4s}.cmCard.open .cmInner,.cmCard.matched .cmInner{transform:rotateY(180deg)}.cmFace{position:absolute;inset:0;backface-visibility:hidden;border-radius:7px;display:grid;place-items:center;overflow:hidden}.cmBack{background:linear-gradient(145deg,#075b60,#043b40)}.cmBack:after{content:"G";font-weight:950;font-size:38px;color:#f0c957;border:2px solid #f0c957;border-radius:50%;width:62px;height:62px;display:grid;place-items:center}.cmFront{transform:rotateY(180deg);background:#f8faf9}.cmFront img{width:100%;height:100%;object-fit:cover}.cmCard.matched{box-shadow:0 0 0 2px #48d690,0 0 20px #48d69055}.cmSide.right .cmSidePanel{min-height:120px}.statusRow{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid #11666a;border-radius:10px;background:#043d42;margin-bottom:7px}.statusAvatar{width:30px;height:30px;border-radius:50%;background:var(--player)}.statusRow div{flex:1}.statusRow small{display:block;color:#8db0ad;font-size:9px}.statusTag{font-size:8px;font-weight:950;border-radius:999px;padding:6px 8px;background:#0c763e}.statusTag.next{background:#075aa0}.scoreRow{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid #ffffff0c}.scoreRow div:nth-child(2){flex:1}.scoreRow small{display:block;color:#8db0ad;font-size:9px}.scoreRow strong{color:#f1cc5d;font-size:20px}.cmFoot{width:min(1120px,100%);margin:10px auto;color:#9dbab8;font-size:10px;display:flex;justify-content:space-between}.cmFooter{max-width:1450px;margin:14px auto 0;padding:13px 30px 18px;border-top:1px solid #197b7f;display:flex;justify-content:space-between;color:#8fb3b0;font-size:11px}.trophy{font-size:60px}
+#toast{position:fixed!important;left:50%!important;bottom:25px!important;top:auto!important;transform:translateX(-50%)!important;background:#fff!important;color:#123!important;border-radius:999px!important;padding:11px 18px!important;z-index:99999!important;opacity:0;pointer-events:none;transition:.2s}.cardMatchPage #toast.show{opacity:1!important}
+@media(max-width:1150px){.cmHomeGrid{grid-template-columns:230px 1fr 280px;gap:14px}.cmGameLayout{grid-template-columns:190px 1fr 220px}.cmApp{padding:22px 18px}.cmTurnBanner{gap:60px}}
+@media(max-width:850px){.cmHeader{padding:0 15px}.cmHeaderBrand img{width:125px}.cmHeaderTitle{font-size:12px}.cmWelcome{font-size:8px}.cmHomeGrid{grid-template-columns:1fr}.cmInfo{display:none}.cmCenterHero{order:1}.cmPlayersPanel{order:2;max-width:520px;width:100%;margin:auto}.cmGameLayout{grid-template-columns:1fr}.cmSide{display:none}.cmGameTop{display:block}.cmTvControls{margin-top:10px}.cmTurnBanner{gap:18px;justify-content:space-between}.cmBoard{max-width:620px}}
+@media(max-width:520px){.cmApp{padding:16px 10px}.cmHeroLogo{width:210px;height:82px}.cmCenterHero h1{font-size:27px}.cmJoinBox{grid-template-columns:1fr}.cmJoinBox>div:first-child{border-right:0;border-bottom:1px solid #3a8586;padding-bottom:10px}.joinQrMini{padding-top:10px}.cmHeroActions{flex-direction:column}.cmTurnBanner{font-size:10px}.cmGameTop h2{font-size:25px}.cmBoard{gap:5px}.cmFooter{font-size:9px;padding:10px;gap:8px;flex-wrap:wrap}}
 
 /* =========================================================
-   CARD MATCH LAYOUT FOUNDATION
-   Fixes all game screens appearing at once / stretched UI.
+   CARD MATCH TV BOARD — GAMESARENA SHOWCASE LAYOUT
    ========================================================= */
-
-.cardMatchPage{
-  margin:0;
-  min-height:100vh;
-  overflow-x:hidden;
-}
-
-.cardMatchPage .sitebar{
-  width:100%;
-  height:76px;
-  padding:0 30px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  position:sticky;
-  top:0;
-  z-index:1000;
-}
-
-.cardMatchPage .cmBrand{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
-  color:#075056;
-  text-decoration:none;
-  font-size:15px;
-}
-
-.cardMatchPage .cmBrand .brand{
-  display:block;
-  height:44px;
-  width:auto;
-  max-width:245px;
-  object-fit:contain;
-}
-
-.cardMatchPage .cmBrand b{
-  white-space:nowrap;
-  font-size:14px;
-  letter-spacing:.2px;
-}
-
-.cardMatchPage .chip{
-  flex:none;
-  white-space:nowrap;
-}
-
-.cardMatchPage .cmWrap{
-  width:100%;
-  max-width:1280px;
-  min-height:calc(100vh - 76px);
+.cmGame{width:100%}
+.cmGameHeader{
+  display:grid;
+  grid-template-columns:minmax(220px,260px) minmax(440px,1fr) minmax(240px,310px);
+  gap:22px;
+  align-items:start;
+  width:min(1450px,100%);
   margin:0 auto;
-  padding:44px 28px 34px;
-  display:flex;
-  flex-direction:column;
 }
-
-.cardMatchPage .cmScreen{
-  display:none !important;
-  width:100%;
-  flex:0 0 auto;
-}
-
-.cardMatchPage .cmScreen.active{
-  display:block !important;
-}
-
-.cardMatchPage .cmHero{
-  width:min(920px,100%);
-  margin:15px auto 0;
-  text-align:center;
-}
-
-.cardMatchPage .cmHero label,
-.cardMatchPage .cmPanel > label,
-.cardMatchPage .cmGameTop label{
-  display:block;
-  color:#f1cc5d;
-  font-size:12px;
-  font-weight:950;
-  letter-spacing:2px;
-  text-transform:uppercase;
-}
-
-.cardMatchPage .cmHero h1{
-  margin:18px 0 14px;
-  font-size:clamp(48px,7vw,88px);
-  line-height:.92;
-  letter-spacing:-3px;
-  text-align:left;
-}
-
-.cardMatchPage .cmHero h1 em{
-  font-style:normal;
-}
-
-.cardMatchPage .cmHero p{
-  margin:0 auto 28px;
-  max-width:700px;
-  color:#c4dedb;
-  font-size:16px;
-  line-height:1.55;
-}
-
-.cardMatchPage .cmHeroBtns{
-  width:min(680px,100%);
+.cmGameIdentity{padding-top:4px}
+.cmGameIdentity .cmInfoBox{margin-top:10px}
+.cmGameCenter{text-align:center;min-width:0}
+.cmGameCenter>label{display:block;color:#f1cc5d;font-weight:950;letter-spacing:2px;font-size:12px;margin-top:2px}
+.cmGameLogo{width:190px;height:82px;object-fit:contain;display:block;margin:-4px auto -2px;filter:drop-shadow(0 8px 16px #001f2440)}
+.cmGameCenter h1{font-size:30px;line-height:1.05;margin:0 0 5px;letter-spacing:-.6px}
+.cmGameCenter h1 span{font-weight:950}
+.cmGameCenter p{margin:0 0 12px;color:#b9d4d1;font-size:12px}
+.cmRoomCard{
+  width:min(440px,100%);
+  min-height:92px;
   margin:0 auto;
   display:grid;
+  grid-template-columns:1fr 145px;
+  border:1px solid #1da4a766;
+  border-radius:15px;
+  overflow:hidden;
+  background:linear-gradient(180deg,#07575cdd,#043e43e8);
+  box-shadow:inset 0 1px #ffffff0d,0 14px 35px #001f2444;
+}
+.cmRoomCode{display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #3a8586;position:relative}
+.cmRoomCode small,.cmRoomQr small{font-size:9px;color:#a8c9c6;letter-spacing:1px;font-weight:900}
+.cmRoomCode strong{font-size:42px;line-height:1.05;color:#f2cf61;letter-spacing:4px}
+.cmRoomCode .copyMini{position:absolute;right:12px;bottom:10px;padding:5px 8px}
+.cmRoomQr{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;padding:8px}
+#gameQr{width:88px;height:88px;background:#fff;border-radius:7px;padding:4px}
+#gameQr img{width:100%;height:100%}
+.cmGamePlayers{
+  border:1px solid #1da4a766;
+  background:linear-gradient(180deg,#07575bcc,#043e43d9);
+  border-radius:15px;
+  padding:14px;
+  box-shadow:inset 0 1px #ffffff0d,0 14px 35px #001f2444;
+}
+.cmGamePlayers .panelHeading{margin-bottom:9px}
+.cmGamePlayers .cmPlayerRow{height:43px;margin:6px 0}
+.cmGamePlayers .cmPlayerRow.empty{opacity:.72;border-style:dashed;background:#04383d}
+.cmGamePlayers .cmPlayerRow.empty .playerAvatar{background:transparent;border:1px dashed #759492}
+.cmGamePlayers .playerAvatar{font-size:0;position:relative}
+.cmGamePlayers .playerAvatar:after{content:"";width:11px;height:11px;border-radius:50%;background:#fff;opacity:.75}
+.cmGamePlayers .cmPlayerRow b{font-size:11px}
+.cmGamePlayers .cmPlayerRow small{font-size:8px;padding:5px 8px}
+
+.cmGame .cmTurnBanner{margin:7px auto 10px;width:min(1450px,100%);padding:9px 10px;gap:120px}
+.cmGameControls{
+  width:min(560px,100%);
+  margin:0 auto 10px;
+  display:grid;
   grid-template-columns:1fr 1fr;
-  gap:12px;
+  gap:8px;
 }
-
-.cardMatchPage .primary,
-.cardMatchPage .cmSecondary{
-  min-height:52px;
-  border-radius:12px;
-  cursor:pointer;
-  font-weight:900;
-}
-
-.cardMatchPage .primary.big,
-.cardMatchPage .cmSecondary.big{
-  width:100%;
-  padding:15px 18px;
-}
-
-.cardMatchPage .cmSecondary{
-  background:#075056;
-  color:#fff;
-  border:1px solid #39b2b555;
-}
-
-.cardMatchPage .cmPanel{
-  width:min(620px,100%);
-  margin:20px auto 0;
-  padding:32px;
-  border:1px solid #39b2b555;
-  border-radius:22px;
-  text-align:center;
-}
-
-.cardMatchPage .cmPanel h2{
-  margin:9px 0 8px;
-  font-size:clamp(28px,4vw,44px);
-}
-
-.cardMatchPage .cmPanel p{
-  line-height:1.5;
-}
-
-.cardMatchPage .cmCode{
-  margin:13px 0 5px;
-  font-size:clamp(48px,8vw,76px);
-  line-height:1;
-  font-weight:1000;
-  letter-spacing:10px;
-}
-
-.cardMatchPage .cmQr{
-  width:190px;
-  min-height:190px;
-  margin:18px auto;
-  padding:12px;
-  background:#fff;
-  border-radius:16px;
+.cmControlBtn{
+  min-height:43px;
   display:flex;
   align-items:center;
   justify-content:center;
+  gap:6px;
+  flex-wrap:wrap;
+  line-height:1;
 }
-
-.cardMatchPage .cmQr img,
-.cardMatchPage .cmQr canvas{
-  max-width:100%;
-  height:auto;
-}
-
-.cardMatchPage .cmUrl{
-  max-width:100%;
-  margin:8px auto 18px;
-  color:#b8d4d1;
-  font-size:11px;
-  line-height:1.45;
-  overflow-wrap:anywhere;
-}
-
-.cardMatchPage .cmPlayers{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:9px;
-  margin:16px 0;
-  text-align:left;
-}
-
-.cardMatchPage .cmPlayers > *{
-  padding:13px;
-  border:1px solid #39b2b555;
-  border-radius:12px;
-  background:#075056aa;
-}
-
-.cardMatchPage .wide{
-  width:100%;
-  margin-top:8px;
-}
-
-.cardMatchPage .cmPanel input{
-  display:block;
-  width:100%;
-  min-height:52px;
-  margin:0 0 12px;
-  border-radius:12px;
-  padding:14px 15px;
-}
-
-.cardMatchPage .cmGame{
-  max-width:1120px;
-  margin:0 auto;
-}
-
-.cardMatchPage .cmGameTop{
-  width:100%;
-  margin:0 0 12px;
-}
-
-.cardMatchPage .cmGameTop h2{
-  margin:6px 0 0;
-}
-
-.cardMatchPage .turnStrip,
-.cardMatchPage .cmScores{
-  width:100%;
-}
-
-.cardMatchPage .cmBoard{
-  width:min(760px,100%);
-  margin:16px auto 0;
-}
-
-.cardMatchPage .cmFoot{
-  width:min(760px,100%);
-}
-
-.cardMatchPage .gaFooter{
-  width:100%;
-  margin:34px auto 0;
-  padding:16px 4px 0;
-  border-top:1px solid #39b2b533;
-  display:flex;
-  justify-content:space-between;
+.cmControlBtn small{display:block;width:100%;font-size:8px;font-weight:700;opacity:.75;margin-top:-2px}
+.cmGame .cmGameLayout{
+  width:min(1450px,100%);
+  grid-template-columns:230px minmax(500px,1fr) 280px;
   gap:16px;
-  color:#9bc0bd;
-  font-size:12px;
+  align-items:start;
 }
-
-.cardMatchPage #winner .cmPanel h1{
-  margin:8px 0 20px;
+.cmGame .cmSidePanel{padding:14px}
+.cmGame .cmSidePanel h3{margin-bottom:9px}
+.cmGame .cmBoardArea{padding:0 2px}
+.cmGame .turnStrip{margin:0 0 8px}
+.cmGame .cmBoard{
+  max-width:760px;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
 }
-
-.cardMatchPage .trophy{
-  font-size:56px;
-  margin-bottom:8px;
+.cmGame .cmCard{
+  border-width:2px;
+  border-radius:10px;
+  box-shadow:0 5px 13px #001e2333;
 }
-
-/* Never allow hidden game screens to reserve layout space. */
-.cardMatchPage .cmScreen:not(.active){
-  position:absolute !important;
-  width:1px !important;
-  height:1px !important;
-  overflow:hidden !important;
-  clip:rect(0 0 0 0) !important;
-  clip-path:inset(50%) !important;
-  white-space:nowrap !important;
-  border:0 !important;
-  padding:0 !important;
-  margin:-1px !important;
+.cmGame .cmFace{border-radius:7px}
+.cmGame .cmBack{
+  background:linear-gradient(145deg,#075c61,#043a3f);
+  padding:16px;
 }
-
-@media (max-width:760px){
-  .cardMatchPage .sitebar{
-    height:64px;
-    padding:0 14px;
-  }
-  .cardMatchPage .cmBrand .brand{
-    height:36px;
-    max-width:190px;
-  }
-  .cardMatchPage .cmBrand b{
-    display:none;
-  }
-  .cardMatchPage .cmWrap{
-    min-height:calc(100vh - 64px);
-    padding:28px 14px 24px;
-  }
-  .cardMatchPage .cmHero{
-    margin-top:8px;
-  }
-  .cardMatchPage .cmHero h1{
-    font-size:clamp(44px,15vw,70px);
-    letter-spacing:-2px;
-  }
-  .cardMatchPage .cmHeroBtns{
-    grid-template-columns:1fr;
-  }
-  .cardMatchPage .cmPanel{
-    padding:24px 18px;
-    border-radius:18px;
-  }
-  .cardMatchPage .cmPlayers{
-    grid-template-columns:1fr;
-  }
-  .cardMatchPage .cmGameTop{
-    display:flex;
-    flex-direction:column;
-    align-items:stretch;
-  }
-  .cardMatchPage .cmTvControls{
-    width:100%;
-  }
-  .cardMatchPage .cmControl{
-    flex:1;
-  }
-  .cardMatchPage .cmBoard{
-    gap:7px;
-  }
-  .cardMatchPage .cmFace{
-    border-radius:11px;
-  }
-  .cardMatchPage .gaFooter{
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-  }
+.cmGame .cmBack img{
+  width:72%;
+  height:72%;
+  object-fit:contain;
+  filter:drop-shadow(0 4px 7px #0005);
 }
+.cmGame .cmFront{background:#f8faf9;padding:3px}
+.cmGame .cmFront img{object-fit:cover;border-radius:5px}
+.cmGame .cmCard.matched{border-color:#48d690;box-shadow:0 0 0 2px #48d690,0 0 22px #48d69066}
+.cmGame .backHomeGame{width:100%;margin-top:0}
+.cmGame .cmFoot{margin:7px auto 0}
+.cmGame .cmSide.right .cmSidePanel{min-height:0}
+.cmGame .statusRow{padding:9px}
+.cmGame .scoreRow{padding:8px 0}
 
-@media (min-width:761px) and (max-height:800px){
-  .cardMatchPage .cmWrap{
-    padding-top:28px;
-  }
-  .cardMatchPage .cmHero{
-    margin-top:0;
-  }
+@media(max-width:1100px){
+  .cmGameHeader{grid-template-columns:210px 1fr 250px;gap:12px}
+  .cmGame .cmGameLayout{grid-template-columns:190px minmax(420px,1fr) 230px}
+  .cmGame .cmBoard{max-width:640px}
+}
+@media(max-width:850px){
+  .cmGameHeader{grid-template-columns:1fr;gap:12px}
+  .cmGameIdentity{display:none}
+  .cmGameCenter{order:1}
+  .cmGamePlayers{order:2;width:min(520px,100%);margin:auto}
+  .cmGame .cmTurnBanner{gap:18px;justify-content:space-between}
+  .cmGame .cmGameLayout{grid-template-columns:1fr}
+  .cmGame .cmSide{display:none}
+  .cmGame .cmBoard{max-width:620px}
+}
+@media(max-width:520px){
+  .cmGameLogo{width:170px;height:72px}
+  .cmGameCenter h1{font-size:24px}
+  .cmRoomCard{grid-template-columns:1fr 110px}
+  .cmRoomCode strong{font-size:35px}
+  .cmGameControls{grid-template-columns:1fr}
+  .cmGame .cmBoard{gap:4px}
+  .cmGame .cmBack{padding:9px}
+  .cmGame .cmBack img{width:76%;height:76%}
 }
