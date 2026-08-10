@@ -1,9 +1,9 @@
-const path=require("path"),http=require("http"),express=require("express"),crypto=require("crypto");
+const path=require("path"),fs=require("fs"),http=require("http"),express=require("express"),crypto=require("crypto");
 const {Server}=require("socket.io"),QRCode=require("qrcode"),mysql=require("mysql2/promise");
 const independenceBank=require("./questions.json");
 const app=express(),server=http.createServer(app),io=new Server(server,{cors:{origin:true}});
 const PORT=Number(process.env.PORT)||10000;
-const PUBLIC_URL=(process.env.PUBLIC_URL||`http://localhost:${PORT}`).replace(/\/$/,"");
+const PUBLIC_URL=(process.env.PUBLIC_URL||"https://gamesarena.click").replace(/\/$/,"");
 const ADMIN_USERNAME=process.env.ADMIN_USERNAME||"admin";
 const ADMIN_PASSWORD=process.env.ADMIN_PASSWORD||"change-me";
 const adminSessions=new Map();
@@ -248,7 +248,19 @@ app.post("/api/questions",requireAdmin,async(req,res)=>{
 });
 
 io.on("connection",s=>{
- s.on("host:create",async()=>{let code;do code=String(Math.floor(1000+Math.random()*9000));while(rooms.has(code));const r=makeRoom();r.host=s.id;r.questions=[];rooms.set(code,r);s.join(code);s.data.room=code;s.data.role="host";const joinUrl=`${PUBLIC_URL}/join.html?room=${code}`;r.joinUrl=joinUrl;r.joinQr=await QRCode.toDataURL(joinUrl);r.screenToken=crypto.randomBytes(14).toString("base64url");r.screenUrl=`${PUBLIC_URL}/screen/${r.screenToken}`;r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});r.audiencePollUrl=`${PUBLIC_URL}/audience.html?room=${code}`;r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});s.emit("room",{code,joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});emitState(code)});
+ function socketPublicUrl(socket){
+ const configured=(process.env.PUBLIC_URL||"").trim().replace(/\/$/,"");
+ if(configured)return configured;
+ const headers=socket?.handshake?.headers||{};
+ const forwardedHost=String(headers["x-forwarded-host"]||"").split(",")[0].trim();
+ const host=forwardedHost||String(headers.host||"").trim();
+ const forwardedProto=String(headers["x-forwarded-proto"]||"").split(",")[0].trim();
+ const proto=forwardedProto||"https";
+ if(host)return `${proto}://${host}`;
+ return PUBLIC_URL;
+}
+
+s.on("host:create",async()=>{let code;do code=String(Math.floor(1000+Math.random()*9000));while(rooms.has(code));const r=makeRoom();r.host=s.id;r.questions=[];rooms.set(code,r);s.join(code);s.data.room=code;s.data.role="host";const publicUrl=socketPublicUrl(s);const joinUrl=`${publicUrl}/join.html?room=${code}`;r.joinUrl=joinUrl;r.joinQr=await QRCode.toDataURL(joinUrl);r.screenToken=crypto.randomBytes(14).toString("base64url");r.screenUrl=`${publicUrl}/screen/${r.screenToken}`;r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});r.audiencePollUrl=`${publicUrl}/audience.html?room=${code}`;r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});s.emit("room",{code,joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});emitState(code)});
  s.on("join",({code,name,employeeCode,role="player",game})=>{code=String(code||"").trim();const r=rooms.get(code);if(!/^\d{4}$/.test(code))return s.emit("errorMsg","Room code must be exactly 4 digits.");if(!r)return s.emit("errorMsg","Room not found. Ask the host for a new code.");
  if(game){const ec=String(employeeCode||"").trim();if(game!==r.fastestToken)return s.emit("errorMsg","This Fastest Finger QR is no longer active.");if(!/^\d+$/.test(ec))return s.emit("errorMsg","Register number must contain numbers only.");if(!r.pool.some(p=>p.employeeCode===ec))return s.emit("errorMsg","You are not selected for this Fastest Finger round.");}
  s.join(code);s.data.room=code;s.data.role=role;if(role==="audience"||role==="tv"||role==="roster"){s.emit("joined",{name:role==="tv"?"TV Screen":role==="roster"?"Roster Viewer":"Audience"});emitState(code);return}name=String(name||"").trim();employeeCode=String(employeeCode||"").trim();if(!/^[A-Za-z]+(?:[ ][A-Za-z]+)*$/.test(name))return s.emit("errorMsg","Name must contain alphabets only.");if(!/^\d+$/.test(employeeCode))return s.emit("errorMsg","Register number must contain numbers only.");if([...r.users.values()].some(u=>u.employeeCode===employeeCode))return s.emit("errorMsg","This register number is already registered.");r.users.set(s.id,{id:s.id,name,employeeCode,score:0,status:"active",inPool:false,lifelinesUsed:{"5050":false,"audience":false,"phone":false},registeredAt:Date.now()});s.emit("joined",{name,employeeCode});emitState(code)});
