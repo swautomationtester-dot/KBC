@@ -345,23 +345,31 @@ function cmCode(){let c;do c=String(Math.floor(1000+Math.random()*9000));while(c
 function cmNextIndex(r){return r.players.length?((r.turn+1)%r.players.length):0}
 function cmState(r){
  const next=r.status==="playing"&&r.players.length>1?cmNextIndex(r):null;
+ const now=Date.now();
+ const players=r.players.map(p=>{
+  const live=(r.status==="playing" && r.players[r.turn]?.id===p.id && r.turnStartedAt)?Math.max(0,now-r.turnStartedAt):0;
+  return {id:p.id,name:p.name,color:p.color,score:p.score,timeMs:(p.timeMs||0)+live};
+ });
  return {
   code:r.code,status:r.status,turn:r.turn,nextTurn:next,flipped:r.flipped,
+  turnStartedAt:r.turnStartedAt||null,
   deck:Array.isArray(r.deck)?r.deck:[],
-  players:r.players.map(p=>({id:p.id,name:p.name,color:p.color,score:p.score})),
-  winner:r.winner||[]
+  players,
+  winner:r.winner||[],
+  winnerReason:r.winnerReason||""
  };
 }
 function cmBroadcast(r){io.to(r.channel).emit("cm:state",cmState(r))}
 function cmReset(r,keepScores=false){
- r.deck=cmDeck();r.flipped=[];r.turn=0;r.status="playing";r.winner=[];
- if(!keepScores)r.players.forEach(p=>p.score=0);
+ r.deck=cmDeck();r.flipped=[];r.turn=0;r.status="playing";r.winner=[];r.winnerReason="";
+ r.turnStartedAt=Date.now();
+ r.players.forEach(p=>{p.timeMs=keepScores?(p.timeMs||0):0;if(!keepScores)p.score=0;});
 }
 io.on("connection",s=>{
  s.on("cm:create",()=>{
    const code=cmCode(),channel="cardmatch-"+code;
    const tvToken=crypto.randomBytes(24).toString("hex");
-   const r={code,channel,tv:s.id,tvToken,players:[],deck:[],flipped:[],turn:0,status:"lobby",winner:[],joinUrl:""};
+   const r={code,channel,tv:s.id,tvToken,players:[],deck:[],flipped:[],turn:0,status:"lobby",winner:[],winnerReason:"",turnStartedAt:null,joinUrl:""};
    cardMatchRooms.set(code,r);s.join(channel);s.data.cmRoom=code;s.data.cmRole="tv";s.data.cmTvToken=tvToken;
    const proto=String(s.handshake.headers["x-forwarded-proto"]||"http").split(",")[0].trim().replace(/:$/,""),host=String(s.handshake.headers.host||"").trim();
    r.joinUrl=`${proto}://${host}/card-match.html?join=${code}`;
@@ -372,7 +380,7 @@ io.on("connection",s=>{
    if(r.status!=="lobby")return s.emit("cm:error",{message:"Game already started."});
    if(r.players.length>=4)return s.emit("cm:error",{message:"Room is full."});
    const playerToken=crypto.randomBytes(24).toString("hex");
-   const p={id:s.id,token:playerToken,name:String(name||"Player").trim().slice(0,18),score:0,color:CM_COLORS[r.players.length%CM_COLORS.length]};
+   const p={id:s.id,token:playerToken,name:String(name||"Player").trim().slice(0,18),score:0,timeMs:0,color:CM_COLORS[r.players.length%CM_COLORS.length]};
    r.players.push(p);s.join(r.channel);s.data.cmRoom=r.code;s.data.cmRole="player";s.data.cmPlayerToken=playerToken;
    s.emit("cm:joined",{playerId:p.id,playerToken,code:r.code});cmBroadcast(r);
  });
@@ -426,10 +434,30 @@ io.on("connection",s=>{
     const a=r.deck.find(x=>x.id===r.flipped[0]),b=r.deck.find(x=>x.id===r.flipped[1]);
     setTimeout(()=>{
       if(!cardMatchRooms.has(r.code))return;
-      if(a.key===b.key){const owner=r.players[r.turn];a.matched=b.matched=true;a.matchedBy=owner.id;b.matchedBy=owner.id;a.matchedByColor=owner.color;b.matchedByColor=owner.color;owner.score++}
-      else r.turn=(r.turn+1)%r.players.length;
+      const owner=r.players[r.turn];
+      if(owner && r.turnStartedAt) owner.timeMs=(owner.timeMs||0)+Math.max(0,Date.now()-r.turnStartedAt);
+      if(a.key===b.key){
+        a.matched=b.matched=true;a.matchedBy=owner.id;b.matchedBy=owner.id;a.matchedByColor=owner.color;b.matchedByColor=owner.color;owner.score++;
+      } else {
+        r.turn=(r.turn+1)%r.players.length;
+      }
       r.flipped=[];
-      if(r.deck.every(x=>x.matched)){r.status="finished";const max=Math.max(...r.players.map(p=>p.score));r.winner=r.players.filter(p=>p.score===max).map(p=>p.name)}
+      r.turnStartedAt=Date.now();
+      if(r.deck.every(x=>x.matched)){
+        r.status="finished";
+        r.turnStartedAt=null;
+        const max=Math.max(...r.players.map(p=>p.score));
+        const tied=r.players.filter(p=>p.score===max);
+        if(tied.length===1){
+          r.winner=[tied[0].name];
+          r.winnerReason="Most pairs";
+        }else{
+          const minTime=Math.min(...tied.map(p=>p.timeMs||0));
+          const fastest=tied.filter(p=>(p.timeMs||0)===minTime);
+          r.winner=fastest.map(p=>p.name);
+          r.winnerReason=fastest.length===1?"Tie on pairs — fastest total turn time":"Exact tie on pairs and time";
+        }
+      }
       cmBroadcast(r);
     },800);
    }
