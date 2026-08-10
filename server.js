@@ -261,7 +261,7 @@ io.on("connection",s=>{
    const code=cmCode(),channel="cardmatch-"+code;
    const r={code,channel,tv:s.id,players:[],deck:[],flipped:[],turn:0,status:"lobby",winner:[]};
    cardMatchRooms.set(code,r);s.join(channel);s.data.cmRoom=code;s.data.cmRole="tv";
-   const proto=s.handshake.headers["x-forwarded-proto"]||"http",host=s.handshake.headers.host;
+   const proto=String(s.handshake.headers["x-forwarded-proto"]||"http").split(",")[0].trim().replace(/:$/,""),host=String(s.handshake.headers.host||"").trim();
    s.emit("cm:room",{code,joinUrl:`${proto}://${host}/card-match.html?join=${code}`});cmBroadcast(r);
  });
  s.on("cm:join",({code,name}={})=>{
@@ -271,12 +271,22 @@ io.on("connection",s=>{
    const p={id:s.id,name:String(name||"Player").trim().slice(0,18),score:0,color:["#ff5c7a","#5c8dff","#20c997","#ffb020"][r.players.length]};
    r.players.push(p);s.join(r.channel);s.data.cmRoom=r.code;s.data.cmRole="player";s.emit("cm:joined",{playerId:p.id,code:r.code});cmBroadcast(r);
  });
- s.on("cm:start",()=>{
-   const r=cardMatchRooms.get(String(s.data.cmRoom||""));if(!r||s.id!==r.tv)return;
-   if(r.players.length<2)return s.emit("cm:error",{message:"At least 2 players must join."});
+ s.on("cm:start",({code}={})=>{
+   const roomCode=String(code||s.data.cmRoom||"").trim();
+   const r=cardMatchRooms.get(roomCode);
+   if(!r)return s.emit("cm:error",{message:"The game room is no longer available. Create a new game."});
+   if(s.id!==r.tv)return s.emit("cm:error",{message:"Only the TV that created this room can start the match."});
+   if(r.players.length<2)return s.emit("cm:error",{message:"At least 2 players must join before starting."});
    cmReset(r);cmBroadcast(r);
  });
- s.on("cm:restart",()=>{const r=cardMatchRooms.get(String(s.data.cmRoom||""));if(!r||s.id!==r.tv)return;cmReset(r);cmBroadcast(r)});
+ s.on("cm:restart",({code}={})=>{
+   const roomCode=String(code||s.data.cmRoom||"").trim();
+   const r=cardMatchRooms.get(roomCode);
+   if(!r)return s.emit("cm:error",{message:"The game room is no longer available."});
+   if(s.id!==r.tv)return s.emit("cm:error",{message:"Only the TV can restart the match."});
+   if(r.players.length<2)return s.emit("cm:error",{message:"At least 2 players must join before restarting."});
+   cmReset(r);cmBroadcast(r);
+ });
  s.on("cm:flip",({cardId}={})=>{
    const r=cardMatchRooms.get(String(s.data.cmRoom||""));if(!r||r.status!=="playing")return;
    const idx=r.players.findIndex(p=>p.id===s.id);if(idx!==r.turn||r.flipped.length>=2)return;
