@@ -1112,6 +1112,127 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
 });
 
 
+
+// ========================= GamesArena Runner =========================
+// Original GamesArena platformer inspired by classic side-scrolling platform games.
+// Phones are controllers; the TV browser renders the shared game world.
+const runnerNs=io.of('/runner');
+const runnerRooms=new Map();
+const RUNNER_COLORS=['#ff5b5b','#20b7df','#7b61ff','#f2b84b'];
+const RUNNER_MAX=4, RUNNER_W=3200, RUNNER_H=720, RUNNER_TICK=50;
+const RUNNER_PLATFORMS=[
+ {x:0,y:620,w:520,h:100},{x:610,y:540,w:360,h:28},{x:1050,y:455,w:300,h:28},
+ {x:1430,y:560,w:420,h:28},{x:1940,y:470,w:330,h:28},{x:2370,y:390,w:320,h:28},
+ {x:2780,y:520,w:420,h:28},{x:900,y:650,w:700,h:70},{x:1800,y:650,w:1200,h:70}
+];
+const RUNNER_COINS=[
+ {x:250,y:560},{x:700,y:480},{x:790,y:480},{x:1160,y:395},{x:1260,y:395},
+ {x:1580,y:500},{x:1710,y:500},{x:2040,y:410},{x:2150,y:410},{x:2470,y:330},
+ {x:2580,y:330},{x:2920,y:460},{x:3030,y:460}
+];
+const RUNNER_FINISH={x:3090,y:430};
+function runnerCode(){let c;do c=String(Math.floor(1000+Math.random()*9000));while(runnerRooms.has(c));return c;}
+function runnerRoom(){return{code:'',host:null,players:new Map(),phase:'lobby',startAt:0,timer:null,elapsed:0,coins:new Set(),winner:null};}
+function runnerSpawn(i){
+ return {x:90,y:560-i*42,vx:0,vy:0,onGround:false,coins:0,finished:false,finishTime:null,inputX:0,jump:false};
+}
+function runnerPublic(r){
+ return {
+  code:r.code,phase:r.phase,elapsed:r.phase==='race'?Date.now()-r.startAt:r.elapsed,
+  platforms:RUNNER_PLATFORMS,coins:RUNNER_COINS.map((c,i)=>({...c,taken:r.coins.has(i)})),finish:RUNNER_FINISH,
+  winner:r.winner,
+  players:[...r.players.values()].map(p=>({id:p.id,name:p.name,color:p.color,x:p.x,y:p.y,vx:p.vx,vy:p.vy,coins:p.coins,finished:p.finished,finishTime:p.finishTime}))
+ };
+}
+function runnerBroadcast(code){const r=runnerRooms.get(code);if(r)runnerNs.to(code).emit('state',runnerPublic(r));}
+function runnerTick(r){
+ if(r.phase!=='race')return;
+ const now=Date.now(),dt=Math.min(.05,(now-r._last)/1000);r._last=now;
+ for(const p of r.players.values()){
+   if(p.finished)continue;
+   const dir=Math.max(-1,Math.min(1,p.inputX||0));
+   p.vx += dir*.55;
+   p.vx *= .84;
+   p.vx=Math.max(-6,Math.min(6,p.vx));
+   if(p.jump && p.onGround){p.vy=-12;p.onGround=false;}
+   p.jump=false;
+   p.vy=Math.min(14,p.vy+.65);
+   const oldY=p.y;
+   let nx=p.x+p.vx, ny=p.y+p.vy;
+   p.onGround=false;
+   for(const plat of RUNNER_PLATFORMS){
+     const withinX=nx+28>plat.x && nx-28<plat.x+plat.w;
+     if(withinX && oldY+42<=plat.y && ny+42>=plat.y && p.vy>=0){
+       ny=plat.y-42;p.vy=0;p.onGround=true;
+     }
+   }
+   p.x=Math.max(25,Math.min(RUNNER_W-25,nx));p.y=ny;
+   if(p.y>RUNNER_H+100){p.x=90;p.y=520;p.vx=0;p.vy=0;}
+   for(let i=0;i<RUNNER_COINS.length;i++){
+     if(r.coins.has(i))continue;
+     const c=RUNNER_COINS[i];
+     if(Math.hypot(p.x-c.x,p.y-c.y)<48){r.coins.add(i);p.coins++;}
+   }
+   if(p.x>=RUNNER_FINISH.x && !p.finished){
+     p.finished=true;p.finishTime=now-r.startAt;
+     if(!r.winner)r.winner={id:p.id,name:p.name,color:p.color,time:p.finishTime,coins:p.coins};
+   }
+ }
+ if([...r.players.values()].every(p=>p.finished||p.x>=RUNNER_FINISH.x)){
+   r.phase='finished';r.elapsed=now-r.startAt;clearInterval(r.timer);r.timer=null;
+ }
+ runnerBroadcast(r.code);
+}
+runnerNs.on('connection',socket=>{
+ socket.on('tv',({room}={})=>{
+   const code=String(room||'').toUpperCase(),r=runnerRooms.get(code);
+   if(!r)return socket.emit('errorMsg','Room not found.');
+   socket.join(code);socket.data.room=code;socket.data.tv=true;
+   socket.emit('joined',{room:code,tv:true});runnerBroadcast(code);
+ });
+ socket.on('create',({name='Player'}={})=>{
+   if(socket.data.room)return;
+   const code=runnerCode(),r=runnerRoom();r.code=code;r.host=socket.id;
+   const p={id:socket.id,name:String(name).slice(0,18)||'Player',color:RUNNER_COLORS[0],...runnerSpawn(0)};
+   r.players.set(socket.id,p);runnerRooms.set(code,r);socket.join(code);socket.data.room=code;
+   socket.emit('joined',{room:code,host:true});runnerBroadcast(code);
+ });
+ socket.on('join',({room,name='Player'}={})=>{
+   const code=String(room||'').toUpperCase(),r=runnerRooms.get(code);
+   if(!r)return socket.emit('errorMsg','Room not found.');
+   if(r.players.size>=RUNNER_MAX)return socket.emit('errorMsg','Room is full.');
+   if(r.phase!=='lobby')return socket.emit('errorMsg','Race already started.');
+   const i=r.players.size,p={id:socket.id,name:String(name).slice(0,18)||'Player',color:RUNNER_COLORS[i],...runnerSpawn(i)};
+   r.players.set(socket.id,p);socket.join(code);socket.data.room=code;
+   socket.emit('joined',{room:code,host:false});runnerBroadcast(code);
+ });
+ socket.on('start',()=>{
+   const r=runnerRooms.get(socket.data.room);
+   if(!r||r.host!==socket.id||r.players.size<1||r.phase!=='lobby')return;
+   r.phase='race';r.startAt=Date.now();r._last=Date.now();r.coins=new Set();r.winner=null;
+   r.timer=setInterval(()=>runnerTick(r),RUNNER_TICK);runnerBroadcast(r.code);
+ });
+ socket.on('input',({x=0,jump=false}={})=>{
+   const r=runnerRooms.get(socket.data.room),p=r?.players.get(socket.id);
+   if(!p||r.phase!=='race')return;
+   p.inputX=Math.max(-1,Math.min(1,Number(x)||0));if(jump)p.jump=true;
+ });
+ socket.on('restart',()=>{
+   const r=runnerRooms.get(socket.data.room);if(!r||r.host!==socket.id)return;
+   clearInterval(r.timer);r.timer=null;r.phase='lobby';r.startAt=0;r.elapsed=0;r.coins=new Set();r.winner=null;
+   let i=0;for(const p of r.players.values())Object.assign(p,runnerSpawn(i++));
+   runnerBroadcast(r.code);
+ });
+ socket.on('disconnect',()=>{
+   const code=socket.data.room,r=runnerRooms.get(code);if(!r)return;
+   if(socket.data.tv)return;
+   r.players.delete(socket.id);
+   if(r.host===socket.id)r.host=r.players.values().next().value?.id||null;
+   if(!r.players.size){clearInterval(r.timer);runnerRooms.delete(code);}
+   else runnerBroadcast(code);
+ });
+});
+
 // ========================= Mini Kart Race =========================
 const kartNs=io.of('/kart');
 const kartRooms=new Map();
