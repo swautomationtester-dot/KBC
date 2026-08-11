@@ -2,3 +2,5 @@
 .roomJoinLabel{margin:8px 0 3px;font-size:10px;letter-spacing:.12em;font-weight:800;opacity:.7}
 .roomJoinLink{display:inline-flex;align-items:center;gap:6px;color:#f4d77a;font-weight:800;text-decoration:none;word-break:break-all}
 .roomJoinLink:hover{text-decoration:underline}
+
+.gold{background:#f2c45f!important;color:#0b2b2f!important;border-color:#d9a83e!important}.hidden{display:none!important}

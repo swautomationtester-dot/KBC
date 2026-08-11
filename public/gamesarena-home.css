@@ -121,4 +121,3 @@ html,body.gaHome{width:100%;min-height:100%;overflow-x:hidden}
 .gaFooter{padding-top:14px}
 @media(max-width:900px){.gaTiles{grid-template-columns:repeat(2,1fr)}.gaSectionIntro{align-items:center}.gaSectionIntro h2{font-size:22px}}
 @media(max-width:600px){.gaHeader{height:64px}.gaHeaderLogo{width:180px}.gaHero{padding-top:24px}.gaHeroLogo{width:250px}.gaHero h1{font-size:38px}.gaGameShowcase{width:calc(100% - 24px)}.gaTiles{grid-template-columns:1fr;gap:11px}.gaTile img{aspect-ratio:16/7}.gaTileBody{min-height:104px}.gaSectionIntro{margin-bottom:10px}.gaSectionIntro p{display:none}.gaLiveBadge{font-size:8px;padding:8px 9px}}
-.gaKartTile{border-color:#20b7df}

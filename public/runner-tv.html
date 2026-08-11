@@ -1,12 +1,12 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GamesArena Runner • TV</title><link rel="stylesheet" href="/runner-tv.css?v=1"></head>
+<title>GamesArena Runner • TV</title><link rel="stylesheet" href="/runner-tv.css?v=3"></head>
 <body class="runnerTv">
 <canvas id="game"></canvas>
 <div class="topbar"><div><img src="/assets/gamesarena-logo-premium.png" alt="GamesArena"><b>RUNNER</b></div><span id="room">ROOM ----</span><span id="timer">0:00</span></div>
 <div id="countdown" class="countdown"></div>
 <div id="leaderboard" class="leaderboard"></div>
 <div id="finish" class="finish hidden"></div>
-<div id="tvJoin" class="tvJoin"><div><b>GAMESARENA RUNNER</b><p>Enter the room code from the controller.</p><input id="tvCode" maxlength="4" inputmode="numeric" placeholder="ROOM CODE"><button id="tvJoinBtn">OPEN GAME</button></div></div>
-<script src="/socket.io/socket.io.js"></script><script src="/runner-tv.js?v=1"></script>
+<div id="tvJoin" class="tvJoin"><div><b>GAMESARENA RUNNER</b><p>Open the TV link from the Host, or enter the 4-digit room code.</p><input id="tvCode" maxlength="4" inputmode="numeric" placeholder="ROOM CODE"><button id="tvJoinBtn">OPEN GAME</button></div></div>
+<script src="/socket.io/socket.io.js"></script><script src="/runner-tv.js?v=3"></script>
 <script>document.getElementById("tvJoinBtn").onclick=()=>{const c=document.getElementById("tvCode").value.trim();if(c)location.search="?room="+encodeURIComponent(c)};</script></body></html>

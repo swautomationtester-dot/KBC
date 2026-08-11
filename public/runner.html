@@ -1,27 +1,33 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GamesArena Runner</title><link rel="stylesheet" href="/runner.css?v=1"></head>
+<title>GamesArena Runner</title><link rel="stylesheet" href="/runner.css?v=3"></head>
 <body class="runnerBody">
 <header><a href="/"><img src="/assets/gamesarena-logo-premium.png" alt="GamesArena"></a><span>GAMESARENA RUNNER</span></header>
 <main>
-<section id="join" class="panel">
- <div class="eyebrow">🕹️ MOBILE CONTROLLER</div><h1>GamesArena Runner</h1>
- <p>Race across the platforms. Collect coins. Reach the finish first.</p>
- <input id="name" maxlength="18" placeholder="Your name">
- <div class="joinRow"><input id="room" maxlength="4" inputmode="numeric" placeholder="Room code"><button id="join">JOIN</button></div>
- <button id="create" class="primary">CREATE GAME</button><p id="msg"></p>
+<section id="home" class="panel runnerHome">
+ <div class="eyebrow">🏃 TV + PHONE MULTIPLAYER</div><h1>GamesArena Runner</h1>
+ <p>Use your phone as a controller while the race plays on the big screen. Up to 4 players.</p>
+ <div class="runnerHomeBtns"><button id="create" class="primary">🏁 CREATE RUNNER GAME</button><button id="showJoin" class="secondary">📱 JOIN A GAME</button></div><p id="msg"></p>
+</section>
+<section id="joinPage" class="panel hidden">
+ <div class="eyebrow">📱 JOIN RUNNER</div><h2>Enter the arena</h2><p id="joinHint">Scan the Host QR code or enter the 4-digit room code shown on screen.</p>
+ <input id="name" maxlength="18" placeholder="Your name"><div class="joinRow"><input id="room" maxlength="4" inputmode="numeric" placeholder="4-digit room code"><button id="join">JOIN</button></div>
+ <button id="back" class="secondary full">Back</button><p id="joinMsg"></p>
 </section>
 <section id="lobby" class="panel hidden">
- <div class="eyebrow">ROOM <b id="code">----</b></div>
- <h2>Players</h2><div id="players"></div>
- <button id="start" class="primary">START GAME</button><p id="lobbyMsg">Open the TV screen with this room code.</p>
+ <div class="eyebrow">ROOM READY</div><div class="codeBig" id="code">----</div><p>Scan the QR code below to join from another phone.</p>
+ <div class="runnerLobbyGrid">
+  <div class="qrBox"><div id="qr"></div><b>PLAYER JOIN</b><small>Scan to join this race</small></div>
+  <div class="qrBox"><div id="tvQr"></div><b>TV SCREEN</b><small>Open the big-screen race</small></div>
+ </div>
+ <div class="linkRows"><a id="joinUrl" href="#" target="_blank" rel="noopener">Player link ↗</a><a id="tvUrl" href="#" target="_blank" rel="noopener">Open Runner TV ↗</a></div>
+ <h2>Players</h2><div id="players"></div><button id="start" class="primary full">START RACE</button><button id="newRoom" class="secondary full">NEW ROOM</button><p id="lobbyMsg"></p>
 </section>
 <section id="controller" class="panel hidden">
  <div class="identity"><span id="dot"></span><div><small>YOU ARE PLAYING AS</small><b id="me"></b></div><strong id="timer">0:00</strong></div>
- <div class="controllerPad"><button id="left">◀</button><button id="jump">JUMP</button><button id="right">▶</button></div>
- <div class="hint">Hold ◀ / ▶ to run • Tap JUMP to leap</div>
- <div id="status"></div>
-</section>
+ <div class="controllerPad"><button id="left">◀</button><button id="jump">🟡 JUMP</button><button id="right">▶</button></div>
+ <div class="hint">Hold ◀ / ▶ to run • Tap JUMP to leap</div><div id="status"></div>
+</section><div id="toast"></div>
 </main>
-<script src="/socket.io/socket.io.js"></script><script src="/runner.js?v=1"></script>
+<script src="/socket.io/socket.io.js"></script><script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script><script src="/runner.js?v=3"></script>
 </body></html>

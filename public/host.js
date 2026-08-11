@@ -65,29 +65,33 @@ function demoPrev(){demoIndex=Math.max(0,demoIndex-1);renderDemo()}function open
   }
   s.emit("host:startQuiz");
 }function next7(){s.emit("host:nextFastest")}function nextQ(){s.emit("host:nextQuestion")}function toggleAudiencePoll(){
-  if(audiencePollOpen){
+  const st=window.__hostState||{};
+  if(st.pollTimerRunning){
     s.emit("host:audiencePollStop");
-  }else{
-    s.emit("host:audiencePollStart");
+    return;
   }
+  if(st.pollActive){
+    if(Number(st.audienceConnected||0)>0) s.emit("host:startAudiencePollTimer");
+    else s.emit("host:audiencePollStart");
+    return;
+  }
+  s.emit("host:audiencePollStart");
 }
 function updatePollButton(){
-  const b=$("audiencePollBtn"); if(!b)return;
+  const b=$("audiencePollBtn"),start=$("audiencePollStartBtn"); if(!b)return;
   const st=window.__hostState||{};
   const ready=!!st.pollActive;
   const running=!!st.pollTimerRunning;
   const connected=Number(st.audienceConnected||0);
   if(running){
-    b.textContent="🛑 Stop Audience Poll";
-    b.classList.add("danger");
-    b.disabled=false;
+    b.textContent="🛑 Stop Audience Poll"; b.classList.add("danger"); b.disabled=false;
+    if(start){start.classList.add("hidden");start.disabled=true;}
   }else if(ready){
-    b.textContent=connected>0?`▶️ Start 60s Poll • ${connected} scanned`:"⏳ Waiting for Audience Scan…";
-    b.classList.remove("danger");
-    b.disabled=connected<1;
+    b.textContent="🗳️ Poll Shown • Waiting for Audience"; b.classList.remove("danger"); b.disabled=false;
+    if(start){start.classList.toggle("hidden",connected<1);start.disabled=connected<1;start.textContent=connected>0?`▶️ START 60s POLL • ${connected} SCANNED`:"⏳ WAITING FOR AUDIENCE SCAN…";}
   }else{
-    b.textContent="🗳️ Show Audience Poll";
-    b.classList.remove("danger");
+    b.textContent="🗳️ Show Audience Poll"; b.classList.remove("danger"); b.disabled=false;
+    if(start){start.classList.add("hidden");start.disabled=true;}
   }
 }function participants(){const room=$("code").textContent.trim();if(room&&room!=="----")location.href=`/registered.html?room=${room}`}function restartEvent(){if(confirm("Reset the entire event?"))s.emit("host:restartEvent")}
 function drawTimer(x){
@@ -159,13 +163,29 @@ function rejectAnswer(){s.emit("host:rejectAnswer")}
 function approveQuit(){s.emit("host:approveQuit")}
 function rejectQuit(){s.emit("host:rejectQuit")}
 
-s.on("quitRequested",a=>{
- const el=$("status"); if(el)el.innerHTML=`🚪 <b>SAFE QUIT REQUEST</b> — ${a.contestant?.name||"Contestant"} is requesting to take ₹${Number(a.amount||0).toLocaleString("en-IN")}. Approve or reject above.`;
-});
+function showSafeQuitRequest(a){
+ const review=$("answerReview");
+ const name=a?.contestant?.name||a?.name||"Contestant";
+ const amount=Number(a?.amount||0);
+ window.__pendingQuitUi={name,amount};
+ if(review){
+   review.classList.remove("hidden");
+   review.innerHTML=`<div class="reviewTitle">🚪 SAFE QUIT REQUEST</div><div class="reviewAnswer"><b>${name}</b> is requesting to leave with the guaranteed <strong>₹${amount.toLocaleString("en-IN")}</strong>.</div><div class="reviewButtons"><button type="button" class="approve" onclick="approveQuit()">✓ APPROVE SAFE QUIT</button><button type="button" class="reject" onclick="rejectQuit()">✕ REJECT — CONTINUE</button></div>`;
+ }
+ const el=$("status");
+ if(el){el.classList.remove("hidden");el.innerHTML=`🚪 <b>Safe Quit Request</b> — ${name} is waiting for Host approval.`;}
+}
+s.on("quitRequested",a=>showSafeQuitRequest(a));
 s.on("quitRejected",a=>{
- const el=$("status"); if(el)el.innerHTML=`↩️ Safe Quit rejected for ${a.contestant?.name||"contestant"}. The game continues.`;
+ window.__pendingQuitUi=null;
+ const review=$("answerReview"); if(review){review.classList.add("hidden");review.innerHTML="";}
+ const el=$("status"); if(el){el.classList.remove("hidden");el.innerHTML=`↩️ Safe Quit rejected for ${a.contestant?.name||"contestant"}. The game continues.`;}
 });
-s.on("contestantQuit",a=>{const el=$("status");if(el)el.innerHTML=`🚪 <b>${a.contestant?.name||"Contestant"} walked away with ₹${Number(a.amount||0).toLocaleString("en-IN")}</b>.`;});
+s.on("contestantQuit",a=>{
+ window.__pendingQuitUi=null;
+ const review=$("answerReview"); if(review){review.classList.add("hidden");review.innerHTML="";}
+ const el=$("status");if(el){el.classList.remove("hidden");el.innerHTML=`🚪 <b>${a.contestant?.name||"Contestant"} walked away with ₹${Number(a.amount||0).toLocaleString("en-IN")}</b>.`;}
+});
 function updateFlowControls(x){
   window.__hostPhase=x.phase||"";
   window.__hostWinnerName=x.winner?.name||x.contestant?.name||"";
@@ -233,8 +253,9 @@ s.on("state",x=>{ window.__hostState=x; audiencePollOpen=!!x.pollActive;renderHo
  $("answerReview").classList.remove("hidden");
  $("answerReview").innerHTML=`<div class="reviewTitle">🔒 ANSWER LOCKED</div><div class="reviewAnswer">${x.pendingAnswer.name} selected <b>${String.fromCharCode(65+x.pendingAnswer.choice)}. ${x.pendingAnswer.option}</b></div><div class="reviewButtons"><button class="approve" onclick="approveAnswer()">✓ APPROVE / REVEAL</button><button class="reject" onclick="rejectAnswer()">↶ REJECT / UNLOCK</button></div>`;
 }else if(x.pendingQuit){
- $("answerReview").classList.remove("hidden");
- $("answerReview").innerHTML=`<div class="reviewTitle">🚪 SAFE QUIT REQUEST</div><div class="reviewAnswer"><b>${x.pendingQuit.name}</b> wants to quit and take the guaranteed <strong>₹${Number(x.pendingQuit.amount||0).toLocaleString("en-IN")}</strong>.</div><div class="reviewButtons"><button class="approve" onclick="approveQuit()">✓ APPROVE SAFE QUIT</button><button class="reject" onclick="rejectQuit()">✕ REJECT — CONTINUE</button></div>`;
+ showSafeQuitRequest({contestant:{name:x.pendingQuit.name,employeeCode:x.pendingQuit.employeeCode,id:x.pendingQuit.playerId},amount:x.pendingQuit.amount});
+}else if(window.__pendingQuitUi){
+ showSafeQuitRequest({contestant:{name:window.__pendingQuitUi.name},amount:window.__pendingQuitUi.amount});
 }else if(x.pendingPollRequest){
  $("answerReview").classList.remove("hidden");
  $("answerReview").innerHTML=`<div class="reviewTitle">🗳️ AUDIENCE POLL REQUEST</div><div class="reviewAnswer"><b>${x.pendingPollRequest.name}</b> requested the Audience Poll lifeline.</div><div class="reviewButtons"><button class="approve" onclick="approveAudiencePoll()">✓ APPROVE POLL</button><button class="reject" onclick="rejectAudiencePoll()">✕ REJECT POLL</button></div>`;
