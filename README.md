@@ -103,3 +103,11 @@ The current `questions.json` contains 520 unique questions across South Indian C
 - Politics & Indian Polity now keeps only easier questions (difficulty 1–2).
 - The bank contains 509 unique questions across South Indian Cinema, Technology, General Knowledge, and easier Indian Polity.
 - Safe Quit is available at ₹20 and ₹40, but the contestant's request must be approved by the Host.
+
+
+## Color War
+Added `/color-war.html` and `/color-war-tv.html` for a 2–4 player live Color War mini-game with a dedicated audience TV screen. See `README_COLOR_WAR.md`.
+
+## Mini Kart Race
+
+Added `/kart.html` for phone controllers and `/kart-tv.html?room=XXXX` for the big-screen race. Up to four players use a virtual joystick on their phones; the TV renders the live track, karts, laps, standings, countdown and winner.

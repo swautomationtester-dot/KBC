@@ -92,6 +92,8 @@ async function questions(){
 const GAME_POINTS=[10,20,30,40,50];
 const GAME_DIFFICULTY=[1,2,3,4,5];
 const TOTAL_QUESTIONS=5;
+const QUESTION_TIME_MS=30000;
+const AUDIENCE_POLL_TIME_MS=30000;
 const QUESTION_BANK_VERSION="GAMESARENA-KBC-KIDS-WARMUP-HARD-FINISH-v3";
 
 function shuffleCopy(arr){
@@ -157,8 +159,18 @@ function pollCounts(poll){
   return c;
 }
 
-function makeRoom(){return{host:null,users:new Map(),questions:[],current:-1,phase:"lobby",pool:[],winner:null,completed:new Set(),played:new Set(),failed:new Set(),answers:new Map(),pendingAnswer:null,pendingPollRequest:null,poll:new Map(),lifelines:new Set(),fiftyFiftyRemoved:new Map(),timer:null,fastestSize:7,fastestStartAt:0,fastestDurationMs:15000,fastestSequence:[],fastestTimes:new Map(),fastestProgress:new Map(),fastestToken:"",fastestJoinUrl:"",fastestJoinQr:"",screenToken:"",screenUrl:"",screenQr:"",audiencePollUrl:"",audiencePollQr:"",pollActive:false,winnerCelebrationUntil:0,contestantId:null,eliminatedContestant:null,ladder:[10,20,30,40,50],safeHavens:[20,40],contestantQuit:null,pendingQuit:null,usedQuestionIds:new Set()}}
+function makeRoom(){return{host:null,users:new Map(),questions:[],current:-1,phase:"lobby",pool:[],winner:null,completed:new Set(),played:new Set(),failed:new Set(),answers:new Map(),pendingAnswer:null,pendingPollRequest:null,poll:new Map(),lifelines:new Set(),fiftyFiftyRemoved:new Map(),timer:null,fastestSize:7,fastestStartAt:0,fastestDurationMs:15000,fastestSequence:[],fastestTimes:new Map(),fastestProgress:new Map(),fastestToken:"",fastestJoinUrl:"",fastestJoinQr:"",screenToken:"",screenUrl:"",screenQr:"",audiencePollUrl:"",audiencePollQr:"",pollActive:false,winnerCelebrationUntil:0,contestantId:null,eliminatedContestant:null,ladder:[10,20,30,40,50],safeHavens:[20,40],contestantQuit:null,pendingQuit:null,usedQuestionIds:new Set(),questionTimerTimeout:null,questionTimerStartAt:0,questionTimerRemainingMs:QUESTION_TIME_MS,questionTimerPaused:false,pollTimerTimeout:null,pollTimerStartAt:0,pollTimerRemainingMs:AUDIENCE_POLL_TIME_MS,pollTimerRunning:false}}
 function active(r){return [...r.users.values()].filter(u=>u.status==="active")}
+function clearQuestionTimer(r){clearTimeout(r.questionTimerTimeout);r.questionTimerTimeout=null;}
+function questionRemaining(r){if(r.phase!=="question")return 0;if(r.questionTimerPaused)return Math.max(0,Number(r.questionTimerRemainingMs||0));if(r.questionTimerStartAt)return Math.max(0,Number(r.questionTimerRemainingMs||QUESTION_TIME_MS)-(Date.now()-r.questionTimerStartAt));return Math.max(0,Number(r.questionTimerRemainingMs||QUESTION_TIME_MS));}
+function pauseQuestionTimer(r){if(r.phase!=="question"||r.questionTimerPaused)return false;r.questionTimerRemainingMs=questionRemaining(r);r.questionTimerStartAt=0;r.questionTimerPaused=true;clearQuestionTimer(r);return true;}
+function startQuestionTimer(r,remaining=QUESTION_TIME_MS){clearQuestionTimer(r);r.questionTimerRemainingMs=Math.max(0,Number(remaining||0));r.questionTimerPaused=false;r.questionTimerStartAt=Date.now();if(r.questionTimerRemainingMs<=0){questionTimeExpired(r);return;}r.questionTimerTimeout=setTimeout(()=>questionTimeExpired(r),r.questionTimerRemainingMs);}
+function questionTimeExpired(r){if(r.phase!=="question"||r.current<0)return;r.questionTimerRemainingMs=0;r.questionTimerStartAt=0;r.questionTimerPaused=false;r.questionTimerTimeout=null;if(r.pendingAnswer){const code=[...rooms.entries()].find(([,room])=>room===r)?.[0];if(code)emitState(code);return;}const u=r.winner&&r.users.get(r.winner.id);if(!u)return;u.prizeWon=0;u.status="eliminated";r.eliminatedContestant={id:u.id,name:u.name,employeeCode:u.employeeCode,score:u.score,pointsEarned:0,prizeWon:0,eliminatedAt:Date.now(),reason:"TIME_UP",until:Date.now()+30000};const code=[...rooms.entries()].find(([,room])=>room===r)?.[0];if(code){io.to(code).emit("answerResult",{correct:false,eliminated:true,timeout:true,approved:true,contestant:{name:u.name,employeeCode:u.employeeCode},pointsEarned:0,prizeWon:0});io.to(u.id).emit("eliminationNotice",{name:u.name,employeeCode:u.employeeCode,score:u.score,pointsEarned:0,prizeWon:0,until:Date.now()+30000,reason:"TIME_UP"});nextContestant(code);}}
+function clearAudiencePollTimer(r){clearTimeout(r.pollTimerTimeout);r.pollTimerTimeout=null;r.pollTimerStartAt=0;r.pollTimerRunning=false;r.pollTimerRemainingMs=AUDIENCE_POLL_TIME_MS;}
+function pollRemaining(r){if(!r.pollTimerRunning)return Math.max(0,Number(r.pollTimerRemainingMs||0));return Math.max(0,Number(r.pollTimerRemainingMs||0)-(Date.now()-r.pollTimerStartAt));}
+function startAudiencePollTimer(r){clearAudiencePollTimer(r);r.pollTimerRemainingMs=AUDIENCE_POLL_TIME_MS;r.pollTimerStartAt=Date.now();r.pollTimerRunning=true;r.pollTimerTimeout=setTimeout(()=>stopAudiencePoll(r,true),AUDIENCE_POLL_TIME_MS);}
+function stopAudiencePoll(r,expired=false){if(!r.pollActive&&!r.pollTimerRunning)return;r.pollTimerRemainingMs=pollRemaining(r);clearAudiencePollTimer(r);r.pollActive=false;const code=[...rooms.entries()].find(([,room])=>room===r)?.[0];if(code)io.to(code).emit(expired?"audiencePollTimeUp":"audiencePollStopped");if(r.phase==="question"&&!r.pendingAnswer)startQuestionTimer(r,questionRemaining(r)||QUESTION_TIME_MS);if(code)emitState(code);}
+function resetQuestionClock(r){clearQuestionTimer(r);r.questionTimerStartAt=0;r.questionTimerRemainingMs=QUESTION_TIME_MS;r.questionTimerPaused=false;clearAudiencePollTimer(r);}
 function emitState(code){
  const r=rooms.get(code);if(!r)return;
  const q=r.questions[r.current];
@@ -187,6 +199,15 @@ function emitState(code){
   // audience socket-id -> choice pairs. This keeps every client in sync
   // after the state broadcast that follows a vote.
   pollCounts:pollCounts(r.poll),
+  questionTimerRemaining:questionRemaining(r),
+  questionTimerRunning:r.phase==="question"&&!r.questionTimerPaused&&!!r.questionTimerStartAt,
+  questionTimerStartAt:r.questionTimerStartAt||0,
+  questionTimerPaused:!!r.questionTimerPaused,
+  questionTimerTotalMs:QUESTION_TIME_MS,
+  pollTimerRemaining:pollRemaining(r),
+  pollTimerRunning:!!r.pollTimerRunning,
+  pollTimerStartAt:r.pollTimerStartAt||0,
+  pollTimerTotalMs:AUDIENCE_POLL_TIME_MS,
   fiftyFiftyRemoved:(r.current>=0)?(r.fiftyFiftyRemoved.get(r.current)||[]):[],
   lifelines:(r.winner&&r.current>=0)?{
     "5050":!!r.winner.lifelinesUsed?.["5050"],
@@ -323,6 +344,153 @@ app.post("/api/questions",requireAdmin,async(req,res)=>{
  res.json({ok:true});
 });
 
+
+
+// ===== Color War mini-game =====
+const colorWarRooms=new Map();
+const CW_COLORS=["#ff5c7a","#20b7df","#7b61ff","#f2b84b"];
+const CW_SIZE=5;
+function cwCode(){let c;do c=String(Math.floor(1000+Math.random()*9000));while(colorWarRooms.has(c));return c}
+function cwCapacity(i){
+  const row=Math.floor(i/CW_SIZE),col=i%CW_SIZE;
+  if((row===0||row===CW_SIZE-1)&&(col===0||col===CW_SIZE-1))return 2;
+  if(row===0||row===CW_SIZE-1||col===0||col===CW_SIZE-1)return 3;
+  return 4;
+}
+function cwNeighbors(i){
+  const row=Math.floor(i/CW_SIZE),col=i%CW_SIZE,out=[];
+  if(row>0)out.push(i-CW_SIZE);if(row<CW_SIZE-1)out.push(i+CW_SIZE);
+  if(col>0)out.push(i-1);if(col<CW_SIZE-1)out.push(i+1);
+  return out;
+}
+function cwBoard(){return Array.from({length:CW_SIZE*CW_SIZE},()=>({owner:null,count:0}))}
+function cwState(r){
+  return {
+    code:r.code,status:r.status,hostOnline:!!r.host,
+    tvToken:r.tvToken,
+    joinUrl:r.joinUrl,tvUrl:r.tvUrl,
+    current:r.current,
+    board:r.board,
+    winner:r.winner||null,
+    players:r.players.map(p=>({id:p.id,name:p.name,color:p.color,hadCell:p.hadCell,eliminated:p.eliminated}))
+  };
+}
+function cwBroadcast(r){io.to(r.channel).emit("cw:state",cwState(r))}
+function cwReset(r){
+  r.board=cwBoard();r.status="playing";r.current=0;r.winner=null;
+  r.players.forEach(p=>{p.hadCell=false;p.eliminated=false});
+}
+function cwAdvance(r){
+  for(let n=0;n<r.players.length;n++){
+    r.current=(r.current+1)%r.players.length;
+    const p=r.players[r.current];
+    if(p&&!p.eliminated)return;
+  }
+}
+function cwApplyMove(r,pid,index){
+  if(r.status!=="playing")return {ok:false,error:"The battle is not running."};
+  const pidx=r.players.findIndex(p=>p.id===pid);
+  if(pidx<0||pidx!==r.current)return {ok:false,error:"It is not your turn."};
+  if(!Number.isInteger(index)||index<0||index>=r.board.length)return {ok:false,error:"Invalid cell."};
+  const cell=r.board[index];
+  if(cell.owner!==null&&cell.owner!==pid)return {ok:false,error:"You can only play an empty cell or your own color."};
+  cell.owner=pid;cell.count++;r.players[pidx].hadCell=true;
+
+  const queue=[index],guard=new Set();
+  while(queue.length){
+    const i=queue.shift(),c=r.board[i],cap=cwCapacity(i);
+    if(c.count<cap)continue;
+    c.count-=cap;
+    if(c.count===0)c.owner=null;
+    for(const n of cwNeighbors(i)){
+      const t=r.board[n];t.owner=pid;t.count++;
+      r.players[pidx].hadCell=true;
+      if(t.count>=cwCapacity(n)&&!guard.has(n)){guard.add(n);queue.push(n)}
+    }
+  }
+
+  // Players who have already entered the battle are eliminated once they
+  // have no territory left. Players who have not moved yet remain eligible.
+  r.players.forEach(x=>{
+    if(x.hadCell)x.eliminated=!r.board.some(c=>c.owner===x.id);
+  });
+
+  const moved=r.players.filter(x=>x.hadCell);
+  const active=moved.filter(x=>!x.eliminated);
+  if(r.players.length>=2 && moved.length===r.players.length && active.length<=1){
+    r.winner=active[0]?.id||null;r.status="finished";return {ok:true};
+  }
+  cwAdvance(r);
+  return {ok:true};
+}
+io.on("connection",s=>{
+  s.on("cw:create",()=>{
+    const code=cwCode(),channel="colorwar-"+code,tvToken=crypto.randomBytes(24).toString("hex");
+    const base=getPublicUrlForSocket(s);
+    const r={code,channel,tv:s.id,tvToken,host:s.id,players:[],board:cwBoard(),current:0,status:"lobby",winner:null,joinUrl:`${base}/color-war.html?join=${code}`,tvUrl:`${base}/color-war-tv.html?room=${code}&token=${tvToken}`};
+    colorWarRooms.set(code,r);s.join(channel);s.data.cwRoom=code;s.data.cwRole="host";
+    s.emit("cw:room",{code,tvToken,joinUrl:r.joinUrl,tvUrl:r.tvUrl});cwBroadcast(r);
+  });
+  s.on("cw:join",({code,name}={})=>{
+    const r=colorWarRooms.get(String(code||"").trim());
+    if(!r)return s.emit("cw:error",{message:"Room not found."});
+    if(r.status!=="lobby")return s.emit("cw:error",{message:"The battle has already started."});
+    if(r.players.length>=4)return s.emit("cw:error",{message:"Room is full — maximum 4 players."});
+    const p={id:s.id,token:crypto.randomBytes(24).toString("hex"),name:String(name||"Player").trim().slice(0,18),color:CW_COLORS[r.players.length],hadCell:false,eliminated:false};
+    r.players.push(p);s.join(r.channel);s.data.cwRoom=r.code;s.data.cwRole="player";
+    s.emit("cw:joined",{playerId:p.id,playerToken:p.token,code:r.code});cwBroadcast(r);
+  });
+  s.on("cw:resume",({code,token,name}={})=>{
+    const r=colorWarRooms.get(String(code||"").trim());
+    if(!r)return s.emit("cw:error",{message:"Room not found. Create a new room if the room expired."});
+    const p=r.players.find(x=>x.token===String(token||""));
+    if(!p)return s.emit("cw:error",{message:"Player session expired. Please join the room again."});
+    p.id=s.id;if(name&&String(name).trim())p.name=String(name).trim().slice(0,18);
+    s.join(r.channel);s.data.cwRoom=r.code;s.data.cwRole="player";
+    s.emit("cw:joined",{playerId:p.id,playerToken:p.token,code:r.code,resumed:true});cwBroadcast(r);
+  });
+  s.on("cw:start",({code}={})=>{
+    const r=colorWarRooms.get(String(code||s.data.cwRoom||"").trim());
+    if(!r)return s.emit("cw:error",{message:"Room no longer exists."});
+    if(r.host!==s.id)return s.emit("cw:error",{message:"Only the host can start the battle."});
+    if(r.players.length<2)return s.emit("cw:error",{message:"At least 2 players must join."});
+    cwReset(r);cwBroadcast(r);
+  });
+  s.on("cw:restart",({code}={})=>{
+    const r=colorWarRooms.get(String(code||s.data.cwRoom||"").trim());
+    if(!r)return s.emit("cw:error",{message:"Room no longer exists."});
+    if(r.host!==s.id)return s.emit("cw:error",{message:"Only the host can restart the battle."});
+    if(r.players.length<2)return s.emit("cw:error",{message:"At least 2 players must join."});
+    cwReset(r);cwBroadcast(r);
+  });
+  s.on("cw:move",({index}={})=>{
+    const r=colorWarRooms.get(String(s.data.cwRoom||""));if(!r||s.data.cwRole!=="player")return;
+    const result=cwApplyMove(r,s.id,Number(index));
+    if(!result.ok)s.emit("cw:error",{message:result.error});
+    cwBroadcast(r);
+  });
+  s.on("cw:tv",({code,token}={})=>{
+    const r=colorWarRooms.get(String(code||"").trim());
+    if(!r||r.tvToken!==String(token||""))return s.emit("cw:error",{message:"TV link expired. Create a new Color War room."});
+    s.join(r.channel);s.data.cwRoom=r.code;s.data.cwRole="tv";s.emit("cw:state",cwState(r));
+  });
+  s.on("cw:host-resume",({code}={})=>{
+    const r=colorWarRooms.get(String(code||"").trim());
+    if(!r)return s.emit("cw:error",{message:"Room not found."});
+    r.host=s.id;s.data.cwRoom=r.code;s.data.cwRole="host";s.join(r.channel);s.emit("cw:state",cwState(r));
+  });
+  s.on("disconnect",()=>{
+    const code=s.data.cwRoom,r=code?colorWarRooms.get(code):null;
+    if(!r)return;
+    if(r.host===s.id)r.host=null;
+  });
+});
+setInterval(()=>{
+  const cutoff=Date.now()-6*60*60*1000;
+  for(const [code,r] of colorWarRooms){
+    if(r.lastActivity&&r.lastActivity<cutoff)colorWarRooms.delete(code);
+  }
+},60*60*1000);
 
 // ===== Card Match mini-game =====
 const cardMatchRooms=new Map();
@@ -563,12 +731,12 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  });
  s.on("host:approveAudiencePoll",()=>{
   const r=rooms.get(s.data.room);if(!r||r.host!==s.id||!r.pendingPollRequest||r.phase!=="question")return;
-  const req=r.pendingPollRequest;r.pendingPollRequest=null;r.poll.clear();r.pollActive=true;
+  const req=r.pendingPollRequest;r.pendingPollRequest=null;r.poll.clear();r.pollActive=false;
   const lifelineKey=`${req.id}:${r.current}:audience`;
   r.lifelines.add(lifelineKey);
   if(r.winner?.id===req.id) r.winner.lifelinesUsed={...(r.winner.lifelinesUsed||{}),audience:true};
   io.to(req.id).emit("audiencePollApproved",{contestant:req,counts:pollCounts(r.poll)});
-  io.to(s.data.room).emit("audiencePollStarted",{contestant:req});
+  io.to(s.data.room).emit("audiencePollApproved",{contestant:req});
   emitState(s.data.room);
  });
  s.on("host:rejectAudiencePoll",()=>{
@@ -588,7 +756,9 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  }
  r.pendingPollRequest=null;
  r.poll.clear();
+ pauseQuestionTimer(r);
  r.pollActive=true;
+ startAudiencePollTimer(r);
  const lifelineKey=`${r.winner.id}:${r.current}:audience`;
  r.lifelines.add(lifelineKey);
  r.winner.lifelinesUsed={...(r.winner.lifelinesUsed||{}),audience:true};
@@ -596,7 +766,9 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  io.to(s.data.room).emit("audiencePollStarted",{contestant:{name:r.winner.name,employeeCode:r.winner.employeeCode}});
  emitState(s.data.room);
 });
- s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;r.pollActive=false;io.to(s.data.room).emit("audiencePollStopped");emitState(s.data.room)});
+ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;stopAudiencePoll(r,false)});
+ s.on("host:pauseQuestionTimer",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question")return;pauseQuestionTimer(r);emitState(s.data.room);});
+ s.on("host:resumeQuestionTimer",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question")return;if(r.pollActive)return;startQuestionTimer(r,questionRemaining(r)||QUESTION_TIME_MS);emitState(s.data.room);});
  s.on("host:pick7",async()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;await pick7(r);emitState(s.data.room)});
  s.on("fastest:progress",({value})=>{
   const r=rooms.get(s.data.room);
@@ -666,11 +838,12 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  const bank=await questions();
  r.questions=buildGameQuestions(bank,r.usedQuestionIds);
  r.questions.forEach(q=>r.usedQuestionIds.add(q.id));
- r.phase="question";r.current=0;r.answers.clear();r.pendingAnswer=null;r.pendingQuit=null;r.pendingPollRequest=null;r.poll.clear();r.lifelines.clear();r.fiftyFiftyRemoved.clear();r.eliminatedContestant=null;r.contestantQuit=null;if(r.winner){
+ r.phase="question";r.current=0;r.answers.clear();r.pendingAnswer=null;r.pendingQuit=null;r.pendingPollRequest=null;r.poll.clear();r.lifelines.clear();r.fiftyFiftyRemoved.clear();r.eliminatedContestant=null;r.contestantQuit=null;resetQuestionClock(r);if(r.winner){
    r.winner.lifelinesUsed={"5050":false,"audience":false,"phone":false};
    const contestantUser=r.users.get(r.winner.id);
    if(contestantUser){contestantUser.lifelinesUsed={"5050":false,"audience":false,"phone":false};contestantUser.assuredMoney=0;contestantUser.prizeWon=0;}
  }
+ startQuestionTimer(r);
  emitState(s.data.room);
 });
  s.on("host:nextFastest",async()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;await pick7(r);emitState(s.data.room)});
@@ -678,6 +851,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  s.on("host:nextQuestion",()=>{
  const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question")return;
  if(r.pendingQuit){s.emit("errorMsg","Approve or reject the pending Safe Quit request before moving to the next question.");return;}
+ clearQuestionTimer(r);clearAudiencePollTimer(r);
  r.current++;
  r.answers.clear();r.pendingAnswer=null;r.pendingPollRequest=null;r.poll.clear();r.lifelines.clear();
  if(r.current>=TOTAL_QUESTIONS||r.current>=r.questions.length){
@@ -689,7 +863,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
      for(const u of x.users.values())u.inPool=false;
      x.phase="registration";emitState(s.data.room);
    },5000);
- }else r.phase="question";
+ }else {r.phase="question";resetQuestionClock(r);startQuestionTimer(r);}
  emitState(s.data.room);
 });
  s.on("host:restartEvent",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;for(const u of r.users.values()){u.score=0;u.assuredMoney=0;u.prizeWon=0;u.status="active";u.inPool=false;u.lifelinesUsed={"5050":false,"audience":false,"phone":false}}r.contestantId=null;r.failed.clear();r.completed.clear();r.played.clear();r.pool=[];r.usedQuestionIds.clear();r.winner=null;r.current=-1;r.fiftyFiftyRemoved.clear();r.eliminatedContestant=null;r.contestantQuit=null;r.pendingQuit=null;r.phase="registration";emitState(s.data.room)});
@@ -700,6 +874,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
   if(r.pendingAnswer||r.pendingQuit)return;
   const q=r.questions[r.current],picked=Number(choice);
   if(picked<0||picked>3)return;
+  pauseQuestionTimer(r);
   r.pendingAnswer={playerId:s.id,name:u.name,employeeCode:u.employeeCode,choice:picked,option:q.options[picked],lockedAt:Date.now()};
   io.to(s.data.room).emit("answerLocked",{
     contestant:{name:u.name,employeeCode:u.employeeCode},
@@ -712,6 +887,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
   const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question"||!r.pendingAnswer)return;
   const pending=r.pendingAnswer,u=r.users.get(pending.playerId),q=r.questions[r.current];
   if(!u)return;
+  clearQuestionTimer(r);clearAudiencePollTimer(r);
   const ok=pending.choice===q.answer;
   r.answers.set(pending.playerId,{choice:pending.choice,ok,approved:true});
   r.pendingAnswer=null;
@@ -737,6 +913,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
       x.poll.clear();
       x.lifelines.clear();
       if(x.current>=TOTAL_QUESTIONS||x.current>=x.questions.length){
+        clearQuestionTimer(x);clearAudiencePollTimer(x);
         x.phase="winnerCelebration";
         x.current=-1;
         x.winnerCelebrationUntil=Date.now()+30000;
@@ -761,6 +938,8 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
         },30000);
       }else{
         x.phase="question";
+        resetQuestionClock(x);
+        startQuestionTimer(x);
       }
       emitState(s.data.room);
     },3000);
@@ -856,6 +1035,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  s.on("host:rejectAnswer",()=>{
   const r=rooms.get(s.data.room);if(!r||r.host!==s.id||!r.pendingAnswer)return;
   const pending=r.pendingAnswer;r.pendingAnswer=null;
+  startQuestionTimer(r,questionRemaining(r)||QUESTION_TIME_MS);
   io.to(s.data.room).emit("answerRejected",{contestant:{name:pending.name,employeeCode:pending.employeeCode}});
   emitState(s.data.room);
  });
@@ -930,4 +1110,70 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  }
 });
 });
+
+
+// ========================= Mini Kart Race =========================
+const kartNs=io.of('/kart');
+const kartRooms=new Map();
+const KART_COLORS=['#ff5b5b','#20b7df','#7b61ff','#f2b84b'];
+const KART_MAX=4, KART_LAPS=3, KART_TICK=50;
+function kartCode(){let c;do c=String(Math.floor(1000+Math.random()*9000));while(kartRooms.has(c));return c;}
+function kartRoom(){return{code:'',host:null,players:new Map(),phase:'lobby',countdownUntil:0,startAt:0,lastTick:Date.now(),timer:null};}
+function kartPublic(r){
+ return {code:r.code,phase:r.phase,countdownRemaining:Math.max(0,r.countdownUntil-Date.now()),raceTime:r.phase==='race'?Date.now()-r.startAt:0,
+ players:[...r.players.values()].map(x=>({id:x.id,name:x.name,color:x.color,x:x.x,y:x.y,vx:x.vx,vy:x.vy,lap:x.lap,progress:x.progress,finished:x.finished,finishTime:x.finishTime})),laps:KART_LAPS};
+}
+function kartBroadcast(code){const r=kartRooms.get(code);if(r)kartNs.to(code).emit('state',kartPublic(r));}
+function kartSpawn(i){const row=Math.floor(i/2),side=i%2;return{x:0.5+(side?0.055:-0.055),y:0.84+row*0.055,vx:0.0058,vy:0,lap:0,progress:0,finished:false,finishTime:null,prevAngle:null};}
+function kartAngle(x,y){const cx=.5,cy=.5,rx=.34,ry=.35;return Math.atan2((y-cy)/ry,(x-cx)/rx);}
+function kartProgress(x,y){let a=kartAngle(x,y);let p=(a+Math.PI*0.5)%(Math.PI*2);if(p<0)p+=Math.PI*2;return p/(Math.PI*2);}
+function kartTick(r){
+ const now=Date.now(),dt=Math.min(.08,(now-r.lastTick)/1000);r.lastTick=now;
+ if(r.phase!=='race')return;
+ for(const pl of r.players.values()){
+   const steer=pl.inputX||0, throttle=pl.inputY||0;
+   const accel=0.00024, max=.0105, drag=.92;
+   const speed=Math.hypot(pl.vx,pl.vy);
+   const angle=Math.atan2(pl.vy,pl.vx);
+   const desired=angle + steer*.065*(0.7+Math.min(1,speed/.006));
+   pl.vx += Math.cos(desired)*accel*throttle;
+   pl.vy += Math.sin(desired)*accel*throttle;
+   pl.vx*=drag;pl.vy*=drag;
+   const sp=Math.hypot(pl.vx,pl.vy);
+   if(sp>max){pl.vx=pl.vx/sp*max;pl.vy=pl.vy/sp*max;}
+   let nx=pl.x+pl.vx*(dt/.05),ny=pl.y+pl.vy*(dt/.05);
+   const dx=(nx-.5)/.34,dy=(ny-.5)/.35,rad=Math.hypot(dx,dy);
+   // Keep cars on the oval track. A soft push toward the road center acts like a wall.
+   if(rad>1.035){nx=.5+(nx-.5)/rad*1.035*.34;ny=.5+(ny-.5)/rad*1.035*.35;pl.vx*=.45;pl.vy*=.45;}
+   if(rad<.72){nx=.5+(nx-.5)/Math.max(.72,rad)*.72*.34;ny=.5+(ny-.5)/Math.max(.72,rad)*.72*.35;}
+   pl.x=Math.max(.06,Math.min(.94,nx));pl.y=Math.max(.06,Math.min(.94,ny));
+   const prog=kartProgress(pl.x,pl.y);
+   if(pl.prevProgress!==undefined && pl.prevProgress>.85 && prog<.15 && speed>.001){pl.lap++;}
+   pl.prevProgress=prog;pl.progress=prog;
+   if(pl.lap>=KART_LAPS&&!pl.finished){pl.finished=true;pl.finishTime=now-r.startAt;pl.vx*=.2;pl.vy*=.2;}
+ }
+ const finished=[...r.players.values()].filter(p=>p.finished).sort((a,b)=>a.finishTime-b.finishTime);
+ if(finished.length===r.players.size){r.phase='finished';clearInterval(r.timer);}
+ kartBroadcast(r.code);
+}
+kartNs.on('connection',socket=>{
+ socket.on('tv',({room}={})=>{const r=kartRooms.get(String(room||'').toUpperCase());if(!r)return socket.emit('errorMsg','Room not found.');socket.join(r.code);socket.data.room=r.code;socket.data.tv=true;socket.emit('joined',{room:r.code,tv:true});kartBroadcast(r.code);});
+ socket.on('create',({name='Player'}={})=>{
+   if(socket.data.room)return;const code=kartCode(),r=kartRoom();r.code=code; r.host=socket.id;
+   const p={id:socket.id,name:String(name).slice(0,18)||'Player',color:KART_COLORS[0],...kartSpawn(0),inputX:0,inputY:0};r.players.set(socket.id,p);kartRooms.set(code,r);socket.join(code);socket.data.room=code;
+   socket.emit('joined',{room:code,host:true});kartBroadcast(code);
+ });
+ socket.on('join',({room,name='Player'}={})=>{
+   const code=String(room||'').toUpperCase(),r=kartRooms.get(code);if(!r)return socket.emit('errorMsg','Room not found.');
+   if(r.players.size>=KART_MAX)return socket.emit('errorMsg','Room is full.');
+   if(r.phase!=='lobby')return socket.emit('errorMsg','Race already started.');
+   const i=r.players.size,p={id:socket.id,name:String(name).slice(0,18)||'Player',color:KART_COLORS[i],...kartSpawn(i),inputX:0,inputY:0};r.players.set(socket.id,p);socket.join(code);socket.data.room=code;
+   socket.emit('joined',{room:code,host:false});kartBroadcast(code);
+ });
+ socket.on('start',()=>{const r=kartRooms.get(socket.data.room);if(!r||r.host!==socket.id||r.players.size<2||r.phase!=='lobby')return;r.phase='countdown';r.countdownUntil=Date.now()+4000;r.lastTick=Date.now();kartBroadcast(r.code);setTimeout(()=>{const x=kartRooms.get(r.code);if(!x||x.phase!=='countdown')return;x.phase='race';x.startAt=Date.now();x.lastTick=Date.now();x.timer=setInterval(()=>kartTick(x),KART_TICK);kartBroadcast(x.code);},4000);});
+ socket.on('input',({x=0,y=0}={})=>{const r=kartRooms.get(socket.data.room),p=r?.players.get(socket.id);if(!p||r.phase!=='race')return;p.inputX=Math.max(-1,Math.min(1,Number(x)||0));p.inputY=Math.max(-1,Math.min(1,Number(y)||0));});
+ socket.on('restart',()=>{const r=kartRooms.get(socket.data.room);if(!r||r.host!==socket.id)return;clearInterval(r.timer);let i=0;for(const p of r.players.values()){Object.assign(p,kartSpawn(i++),{inputX:0,inputY:0});}r.phase='lobby';r.countdownUntil=0;r.startAt=0;kartBroadcast(r.code);});
+ socket.on('disconnect',()=>{const code=socket.data.room,r=kartRooms.get(code);if(!r)return;r.players.delete(socket.id);if(r.host===socket.id){const next=r.players.values().next().value;r.host=next?.id||null;}if(!r.players.size){clearInterval(r.timer);kartRooms.delete(code);}else{if(r.phase!=='lobby'&&r.players.size<2){clearInterval(r.timer);r.phase='lobby';}kartBroadcast(code);}});
+});
+
 initDb().then(()=>server.listen(PORT,"0.0.0.0",()=>console.log(`Perficient Office Quiz Arena v4 listening on 0.0.0.0:${PORT}`))).catch(e=>{console.error("Startup error:",e);process.exit(1)});
