@@ -69,7 +69,9 @@ function requireAdmin(req,res,next){
  if(!isAdmin(req))return res.status(401).json({error:"Admin login required."});
  next();
 }
-app.use(express.json());app.use(express.static(path.join(__dirname,"public")));
+app.use(express.json());
+app.use(express.static(path.join(__dirname,"public")));
+app.get("/healthz",(req,res)=>res.status(200).json({ok:true,service:"gamesarena"}));
 
 const fallback=[];
 let db=null;
@@ -1333,3 +1335,14 @@ runnerNs.on('connection',socket=>{
    runnerBroadcast(code);
  });
 });
+
+
+// Keep HTTP startup independent from optional MySQL initialization.
+// Hostinger/nginx needs the process to bind to the assigned PORT immediately.
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`GamesArena listening on port ${PORT}`);
+});
+
+initDb()
+  .then(() => console.log("GamesArena database initialization complete."))
+  .catch(err => console.error("GamesArena database initialization failed; continuing without DB:", err.message));
