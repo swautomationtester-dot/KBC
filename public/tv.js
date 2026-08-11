@@ -47,6 +47,15 @@ function renderParticipants(x){
  }).join("");
 }
 
+function renderTvQuestion(x){
+ const removed=new Set((x.fiftyFiftyRemoved||[]).map(Number));
+ const options=x.question.options.map((o,i)=>removed.has(i)?`<div class="fiftyRemoved"><b>${String.fromCharCode(65+i)}</b><span>OPTION REMOVED</span></div>`:`<div><b>${String.fromCharCode(65+i)}</b><span>${escapeHtml(o)}</span></div>`).join("");
+ $("tvmain").innerHTML=`<div class="questionScreen ${x.current===4?"finalQuestion":""}"><div class=qmeta><span>QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}</span><span>${escapeHtml(x.question.category||"General Knowledge")}</span><span>₹${Number(x.question.points||0).toLocaleString("en-IN")}</span><strong id="tvQuestionTimer" class="tvQuestionTimer">30.0s</strong></div>${x.current===1?'<div class="finalBadge">🛡️ SAFE HAVEN • ₹20</div>':x.current===3?'<div class="finalBadge">🛡️ SAFE HAVEN • ₹40</div>':x.current===4?'<div class="finalBadge">🏆 FINAL QUESTION • ₹50</div>':""}<h1>${escapeHtml(x.question.text)}</h1><div class=tvopts>${options}</div></div>`;
+ updateTvQuestionTimer(x);
+}
+let tvQuestionClock=null;
+function updateTvQuestionTimer(x){clearInterval(tvQuestionClock);const paint=()=>{const el=$("tvQuestionTimer");if(!el)return;let ms=Number(x.questionTimerRemaining||0);if(x.questionTimerRunning&&x.questionTimerStartAt)ms=Math.max(0,ms-(Date.now()-x.questionTimerStartAt));el.textContent=x.questionTimerPaused?`PAUSED • ${(ms/1000).toFixed(1)}s`:`${(ms/1000).toFixed(1)}s`;el.classList.toggle("paused",!!x.questionTimerPaused);};paint();if(x.questionTimerRunning)tvQuestionClock=setInterval(paint,100);}
+function applyTv5050(x){const panel=document.querySelector(".questionScreen");if(!panel)return;const removed=new Set((x.fiftyFiftyRemoved||[]).map(Number));panel.querySelectorAll(".tvopts > div").forEach((el,i)=>{if(removed.has(i)){el.classList.add("fiftyRemoved");el.querySelector("span").textContent="OPTION REMOVED";}else{el.classList.remove("fiftyRemoved");if(x.question?.options?.[i])el.querySelector("span").textContent=x.question.options[i];}});updateTvQuestionTimer(x);}
 function scheduleTvReload(reason){
  const room=window.__tvRoomCode||"tv";
  const key=`tvReload:${room}:${reason}`;
@@ -87,16 +96,19 @@ function startWinnerCelebrationAudio(until){
   };
   tick();winnerTimer=setInterval(tick,250);
 }
-let latestTvState=null;
+let latestTvState=null,pollTvClock=null;
 function renderPoll(x){
  const stage=$("pollStage"),qr=$("pollQr"),results=$("pollResults");
  if(!stage||!results)return;
  const st=x?.pollActive!==undefined?x:latestTvState;
- if(!st||!st.pollActive){addCls(stage,"hidden");return}
+ if(!st||!st.pollActive){addCls(stage,"hidden");clearInterval(pollTvClock);return}
  removeCls(stage,"hidden");
  if(qr)qr.src=st.audiencePollQr||"";
  if($("pollUrl"))$("pollUrl").textContent=st.audiencePollUrl||"";
  if($("pollQuestionTitle"))$("pollQuestionTitle").textContent=st.question?.text||"Audience Poll";
+ let pollTimerBadge=stage.querySelector(".pollTimerBadge");if(!pollTimerBadge){pollTimerBadge=document.createElement("div");pollTimerBadge.className="pollTimerBadge";stage.querySelector(".tvkicker")?.after(pollTimerBadge);}
+ const timerText=()=>{let ms=Number(st.pollTimerRemaining||0);if(st.pollTimerRunning&&st.pollTimerStartAt)ms=Math.max(0,ms-(Date.now()-st.pollTimerStartAt));pollTimerBadge.textContent=`HOST TIMER • ${(ms/1000).toFixed(1)}s`;};
+ clearInterval(pollTvClock);timerText();if(st.pollTimerRunning)pollTvClock=setInterval(timerText,100);
  const counts={0:0,1:0,2:0,3:0,...(st.pollCounts||{})},total=Object.values(counts).reduce((a,b)=>a+Number(b||0),0);
  const opts=st.question?.options||["Option A","Option B","Option C","Option D"];
  results.innerHTML=opts.map((o,i)=>{const n=Number(counts[i]||0),pct=total?Math.round(n*100/total):0;return `<div class="pollResultRow"><div class="pollResultHead"><b>${String.fromCharCode(65+i)}. ${o}</b><strong>${pct}%</strong></div><div class="pollTrack"><i style="width:${pct}%"></i></div><small>${n} vote${n===1?"":"s"}</small></div>`}).join("");
@@ -326,15 +338,7 @@ s.on("state",x=>{ latestTvState=x;try{
  if(x.phase==="eliminated"){
  const e=x.eliminatedContestant;
  $("tvmain").innerHTML=`<div class=elimination><div class=tvkicker>CONTESTANT ELIMINATED</div><div class=wrongX>✕</div><h1>WRONG ANSWER</h1><h2>${e?e.name:"Contestant"}</h2><p>Well played!</p><div class=securedPoints>PRIZE WON <b>₹${Number(e?.prizeWon??0).toLocaleString("en-IN")}</b></div><div class=nextBadge>NEXT: FASTEST FINGER</div></div>`;return}
- if(x.phase==="question"&&x.question){if(lastQuestion!==x.current){playQuestionAudio(x.current);transition("NEW CONTESTANT GAME",`QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}`);setTimeout(()=>{
-   $("tvmain").innerHTML=`<div class="questionScreen ${x.current===4?"finalQuestion":""}"><div class=qmeta><span>QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}</span><span>${x.question.category||"General Knowledge"}</span><span>₹${x.question.points.toLocaleString("en-IN")}</span></div>${x.current===1?'<div class="finalBadge">🛡️ SAFE HAVEN • ₹20</div>':x.current===3?'<div class="finalBadge">🛡️ SAFE HAVEN • ₹40</div>':x.current===4?'<div class="finalBadge">🏆 FINAL QUESTION • ₹50</div>':""}<h1>${x.question.text}</h1><div class=tvopts>${x.question.options.map((o,i)=>`<div><b>${String.fromCharCode(65+i)}</b><span>${o}</span></div>`).join("")}</div></div>`;
-   tone(440,.18);tone(660,.22,"sine",.05,.18);
-   // The delayed question transition used to overwrite the audience-poll
-   // overlay about 650ms after the poll opened. Always restore the poll after
-   // the question DOM is ready so the live result remains visible until the
-   // host explicitly closes the poll.
-   if(latestTvState?.pollActive){renderPoll(latestTvState);}
- },650);lastQuestion=x.current}return}
+ if(x.phase==="question"&&x.question){if(lastQuestion!==x.current){playQuestionAudio(x.current);transition("NEW CONTESTANT GAME",`QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}`);setTimeout(()=>{renderTvQuestion(x);tone(440,.18);tone(660,.22,"sine",.05,.18);if(latestTvState?.pollActive){renderPoll(latestTvState);}},650);lastQuestion=x.current}else{applyTv5050(x);}return}
  if(x.phase==="winnerCelebration"){
   const winner=x.winner||{};
   const until=Number(x.winnerCelebrationUntil||Date.now()+30000);

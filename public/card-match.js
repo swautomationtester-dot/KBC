@@ -17,6 +17,18 @@ function show(id){document.querySelectorAll(".cmScreen").forEach(x=>x.classList.
 function toast(t){let x=$("toast");x.textContent=t;x.classList.add("show");clearTimeout(window._cmToast);window._cmToast=setTimeout(()=>x.classList.remove("show"),2600)}
 function esc(x){return String(x||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function emit(type,data={}){s.emit(type,{...data,code:room})}
+function setParticipantIdentity(){
+  const p=(state?.players||[]).find(x=>x.id===pid);
+  const name=p?.name||"";
+  const targets=[$("participantIdentityJoin"),$("participantIdentityLobby"),$("participantIdentityGame")];
+  targets.forEach(el=>{
+    if(!el)return;
+    const showIt=role==="player"&&Boolean(name);
+    el.classList.toggle("hidden",!showIt);
+    if(showIt) el.innerHTML=`<span class="identityDot" style="--player:${p.color||"#20c997"}"></span><span><small>YOU ARE PLAYING AS</small><b>${esc(name)}</b></span>`;
+  });
+}
+
 function current(){return state?.players?.[state.turn]||null}
 function next(){return state?.nextTurn==null?null:state.players[state.nextTurn]||null}
 s.on("connect",()=>{
@@ -29,7 +41,7 @@ s.on("cm:room",d=>{
   if(tvToken)localStorage.setItem(tvKey(),tvToken);
   $("code").textContent=d.code;
   const joinUrl=String(d.joinUrl||"").replace(/^https?,\s*/i,"");
-  $("url").textContent=joinUrl;
+  $("url").href=joinUrl;$("url").textContent="Open player page ↗";
   $("qr").innerHTML="";
   if(window.QRCode)new QRCode($("qr"),{text:joinUrl,width:160,height:160});
   show("lobby");
@@ -38,19 +50,20 @@ s.on("cm:joined",d=>{
   role="player";pid=d.playerId;room=d.code;playerToken=d.playerToken||playerToken;
   if(playerToken)localStorage.setItem(tokenKey(),playerToken);
   show("game");
+  setParticipantIdentity();
 });
 
-s.on("cm:error",d=>{toast(d.message);if(String(d.message||"").toLowerCase().includes("room not found")){show("joinPage");$("room").classList.add("expired");$("joinHint").textContent="That room has expired. Create a new TV game and use its new code."}});
+s.on("cm:error",d=>{toast(d.message);if(String(d.message||"").toLowerCase().includes("room not found")){show("joinPage");$("room").classList.add("expired");$("joinHint").textContent="That room has expired. Create a new Host game and use its new code."}});
 s.on("cm:state",d=>{state=d;render()});
 
 $("create").onclick=()=>{role="";room="";tvToken="";emit("cm:create")};
 $("join").onclick=()=>show("joinPage");
 $("back").onclick=()=>show("home");
 $("start").onclick=()=>{if(!room)return toast("Create a room first.");emit("cm:start",{code:room})};
-$("restartGame").onclick=()=>{if(role==="tv")emit("cm:restart",{code:room});else toast("Only the TV can start a new game.")};
-$("refreshGame").onclick=()=>{if(role==="tv")emit("cm:refresh",{code:room});else toast("Only the TV can refresh the board.")};
-$("again").onclick=()=>{if(role==="tv")emit("cm:restart",{code:room});else toast("Only the TV can start a new game.")};
-$("winnerRefresh").onclick=()=>{if(role==="tv")emit("cm:refresh",{code:room});else toast("Only the TV can refresh the board.")};
+$("restartGame").onclick=()=>{if(role==="tv")emit("cm:restart",{code:room});else toast("Only the Host can start a new game.")};
+$("refreshGame").onclick=()=>{if(role==="tv")emit("cm:refresh",{code:room});else toast("Only the Host can refresh the board.")};
+$("again").onclick=()=>{if(role==="tv")emit("cm:restart",{code:room});else toast("Only the Host can start a new game.")};
+$("winnerRefresh").onclick=()=>{if(role==="tv")emit("cm:refresh",{code:room});else toast("Only the Host can refresh the board.")};
 $("lobbyNew").onclick=()=>{role="";room="";tvToken="";emit("cm:create")};
 $("newRoom").onclick=()=>{role="";room="";tvToken="";$("room").classList.remove("expired");emit("cm:create")};
 $("joinNow").onclick=()=>{
@@ -74,8 +87,17 @@ function render(){
 
  if(state.status==="lobby"){
    show("lobby");
-   $("players").innerHTML=(state.players||[]).map(p=>`<div class="cmPlayer" style="--player:${p.color}"><span class="playerDot"></span><div><b>${esc(p.name)}</b><small style="color:${p.color}">Ready to play</small></div></div>`).join("")||`<div class="cmEmpty">Waiting for players…</div>`;
-   $("start").disabled=(state.players||[]).length<2;
+   setParticipantIdentity();
+   $("players").innerHTML=(state.players||[]).map(p=>`<div class="cmPlayer" style="--player:${p.color}"><span class="playerDot"></span><div><b>${esc(p.name)}</b><small style="color:${p.color}">${p.id===pid?"YOU • REGISTERED":"Ready to play"}</small></div></div>`).join("")||`<div class="cmEmpty">Waiting for players…</div>`;
+   const startBtn=$("start");
+   if(startBtn){
+     startBtn.style.display=role==="tv"?"":"none";
+     startBtn.disabled=(state.players||[]).length<2;
+   }
+   const panelLabel=document.querySelector("#lobby .cmPanel > label");
+   if(panelLabel) panelLabel.textContent=role==="player"?"WAITING FOR HOST":"ROOM READY";
+   const lobbyTitle=document.querySelector("#lobby .cmPanel > p");
+   if(lobbyTitle) lobbyTitle.textContent=role==="player"?"You are registered. The Host will start the match when everyone is ready.":"Scan the QR code or enter the room code.";
    return;
  }
 
@@ -90,6 +112,7 @@ function render(){
  }
 
  show("game");
+ setParticipantIdentity();
  const players=state.players||[];
  const cur=players[state.turn]||null,nxt=state.nextTurn==null?null:players[state.nextTurn]||null;
  $("turn").innerHTML=`<span style="color:${cur?.color||"#fff"}">${esc(cur?.name||"Player")}</span>'s turn`;
@@ -132,11 +155,12 @@ function render(){
 
  $("refreshGame").style.display=role==="tv"?"inline-flex":"none";
  $("restartGame").style.display=role==="tv"?"inline-flex":"none";
+ const hostOnly=document.querySelectorAll(".hostOnlyControl");hostOnly.forEach(el=>el.style.display=role==="tv"?"":"none");
 }
 
 const q=new URLSearchParams(location.search).get("join");
 if(q&&/^\d{4}$/.test(q)){
   room=q;loadTokens();
   $("room").value=q;show("joinPage");
-  $("joinHint").textContent="Room "+q+" — enter your name and join the TV game.";
+  $("joinHint").textContent="Room "+q+" — enter your name and join the card game.";
 }

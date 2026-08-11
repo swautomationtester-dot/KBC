@@ -485,3 +485,37 @@
 /* Tie-break result */
 .cardMatchPage .cmTieReason{margin:0 auto 12px;padding:10px 14px;border:1px solid #f1cc5d66;border-radius:10px;color:#f1cc5d;background:#07505688;font-weight:800;text-align:center}
 .cardMatchPage .cmFinalRow small{display:block;color:#b8d4d1;margin-top:3px}
+
+.cmJoinLink{display:inline-flex!important;align-items:center;justify-content:center;margin-top:12px;padding:10px 14px;border-radius:12px;color:#f4d77a!important;background:rgba(244,215,122,.08);border:1px solid rgba(244,215,122,.32);font-weight:800;text-decoration:none!important;word-break:break-all}
+.cmJoinLink:hover{background:rgba(244,215,122,.14);border-color:rgba(244,215,122,.55)}
+
+/* Participant-specific Card Match identity */
+.cardMatchPage .cmParticipantIdentity{
+  width:min(620px,100%);
+  margin:0 auto 14px;
+  padding:11px 16px;
+  border:1px solid #f1cc5d55;
+  border-radius:14px;
+  background:linear-gradient(135deg,#075056ee,#06383dee);
+  box-shadow:0 10px 28px #001e2330;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:11px;
+  color:#fff;
+}
+.cardMatchPage .cmParticipantIdentity.hidden{display:none!important}
+.cardMatchPage .cmParticipantIdentity .identityDot{
+  width:12px;height:12px;border-radius:50%;background:var(--player,#20c997);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--player,#20c997) 20%,transparent);
+}
+.cardMatchPage .cmParticipantIdentity span:last-child{display:flex;flex-direction:column;align-items:flex-start}
+.cardMatchPage .cmParticipantIdentity small{font-size:9px;letter-spacing:1.4px;color:#9bc0bd;font-weight:900}
+.cardMatchPage .cmParticipantIdentity b{font-size:19px;line-height:1.15;color:#fff}
+.cardMatchPage .cmPanel .cmBrokenSafeLogo{
+  display:block;width:min(250px,70vw);height:auto;margin:0 auto 12px;
+}
+@media(max-width:650px){
+  .cardMatchPage .cmParticipantIdentity{padding:10px 12px}
+  .cardMatchPage .cmParticipantIdentity b{font-size:17px}
+}

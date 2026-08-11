@@ -64,13 +64,34 @@ function demoPrev(){demoIndex=Math.max(0,demoIndex-1);renderDemo()}function open
     return;
   }
   s.emit("host:startQuiz");
-}function next7(){s.emit("host:nextFastest")}function nextQ(){s.emit("host:nextQuestion")}function toggleAudiencePoll(){audiencePollOpen=!audiencePollOpen;s.emit(audiencePollOpen?"host:audiencePollStart":"host:audiencePollStop");updatePollButton()}function updatePollButton(){const b=$("audiencePollBtn");if(!b)return;b.textContent=audiencePollOpen?"🛑 Close Audience Poll":"🗳️ Ask Audience Poll";b.classList.toggle("danger",audiencePollOpen)}function participants(){const room=$("code").textContent.trim();if(room&&room!=="----")location.href=`/registered.html?room=${room}`}function restartEvent(){if(confirm("Reset the entire event?"))s.emit("host:restartEvent")}
+}function next7(){s.emit("host:nextFastest")}function nextQ(){s.emit("host:nextQuestion")}function toggleAudiencePoll(){audiencePollOpen=!audiencePollOpen;s.emit(audiencePollOpen?"host:audiencePollStart":"host:audiencePollStop");updatePollButton()}function updatePollButton(){const b=$("audiencePollBtn");if(!b)return;b.textContent=audiencePollOpen?"🛑 Stop Audience Poll":"🗳️ Start Audience Poll (30s)";b.classList.toggle("danger",audiencePollOpen)}function participants(){const room=$("code").textContent.trim();if(room&&room!=="----")location.href=`/registered.html?room=${room}`}function restartEvent(){if(confirm("Reset the entire event?"))s.emit("host:restartEvent")}
 function drawTimer(x){
  clearInterval(fastInterval);
- if(x.phase!=="fastest"){$("fastTimer").textContent="";return}
- const tick=()=>{const ms=Math.max(0,x.fastestStartAt+x.fastestDurationMs-Date.now());$("fastTimer").textContent=ms>5000?`GET READY • ${(ms/1000-5).toFixed(1)}s`:`FASTEST FINGER • ${(ms/1000).toFixed(1)}s`;if(ms<=0)clearInterval(fastInterval)};
- tick();fastInterval=setInterval(tick,50);
+ if(x.phase!=="fastest")$("fastTimer").textContent="";
+ const qTick=()=>{
+   const qel=$("questionTimer");
+   if(qel){
+     let ms=Number(x.questionTimerRemaining||0);
+     if(x.questionTimerRunning&&x.questionTimerStartAt)ms=Math.max(0,ms-(Date.now()-x.questionTimerStartAt));
+     qel.textContent=`${(ms/1000).toFixed(1)}s`;
+     qel.classList.toggle("paused",!!x.questionTimerPaused);
+   }
+   const pel=$("pollTimer");
+   if(pel){
+     let ms=Number(x.pollTimerRemaining||0);
+     if(x.pollTimerRunning&&x.pollTimerStartAt)ms=Math.max(0,ms-(Date.now()-x.pollTimerStartAt));
+     pel.textContent=`${(ms/1000).toFixed(1)}s`;
+   }
+ };
+ qTick();
+ if(x.questionTimerRunning||x.pollTimerRunning)fastInterval=setInterval(qTick,100);
+ if(x.phase==="fastest"){
+   const tick=()=>{const ms=Math.max(0,x.fastestStartAt+x.fastestDurationMs-Date.now());$("fastTimer").textContent=ms>5000?`GET READY • ${(ms/1000-5).toFixed(1)}s`:`FASTEST FINGER • ${(ms/1000).toFixed(1)}s`;if(ms<=0)clearInterval(fastInterval)};
+   tick();clearInterval(fastInterval);fastInterval=setInterval(tick,50);
+ }
 }
+function pauseQuestionTimer(){s.emit("host:pauseQuestionTimer")}
+function resumeQuestionTimer(){s.emit("host:resumeQuestionTimer")}
 function letters(seq){return (seq||[]).map(n=>String.fromCharCode(65+n)).join(" ")}
 s.on("room",d=>{
   if(d.hostToken){
@@ -79,7 +100,7 @@ s.on("room",d=>{
   }
 
   $("code").textContent=d.code;
-  $("url").textContent=d.joinUrl;
+  $("url").href=d.joinUrl;$("url").textContent=`Open participant page ↗`;
   $("qr").src=d.qr;
   $("screenUrl").innerHTML=`📺 TV URL: <a href="${d.screenUrl}" target="_blank" rel="noopener">${d.screenUrl}</a>`;
   $("area").classList.remove("hidden");
@@ -140,6 +161,8 @@ function updateFlowControls(x){
   if(startBtn) startBtn.textContent=canStart?"▶️ START QUIZ — "+(x.winner?.name||x.contestant?.name||"WINNER"):"▶️ Start Quiz";
   set("nextQuestionBtn",!canNextQ);
   set("audiencePollBtn",!canPoll);
+  set("pauseQuestionTimerBtn",!(canPoll&&x.questionTimerRunning));
+  set("resumeQuestionTimerBtn",!(canPoll&&x.questionTimerPaused&&!x.pollActive));
 
   const labels={
     lobby:"SETUP",
@@ -229,3 +252,4 @@ function rejectAudiencePoll(){s.emit("host:rejectAudiencePoll")}
 s.on("poll",counts=>{ if(!audiencePollOpen)return; renderHostAudiencePoll({pollActive:true,pollCounts:counts,question:window.__hostQuestion||null}); });
 s.on("audiencePollStarted",d=>{if($("status"))$("status").innerHTML=`🗳️ <b>Audience Poll approved</b> — ${d.contestant?.name||"Contestant"} can use the audience lifeline.`});
 s.on("audiencePollRejected",d=>{if($("status"))$("status").innerHTML=`↶ <b>Audience Poll rejected</b> — ${d.contestant?.name||"Contestant"}`});
+s.on("audiencePollTimeUp",()=>{audiencePollOpen=false;updatePollButton();if($("status"))$("status").innerHTML="⏱️ <b>Audience Poll time is up.</b> The question timer has resumed."});

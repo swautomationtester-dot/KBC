@@ -1,5 +1,5 @@
 const s=io({transports:["polling","websocket"],upgrade:true,reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:500,reconnectionDelayMax:4000,timeout:15000}),$=id=>document.getElementById(id);
-let me="",gameToken="",tvUniqueUrl="",hasJoined=false,fastSeq=[],fastIndex=0,fastTimer=null,fastStarted=false,eliminationTimer=null,eliminationUntil=0,audiencePollCounts={},audiencePollActive=false,currentQuestion=null,fiftyFiftyRemoved=[];
+let me="",gameToken="",tvUniqueUrl="",hasJoined=false,fastSeq=[],fastIndex=0,fastTimer=null,fastStarted=false,eliminationTimer=null,eliminationUntil=0,audiencePollCounts={},audiencePollActive=false,currentQuestion=null,fiftyFiftyRemoved=[],liveState=null,questionClockTimer=null,pollClockTimer=null;
 let questionAudio=null,lastQuestionAudioIndex=-1;
 function playQuestionAudio(questionIndex){
   if(questionIndex===lastQuestionAudioIndex)return;
@@ -9,6 +9,14 @@ function playQuestionAudio(questionIndex){
     questionAudio.currentTime=0;
     questionAudio.play().catch(()=>{});
   }catch(e){}
+}
+function updateQuizTimers(x){
+ liveState=x;
+ clearInterval(questionClockTimer);clearInterval(pollClockTimer);
+ const paint=()=>{const el=$("questionTimer");if(!el)return;let ms=Number(x.questionTimerRemaining||0);if(x.questionTimerRunning&&x.questionTimerStartAt)ms=Math.max(0,ms-(Date.now()-x.questionTimerStartAt));el.textContent=x.questionTimerPaused?`PAUSED • ${(ms/1000).toFixed(1)}s`:`${(ms/1000).toFixed(1)}s`;el.classList.toggle("paused",!!x.questionTimerPaused);};
+ paint();if(x.questionTimerRunning)questionClockTimer=setInterval(paint,100);
+ const paintPoll=()=>{const el=$("audiencePollTimer");if(!el)return;let ms=Number(x.pollTimerRemaining||0);if(x.pollTimerRunning&&x.pollTimerStartAt)ms=Math.max(0,ms-(Date.now()-x.pollTimerStartAt));el.textContent=x.pollTimerRunning?`${(ms/1000).toFixed(1)}s`:`WAITING`;};
+ paintPoll();if(x.pollTimerRunning)pollClockTimer=setInterval(paintPoll,100);
 }
 const prizeLadder=[10,20,30,40,50];
 const safeHavens=[20,40];
@@ -174,10 +182,10 @@ function renderAudiencePollResult(counts, question){
  if(!audiencePollActive){el.classList.add("hidden");el.innerHTML="";return;}
  const opts=(question?.options)||currentQuestion?.options||["Option A","Option B","Option C","Option D"];
  el.classList.remove("hidden");
- el.innerHTML=`<div class="pollPanelTitle">🗳️ LIVE AUDIENCE POLL</div><div class="pollPanelQuestion">${question?.text||"Audience votes"}</div>`+opts.map((o,i)=>{const n=Number(c[i]||0),pct=total?Math.round(n*100/total):0;return `<div class="pollVoteRow"><div><b>${String.fromCharCode(65+i)}. ${o}</b><strong>${pct}%</strong></div><div class="pollTrack"><i style="width:${pct}%"></i></div><small>${n} vote${n===1?"":"s"}</small></div>`}).join("")+`<div class="pollTotal">${total} total vote${total===1?"":"s"}</div>`;
+ el.innerHTML=`<div class="pollPanelTitle">🗳️ LIVE AUDIENCE POLL <span class="pollTimerBadge">HOST TIMER: <b id="audiencePollTimer">WAITING</b></span></div><div class="pollPanelQuestion">${question?.text||"Audience votes"}</div>`+opts.map((o,i)=>{const n=Number(c[i]||0),pct=total?Math.round(n*100/total):0;return `<div class="pollVoteRow"><div><b>${String.fromCharCode(65+i)}. ${o}</b><strong>${pct}%</strong></div><div class="pollTrack"><i style="width:${pct}%"></i></div><small>${n} vote${n===1?"":"s"}</small></div>`}).join("")+`<div class="pollTotal">${total} total vote${total===1?"":"s"}</div>`;
 }
 
-s.on("state",x=>{ tvUniqueUrl=x.screenUrl||tvUniqueUrl; renderPlayerLadder(x.users);
+s.on("state",x=>{ tvUniqueUrl=x.screenUrl||tvUniqueUrl; updateQuizTimers(x); renderPlayerLadder(x.users);
  if(eliminationUntil>Date.now()){
    return;
  }
@@ -291,7 +299,7 @@ s.on("answerResult",r=>{
  }
 });
 s.on("audiencePollApproved",d=>{
-  audiencePollActive=true;
+  audiencePollActive=false;
   audiencePollCounts=d.counts||{};
   $("status").innerHTML="🗳️ <b>Audience Poll approved.</b><br>The audience can vote now.";
   renderAudiencePollResult(audiencePollCounts,currentQuestion);
@@ -305,6 +313,8 @@ s.on("poll",counts=>{
 });
 s.on("audiencePollRejected",()=>{audiencePollActive=false;audiencePollCounts={};renderAudiencePollResult({},null);});
 s.on("audiencePollStopped",()=>{audiencePollActive=false;audiencePollCounts={};renderAudiencePollResult({},null);});
+s.on("audiencePollTimeUp",()=>{audiencePollActive=false;audiencePollCounts={};renderAudiencePollResult({},null);if($("status"))$("status").innerHTML="⏱️ <b>Audience Poll time is up.</b><br>The question timer has resumed.";});
+s.on("audiencePollStarted",()=>{audiencePollActive=true;renderAudiencePollResult(audiencePollCounts,currentQuestion);});
 s.on("lifelineResult",r=>{
  if(r.error){
    $("result").innerHTML=`<div class="box bad">⚠️ ${r.error}</div>`;

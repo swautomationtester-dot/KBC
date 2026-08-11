@@ -1458,3 +1458,101 @@ body.tv #tvSideRail #prizeLadder .ladderRow.active{
 .answerReview .reviewTitle{font-weight:900;letter-spacing:.08em}
 .answerReview .reviewButtons .approve{border-color:#4ade80}
 .answerReview .reviewButtons .reject{border-color:#ff6b6b}
+
+/* GamesArena KBC timers */
+.hostQuestionTimerBar,.pollTimerBar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:14px 0;padding:12px 16px;border:1px solid #e3c66a55;border-radius:14px;background:#ffffff08}
+.hostQuestionTimerBar .timerLabel,.pollTimerBar>span{font-size:10px;font-weight:900;letter-spacing:1.6px;color:var(--gold)}
+.hostQuestionTimerBar strong,.pollTimerBar strong{font-size:24px;font-variant-numeric:tabular-nums;color:#fff}
+.hostQuestionTimerBar strong.paused{color:var(--gold)}
+.timerActions{display:flex;gap:8px;flex-wrap:wrap}.timerActions button{min-height:38px;padding:8px 12px;border-radius:10px}
+.playerQuestionTimer{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px;padding:10px 14px;border:1px solid #e3c66a55;border-radius:12px;background:#ffffff08}.playerQuestionTimer span{font-size:10px;font-weight:900;letter-spacing:1.4px;color:var(--gold)}.playerQuestionTimer strong{font-size:22px;font-variant-numeric:tabular-nums}.playerQuestionTimer strong.paused{color:var(--gold)}
+.pollTimerBadge{display:inline-flex;align-items:center;gap:6px;margin-left:12px;padding:5px 9px;border-radius:999px;background:#e3c66a1a;border:1px solid #e3c66a55;font-size:10px;color:#fff}.pollTimerBadge b{font-variant-numeric:tabular-nums;color:var(--gold)}
+.tvQuestionTimer{margin-left:auto;padding:8px 14px;border-radius:999px;background:#0a3439;border:2px solid #e3c66a88;color:#fff;min-width:88px;text-align:center;font-variant-numeric:tabular-nums}.tvQuestionTimer.paused{color:#f5dfa0;border-color:#e3c66a}
+.tvopts .fiftyRemoved{opacity:.5;border-color:#ff6b6b!important;background:#3a1115!important;text-decoration:line-through}.tvopts .fiftyRemoved span{color:#ff9a9a!important;font-weight:900}
+
+/* ===== GamesArena TV — premium audience poll presentation ===== */
+body.tv .pollStage.tvAudiencePoll{
+  left:50% !important; right:auto !important; top:50% !important; bottom:auto !important;
+  transform:translate(-50%,-50%) !important;
+  width:min(1440px,88vw) !important;
+  max-height:min(78vh,820px) !important;
+  min-height:430px !important;
+  padding:34px 42px 28px !important;
+  border:2px solid rgba(241,204,93,.58) !important;
+  border-radius:30px !important;
+  background:
+    radial-gradient(700px 360px at 50% 0%,rgba(21,130,135,.30),transparent 65%),
+    linear-gradient(145deg,rgba(3,39,45,.98),rgba(4,72,77,.98)) !important;
+  box-shadow:0 35px 100px rgba(0,0,0,.65),0 0 0 9999px rgba(0,12,16,.70),inset 0 1px 0 rgba(255,255,255,.10) !important;
+  overflow:auto !important;
+}
+body.tv .pollStage.tvAudiencePoll > .tvkicker{
+  font-size:15px !important; letter-spacing:3px !important; color:#f1cc5d !important; margin-bottom:8px !important;
+}
+body.tv .pollStage.tvAudiencePoll h1{
+  max-width:1180px !important; font-size:clamp(30px,3vw,52px) !important; line-height:1.12 !important;
+  margin:5px auto 18px !important; padding:0 !important; color:#fff !important;
+}
+body.tv .pollLiveLayout{
+  width:100% !important; grid-template-columns:250px minmax(0,1fr) !important; gap:34px !important; align-items:center !important;
+}
+body.tv .pollQrFrame{
+  width:220px !important; height:220px !important; padding:12px !important; margin:auto !important;
+  border-radius:20px !important; background:#fff !important; box-shadow:0 14px 38px rgba(0,0,0,.35) !important;
+}
+body.tv .pollResults{
+  grid-template-columns:1fr 1fr !important; gap:16px !important; align-self:stretch !important;
+}
+body.tv .pollResultRow{
+  padding:18px 20px !important; min-height:115px !important; border-radius:18px !important;
+  background:rgba(8,49,55,.9) !important; border:1px solid rgba(81,194,195,.28) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+body.tv .pollResultHead{margin-bottom:10px !important}
+body.tv .pollResultHead b{font-size:clamp(17px,1.5vw,24px) !important; white-space:normal !important; overflow:visible !important; text-overflow:clip !important}
+body.tv .pollResultHead strong{font-size:clamp(20px,1.8vw,30px) !important;color:#f1cc5d !important}
+body.tv .pollTrack{height:16px !important;border-radius:999px !important;background:#0b2c31 !important;overflow:hidden !important}
+body.tv .pollTrack i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#28c5c8,#f1cc5d) !important;box-shadow:0 0 18px rgba(40,197,200,.25) !important}
+body.tv .pollResultRow small{font-size:13px !important;margin-top:7px !important;color:#9fc4c1 !important}
+body.tv .pollHint{font-size:15px !important;margin:17px 0 0 !important;color:#c8dfdc !important}
+body.tv .pollTimerBadge{
+  display:inline-flex !important; align-items:center; justify-content:center; margin:2px auto 14px !important;
+  padding:10px 18px !important; border-radius:999px !important; background:#ff4d78 !important; color:#fff !important;
+  font-size:14px !important; font-weight:950 !important; letter-spacing:1.5px !important;
+  box-shadow:0 8px 24px rgba(255,77,120,.25) !important;
+}
+@media(max-width:900px){
+  body.tv .pollStage.tvAudiencePoll{width:calc(100vw - 28px) !important;padding:24px !important;min-height:0 !important;max-height:86vh !important}
+  body.tv .pollLiveLayout{grid-template-columns:1fr !important;gap:18px !important}
+  body.tv .pollQrFrame{width:150px !important;height:150px !important}
+  body.tv .pollResults{grid-template-columns:1fr 1fr !important}
+}
+@media(max-width:600px){body.tv .pollResults{grid-template-columns:1fr !important}body.tv .pollResultRow{min-height:92px !important}}
+
+/* ===== GamesArena Host Console — premium operator layout ===== */
+body:has(.hostPage){background:radial-gradient(1000px 520px at 15% 0%,rgba(31,177,179,.13),transparent 60%),linear-gradient(180deg,#073f45,#032d32 75%,#02272c)}
+.hostPage{max-width:1260px !important;padding-top:28px !important}
+.hostHeader{padding:4px 0 18px !important;align-items:end !important}
+.hostHeader h1{font-size:clamp(38px,4vw,62px) !important;letter-spacing:-2px !important;margin:4px 0 6px !important}
+.hostSub{color:#b8d8d5 !important;max-width:720px}
+.homeLink{border-radius:999px !important;padding:11px 17px !important;background:rgba(8,75,81,.7) !important;border:1px solid #3db4b6 !important;font-weight:900 !important}
+.createRoomBtn{height:58px !important;border-radius:16px !important;box-shadow:0 15px 35px rgba(0,0,0,.18) !important}
+.hostGrid{grid-template-columns:minmax(0,1fr) 300px !important;gap:22px !important;align-items:start !important}
+.hostMain,.hostSide{min-width:0}
+.room,.stats>div,.controlCard,.hostPrizeCard,.box{border-radius:20px !important;border-color:rgba(82,201,203,.25) !important;background:linear-gradient(180deg,rgba(8,82,88,.72),rgba(3,47,53,.78)) !important;box-shadow:0 18px 45px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.05) !important}
+.room{padding:24px !important}
+.room strong{font-size:clamp(46px,6vw,78px) !important;color:#f1cc5d !important;letter-spacing:4px !important}
+.stats{gap:12px !important;margin:14px 0 !important}
+.stats>div{padding:17px !important}
+.stats>div b{font-size:32px !important}
+.controlCard{padding:22px !important}
+.sectionHead{margin-bottom:12px !important}
+.sectionHead h2{font-size:25px !important}
+.flowSection{border-radius:18px !important;background:rgba(2,38,44,.44) !important;border:1px solid rgba(82,201,203,.16) !important;margin:12px 0 !important;padding:16px !important}
+.flowHeading>span{box-shadow:0 0 0 6px rgba(241,204,93,.08) !important}
+.flowButtons button{border-radius:12px !important;min-height:42px !important;font-weight:850 !important}
+.hostPrizeCard{position:sticky;top:92px;padding:18px !important}
+.sideTitle h3{font-size:18px !important}
+.hostQuestionTimerBar,.pollTimerBar{border-radius:16px !important;background:#062f35 !important;border:1px solid rgba(241,204,93,.3) !important;padding:13px 15px !important}
+.timerActions button{border-radius:10px !important}
+@media(max-width:980px){.hostGrid{grid-template-columns:1fr !important}.hostPrizeCard{position:static}.hostPage{padding-left:16px !important;padding-right:16px !important}}

@@ -84,3 +84,41 @@ html,body.gaHome{width:100%;min-height:100%;overflow-x:hidden}
 
 .gaHeaderLogo img{object-fit:contain!important}
 .gaHeroLogo{object-fit:contain!important}
+
+/* ===== GamesArena 2026 showcase refresh ===== */
+.gaHome{background:
+  radial-gradient(900px 520px at 10% 0%,rgba(35,190,188,.16),transparent 60%),
+  radial-gradient(800px 520px at 90% 12%,rgba(241,204,93,.12),transparent 62%),
+  linear-gradient(180deg,#073f45 0%,#04383d 48%,#022a2f 100%);
+}
+.gaHeader{position:sticky;top:0;z-index:50;height:72px;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid #d6e4e2}
+.gaHeaderLogo{width:220px;height:56px}
+.gaChip{box-shadow:0 8px 24px rgba(7,80,86,.18)}
+.gaHero{position:relative;padding-top:34px}
+.gaHero:before{content:"";position:absolute;left:50%;top:12px;width:620px;height:260px;transform:translateX(-50%);background:radial-gradient(circle,rgba(241,204,93,.12),transparent 68%);pointer-events:none}
+.gaHeroLogo{position:relative;width:min(330px,52vw);max-height:110px}
+.gaHero h1{position:relative;font-weight:950;text-shadow:0 8px 28px rgba(0,0,0,.22)}
+.gaHero p{position:relative;color:#cfe8e5}
+.gaGameShowcase{width:min(1260px,calc(100% - 36px));margin:10px auto 0}
+.gaSectionIntro{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:0 0 14px;padding:0 4px}
+.gaSectionIntro h2{margin:4px 0 3px;font-size:26px;letter-spacing:-.6px}
+.gaSectionIntro p{margin:0;color:#9fc4c1;font-size:12px}
+.gaLiveBadge{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #3fbec0;border-radius:999px;background:#063b40;color:#d9efec;font-size:10px;font-weight:950;letter-spacing:1px;white-space:nowrap}
+.gaLiveBadge i{width:8px;height:8px;border-radius:50%;background:#4df2a3;box-shadow:0 0 0 5px rgba(77,242,163,.1)}
+.gaTiles{width:100%;max-width:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.gaTile{position:relative;display:block;overflow:hidden;min-height:0;padding:0;border:1px solid rgba(83,202,204,.32);border-radius:20px;background:linear-gradient(180deg,rgba(10,90,95,.78),rgba(3,48,54,.92));box-shadow:0 14px 35px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.07);transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.gaTile:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,.06) 48%,transparent 72%);transform:translateX(-120%);transition:transform .5s ease;pointer-events:none}
+.gaTile:hover{transform:translateY(-7px);border-color:#5bd8d8;box-shadow:0 24px 50px rgba(0,0,0,.3),0 0 0 1px rgba(91,216,216,.14)}
+.gaTile:hover:after{transform:translateX(120%)}
+.gaTile img{display:block;width:100%;aspect-ratio:16/8.4;object-fit:cover;border-bottom:1px solid rgba(255,255,255,.08)}
+.gaTileBody{padding:13px 14px 14px;text-align:left;display:flex;flex-direction:column;min-height:116px}
+.gaTile b{font-size:17px;line-height:1.1;margin:0 0 7px}
+.gaTile small{font-size:11px;line-height:1.5;min-height:34px;color:#c3dedb}
+.gaAction{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;width:auto;padding:9px 13px;border-radius:999px;background:#0b7378;border:1px solid #42c6c8;font-size:11px;font-weight:950;color:white}
+.gaTile.gaFeatured{border-color:rgba(241,204,93,.78);background:linear-gradient(180deg,rgba(13,91,96,.92),rgba(4,52,57,.98));box-shadow:0 0 0 1px rgba(241,204,93,.16),0 20px 45px rgba(0,0,0,.28)}
+.gaFeatured .gaAction{background:linear-gradient(135deg,#f1cc5d,#ffe38e);border-color:#f1cc5d;color:#14373a}
+.gaRibbon{margin-top:18px}
+.gaFooter{padding-top:14px}
+@media(max-width:900px){.gaTiles{grid-template-columns:repeat(2,1fr)}.gaSectionIntro{align-items:center}.gaSectionIntro h2{font-size:22px}}
+@media(max-width:600px){.gaHeader{height:64px}.gaHeaderLogo{width:180px}.gaHero{padding-top:24px}.gaHeroLogo{width:250px}.gaHero h1{font-size:38px}.gaGameShowcase{width:calc(100% - 24px)}.gaTiles{grid-template-columns:1fr;gap:11px}.gaTile img{aspect-ratio:16/7}.gaTileBody{min-height:104px}.gaSectionIntro{margin-bottom:10px}.gaSectionIntro p{display:none}.gaLiveBadge{font-size:8px;padding:8px 9px}}
+.gaKartTile{border-color:#20b7df}

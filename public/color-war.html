@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Color War • GamesArena</title>
+<link rel="stylesheet" href="/style.css?v=75"><link rel="stylesheet" href="/color-war.css?v=1">
+</head><body class="cwPage">
+<header class="cwHeader"><a href="/" class="cwBrand"><img src="/assets/gamesarena-logo-premium.png" alt="GamesArena"><span>🎨 <b>Color War</b></span></a><span class="cwChip">LIVE MINI GAME</span></header>
+<main class="cwWrap">
+<section id="home" class="cwScreen active">
+  <div class="cwHero"><div class="cwEyebrow">GAMESARENA • MULTIPLAYER MINI GAME</div>
+  <h1>Claim the grid.<br><em>Start a Color War.</em></h1>
+  <p>2–4 players • Live chain reactions • Big-screen TV mode</p>
+  <div class="cwHeroBtns"><button id="create" class="cwPrimary big">🎨 Create Color War</button><button id="join" class="cwSecondary big">📱 Join a Game</button></div>
+  </div>
+</section>
+<section id="lobby" class="cwScreen">
+  <div class="cwPanel widePanel">
+    <div class="cwPanelTop"><div><label>ROOM READY</label><h2>Color War lobby</h2><p>Put the TV link on the big screen, then have players scan or enter the room code.</p></div><div id="code" class="cwCode">----</div></div>
+    <div class="cwLobbyGrid">
+      <div class="cwQrCard"><div id="qr" class="cwQr"></div><b>Scan to join</b><small id="joinUrl"></small></div>
+      <div class="cwQrCard"><div id="tvQr" class="cwQr"></div><b>TV screen</b><small id="tvUrl"></small><a id="tvLink" class="cwLink" target="_blank" rel="noopener">Open TV ↗</a></div>
+      <div class="cwPlayersCard"><label>PLAYERS <span id="playerCount">0/4</span></label><div id="players"></div></div>
+    </div>
+    <div class="cwHostActions"><button id="start" class="cwPrimary big">Start Battle</button><button id="restart" class="cwSecondary">Restart</button><a href="/" class="cwSecondary asBtn">← GamesArena</a></div>
+    <p id="lobbyMsg" class="cwMessage"></p>
+  </div>
+</section>
+<section id="joinPage" class="cwScreen">
+  <div class="cwPanel"><label>JOIN GAME</label><h2>Enter the arena</h2><p id="joinHint">Enter the code shown on the TV.</p>
+    <input id="name" maxlength="18" placeholder="Your name">
+    <input id="room" maxlength="4" inputmode="numeric" placeholder="4-digit room code">
+    <button id="joinNow" class="cwPrimary big wide">Join Game</button><button id="back" class="cwSecondary wide">Back</button>
+  </div>
+</section>
+<section id="game" class="cwScreen">
+  <div id="identity" class="cwIdentity"></div>
+  <div class="cwGameTop"><div><label>COLOR WAR</label><h2 id="turn">Waiting…</h2><div id="turnMeta"></div></div><div class="cwGameButtons"><button id="refresh" class="cwSecondary">↻ Refresh</button><button id="leave" class="cwSecondary">Exit</button></div></div>
+  <div id="scores" class="cwScores"></div>
+  <div id="board" class="cwBoard"></div>
+  <div class="cwStatus"><b id="status"></b><span id="roomLabel"></span></div>
+</section>
+<section id="winner" class="cwScreen"><div class="cwPanel"><div class="cwTrophy">🏆</div><label>BATTLE COMPLETE</label><h1 id="winnerText"></h1><p id="winnerSub"></p><button id="again" class="cwPrimary big wide">Play Again</button><a href="/" class="cwSecondary wide asBtn">GamesArena Home</a></div></section>
+<div id="toast" class="cwToast"></div>
+</main>
+<script src="/socket.io/socket.io.js"></script><script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script><script src="/color-war.js?v=1"></script>
+</body></html>
