@@ -3,8 +3,6 @@ const {Server}=require("socket.io"),QRCode=require("qrcode"),mysql=require("mysq
 const independenceBank=require("./questions.json");
 const app=express(),server=http.createServer(app),io=new Server(server,{cors:{origin:true}});
 const PORT=Number(process.env.PORT)||10000;
-let db=null;
-app.use(express.json({limit:"1mb"}));
 const PUBLIC_URL=(process.env.PUBLIC_URL||"").replace(/\/$/,"");
 function getPublicUrlForSocket(s){
   const configured=String(PUBLIC_URL||"").trim();
@@ -72,10 +70,11 @@ function requireAdmin(req,res,next){
  next();
 }
 
+
 /* ===== Host Console authentication =====
-   Host credentials are stored in MySQL (host_users). The bundled scrypt
-   values are only used to bootstrap the first host account when the table
-   is empty. The browser never receives the password or password hash.
+   The default credentials are represented by a one-way scrypt hash. In
+   production, HOST_USERNAME/HOST_PASSWORD may be supplied through Hostinger
+   environment variables instead of using the built-in defaults.
 */
 const HOST_USERNAME=process.env.HOST_USERNAME||"venkat";
 const HOST_PASSWORD_HASH=process.env.HOST_PASSWORD_HASH||"2c18d6138ed31b81065e58fe1856fea35d3d61802193be58408644ec4e81c0c66e1c056f77b4e4734aac078b36eebfb9b3e782a112d086a5581e20254f0570e2";
@@ -87,32 +86,15 @@ function safeEqualText(a,b){
  const bb=Buffer.from(String(b||""));
  return aa.length===bb.length && crypto.timingSafeEqual(aa,bb);
 }
-function verifyScryptPassword(password,hash,salt){
+function validHostPassword(password){
  try{
-   const derived=crypto.scryptSync(String(password||""),Buffer.from(String(salt||""),"hex"),64).toString("hex");
-   return safeEqualText(derived,hash);
+   const derived=crypto.scryptSync(String(password||""),Buffer.from(HOST_PASSWORD_SALT,"hex"),64).toString("hex");
+   return safeEqualText(derived,HOST_PASSWORD_HASH);
  }catch{return false}
-}
-async function validHostPassword(username,password){
- try{
-   if(db){
-     const [rows]=await db.query(
-       `SELECT username,password_hash,password_salt FROM host_users WHERE username=? LIMIT 1`,
-       [String(username||"").trim()]
-     );
-     if(rows[0]){
-       return verifyScryptPassword(password,rows[0].password_hash,rows[0].password_salt);
-     }
-   }
- }catch(err){
-   console.error("host credential lookup failed:",err.message);
- }
- return String(username||"")===HOST_USERNAME &&
-   verifyScryptPassword(password,HOST_PASSWORD_HASH,HOST_PASSWORD_SALT);
 }
 function makeHostSession(){
  const token=crypto.randomBytes(32).toString("hex");
- hostSessions.set(token,{createdAt:Date.now(),username:HOST_USERNAME});
+ hostSessions.set(token,{createdAt:Date.now()});
  return token;
 }
 function isHostSession(req){
@@ -125,17 +107,17 @@ function requireHost(req,res,next){
 }
 function socketHasHostSession(s){
  const raw=s.handshake?.headers?.cookie||"";
- const m=raw.match(/(?:^|;\s*)gamesarena_host_session=([^;]+)/);
+ const m=raw.match(/(?:^|;\\s*)gamesarena_host_session=([^;]+)/);
  return !!m && hostSessions.has(decodeURIComponent(m[1]));
 }
 
-app.post("/api/host/login",async(req,res)=>{
+app.post("/api/host/login",(req,res)=>{
  const {username,password}=req.body||{};
- if(!await validHostPassword(username,password))
+ if(String(username||"")!==HOST_USERNAME || !validHostPassword(password))
    return res.status(401).json({ok:false,error:"Invalid host username or password."});
  const token=makeHostSession();
  res.setHeader("Set-Cookie",`gamesarena_host_session=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=28800`);
- res.json({ok:true,username:String(username).trim()});
+ res.json({ok:true});
 });
 app.post("/api/host/logout",(req,res)=>{
  const token=getCookie(req,"gamesarena_host_session");
@@ -145,129 +127,29 @@ app.post("/api/host/logout",(req,res)=>{
 });
 app.get("/api/host/me",(req,res)=>res.json({ok:isHostSession(req),username:HOST_USERNAME}));
 
-/* ===== Payment Inventory authentication =====
-   Separate credentials/session from the live Host Console. Password is stored
-   as a scrypt hash in MySQL (payment_users), never in the browser.
-*/
-const PAYMENT_USERNAME=process.env.PAYMENT_USERNAME||"venkat";
-const PAYMENT_PASSWORD_HASH=process.env.PAYMENT_PASSWORD_HASH||"88a3714143b921be53017a72f26bd92020597b4e35ebae15a63519c241770bcde03125f53d3adc0b8526516a122a2b10eb1562fb0babcc28816e552c99fdd898";
-const PAYMENT_PASSWORD_SALT=process.env.PAYMENT_PASSWORD_SALT||"20acaae0dc77f6ea8f652490aa01515e";
-const paymentSessions=new Map();
-function makePaymentSession(){
- const token=crypto.randomBytes(32).toString("hex");
- paymentSessions.set(token,{createdAt:Date.now(),username:PAYMENT_USERNAME});
- return token;
-}
-function isPaymentSession(req){
- const token=getCookie(req,"gamesarena_payment_session");
- return !!token && paymentSessions.has(token);
-}
-function requirePaymentAdmin(req,res,next){
- if(!isPaymentSession(req))return res.status(401).json({error:"Payment inventory login required."});
- next();
-}
-async function validPaymentAdminPassword(username,password){
- try{
-   if(db){
-     const [rows]=await db.query(`SELECT username,password_hash,password_salt FROM payment_users WHERE username=? LIMIT 1`,[String(username||"").trim()]);
-     if(rows[0])return verifyScryptPassword(password,rows[0].password_hash,rows[0].password_salt);
-   }
- }catch(err){console.error("payment credential lookup failed:",err.message)}
- return String(username||"")===PAYMENT_USERNAME && verifyScryptPassword(password,PAYMENT_PASSWORD_HASH,PAYMENT_PASSWORD_SALT);
-}
-app.post("/api/payment-admin/login",async(req,res)=>{
- const {username,password}=req.body||{};
- if(!await validPaymentAdminPassword(username,password))return res.status(401).json({ok:false,error:"Invalid payment inventory username or password."});
- const token=makePaymentSession();
- res.setHeader("Set-Cookie",`gamesarena_payment_session=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=28800`);
- res.json({ok:true,username:String(username).trim()});
-});
-app.post("/api/payment-admin/logout",(req,res)=>{
- const token=getCookie(req,"gamesarena_payment_session");
- if(token)paymentSessions.delete(token);
- res.setHeader("Set-Cookie","gamesarena_payment_session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0");
- res.json({ok:true});
-});
-app.get("/api/payment-admin/me",(req,res)=>res.json({ok:isPaymentSession(req),username:PAYMENT_USERNAME}));
-
-function requestBaseUrl(req){
- const configured=String(PUBLIC_URL||"").trim();
- if(configured && !/localhost|127\\.0\\.0\\.1/i.test(configured))return configured;
- const proto=String(req.headers["x-forwarded-proto"]||req.protocol||"http").split(",")[0].trim();
- const host=String(req.headers["x-forwarded-host"]||req.get("host")||"").split(",")[0].trim();
- return host ? `${proto}://${host}` : `http://localhost:${PORT}`;
-}
-app.get("/api/payment-qr",async(req,res)=>{
- try{
-   const url=`${requestBaseUrl(req)}/payment.html?source=qr`;
-   const qr=await QRCode.toDataURL(url,{margin:2,width:520,errorCorrectionLevel:"H"});
-   res.json({ok:true,url,qr});
- }catch(err){console.error("payment QR failed:",err);res.status(500).json({ok:false,error:"Unable to create payment QR."});}
-});
-
-async function findOrCreatePlayer({name,registerNumber,phone}={}){
- if(!db)throw new Error("Database not configured");
- const playerName=String(name||"").trim().slice(0,150);
- const register=String(registerNumber||"").trim().slice(0,100);
- const mobile=String(phone||"").trim().slice(0,40);
- if(!playerName || !register)throw new Error("Player name and register number are required.");
- let [rows]=await db.query(
-   `SELECT id,player_name AS playerName,register_number AS registerNumber,phone_number AS phoneNumber
-    FROM players
-    WHERE register_number=? ${mobile?"OR phone_number=?":""}
-    ORDER BY id ASC LIMIT 1`,
-   mobile?[register,mobile]:[register]
- );
- if(rows[0]){
-   if(mobile){
-     await db.query(
-       `UPDATE players SET player_name=?,register_number=?,phone_number=? WHERE id=?`,
-       [playerName,register,mobile,rows[0].id]
-     );
-   }else{
-     await db.query(
-       `UPDATE players SET player_name=?,register_number=? WHERE id=?`,
-       [playerName,register,rows[0].id]
-     );
-   }
-   return {id:rows[0].id,playerName,registerNumber:register,phoneNumber:mobile||rows[0].phoneNumber||""};
- }
- const [r]=await db.query(
-   `INSERT INTO players(player_name,register_number,phone_number) VALUES(?,?,?)`,
-   [playerName,register,mobile||null]
- );
- return {id:r.insertId,playerName,registerNumber:register,phoneNumber:mobile};
-}
-
 async function upsertGameLog({roomCode,player,amountWon=0,resultStatus="PLAYED",safeQuit=false,entryFee=0,playedAt=new Date()}){
  if(!db||!player)return;
  try{
-   const p=await findOrCreatePlayer({
-     name:player.name,
-     registerNumber:player.employeeCode,
-     phone:player.phone||""
-   });
+   let phone="";
+   const [payRows]=await db.query(`SELECT phone FROM payment_records WHERE register_number=? ORDER BY payment_date DESC,created_at DESC LIMIT 1`,[String(player.employeeCode||"")]);
+   if(payRows[0]?.phone)phone=payRows[0].phone;
    await db.query(
-    `INSERT INTO game_results(player_id,room_code,game_type,played_at,amount_won,entry_fee,result_status,safe_quit)
-     VALUES(?,?,?,?,?,?,?,?)
+    `INSERT INTO player_game_logs(room_code,game_type,player_name,register_number,phone,played_at,amount_won,entry_fee,result_status,safe_quit)
+     VALUES(?,?,?,?,?,?,?,?,?,?)
      ON DUPLICATE KEY UPDATE
-       played_at=VALUES(played_at),
-       amount_won=VALUES(amount_won),
-       entry_fee=VALUES(entry_fee),
-       result_status=VALUES(result_status),
-       safe_quit=VALUES(safe_quit)`,
-    [p.id,String(roomCode||""),"GamesArena Quiz",playedAt,Number(amountWon||0),Number(entryFee||0),String(resultStatus||"PLAYED"),safeQuit?1:0]
+       player_name=VALUES(player_name),phone=COALESCE(NULLIF(VALUES(phone),''),phone),
+       amount_won=VALUES(amount_won),result_status=VALUES(result_status),safe_quit=VALUES(safe_quit),entry_fee=VALUES(entry_fee)`,
+    [String(roomCode||""),"GamesArena Quiz",String(player.name||"").slice(0,120),String(player.employeeCode||"").slice(0,80),phone,playedAt,Number(amountWon||0),Number(entryFee||0),String(resultStatus||"PLAYED"),safeQuit?1:0]
    );
  }catch(err){console.error("player game log failed:",err.message)}
 }
-
 function cleanPayment(body){
  const b=body||{};
  const method=String(b.paymentMethod||b.method||"").trim();
  const allowed=["Cash","UPI","Card","Other"];
  return {
-   playerName:String(b.playerName||"").trim().slice(0,150),
-   registerNumber:String(b.registerNumber||"").trim().slice(0,100),
+   playerName:String(b.playerName||"").trim().slice(0,120),
+   registerNumber:String(b.registerNumber||"").trim().slice(0,80),
    phone:String(b.phone||"").trim().slice(0,40),
    paymentDate:String(b.paymentDate||"").trim(),
    entryFee:Number(b.entryFee||0),
@@ -283,266 +165,142 @@ function validPayment(p){
    && p.paymentMethod && Number.isFinite(p.amountPaid)&&p.amountPaid>=0;
 }
 
-/* Public payment form: creates/updates the player and stores the payment
-   itself as PENDING in the payments table. The host later approves it. */
 app.post("/api/payment-submissions",async(req,res)=>{
  if(!db)return res.status(503).json({ok:false,error:"Payment database is not configured. Please contact the host."});
  const p=cleanPayment(req.body);
  if(!validPayment(p))return res.status(400).json({ok:false,error:"Please complete all required payment fields."});
  try{
-   const player=await findOrCreatePlayer({name:p.playerName,registerNumber:p.registerNumber,phone:p.phone});
    const [r]=await db.query(
-    `INSERT INTO payments(player_id,payment_date,entry_fee,payment_method,transaction_reference,amount_paid,notes,status,submitted_at)
-     VALUES(?,?,?,?,?,?,?,?,NOW())`,
-    [player.id,p.paymentDate,p.entryFee,p.paymentMethod,p.transactionReference||null,p.amountPaid,p.notes||null,"PENDING"]
+    `INSERT INTO payment_submissions(player_name,register_number,phone,payment_date,entry_fee,payment_method,transaction_reference,amount_paid,notes)
+     VALUES(?,?,?,?,?,?,?,?,?)`,
+    [p.playerName,p.registerNumber,p.phone,p.paymentDate,p.entryFee,p.paymentMethod,p.transactionReference||null,p.amountPaid,p.notes||null]
    );
-   res.json({ok:true,id:r.insertId,message:"Payment submitted. The host will review and save it."});
+   res.json({ok:true,id:r.insertId,message:"Payment submitted. The host will review it."});
  }catch(err){console.error("payment submission failed:",err);res.status(500).json({ok:false,error:"Unable to save the payment submission."});}
 });
 
-app.get("/api/payment-admin/players",requirePaymentAdmin,async(req,res)=>{
+app.get("/api/host/payment-submissions",requireHost,async(req,res)=>{
  if(!db)return res.status(503).json({error:"Database not configured"});
  try{
-   const [rows]=await db.query(
-     `SELECT id,player_name AS playerName,register_number AS registerNumber,phone_number AS phoneNumber
-      FROM players ORDER BY player_name ASC LIMIT 1000`
-   );
+   const [rows]=await db.query(`SELECT id,player_name AS playerName,register_number AS registerNumber,phone,payment_date AS paymentDate,entry_fee AS entryFee,payment_method AS paymentMethod,transaction_reference AS transactionReference,amount_paid AS amountPaid,notes,status,submitted_at AS submittedAt FROM payment_submissions WHERE status='PENDING' ORDER BY submitted_at DESC LIMIT 200`);
    res.json({ok:true,rows});
- }catch(err){res.status(500).json({error:"Unable to load players."});}
+ }catch(err){res.status(500).json({error:"Unable to load payment submissions."});}
 });
-
-app.get("/api/payment-admin/payment-submissions",requirePaymentAdmin,async(req,res)=>{
- if(!db)return res.status(503).json({error:"Database not configured"});
- try{
-   const [rows]=await db.query(
-    `SELECT p.id,p.player_id AS playerId,
-            pl.player_name AS playerName,pl.register_number AS registerNumber,pl.phone_number AS phone,
-            p.payment_date AS paymentDate,p.entry_fee AS entryFee,p.payment_method AS paymentMethod,
-            p.transaction_reference AS transactionReference,p.amount_paid AS amountPaid,p.notes,
-            p.status,p.submitted_at AS submittedAt
-     FROM payments p
-     JOIN players pl ON pl.id=p.player_id
-     WHERE p.status='PENDING'
-     ORDER BY p.submitted_at DESC LIMIT 200`
-   );
-   res.json({ok:true,rows});
- }catch(err){console.error("pending payments failed:",err.message);res.status(500).json({error:"Unable to load payment submissions."});}
-});
-
-app.get("/api/payment-admin/payments",requirePaymentAdmin,async(req,res)=>{
+app.get("/api/host/payments",requireHost,async(req,res)=>{
  if(!db)return res.status(503).json({error:"Database not configured"});
  const q=String(req.query.q||"").trim();
  try{
    const [rows]=await db.query(
-    `SELECT p.id,p.player_id AS playerId,
-            pl.player_name AS playerName,pl.register_number AS registerNumber,pl.phone_number AS phone,
-            p.payment_date AS paymentDate,p.entry_fee AS entryFee,p.payment_method AS paymentMethod,
-            p.transaction_reference AS transactionReference,p.amount_paid AS amountPaid,p.notes,
-            p.status,p.submitted_at AS submittedAt,p.reviewed_at AS reviewedAt,p.created_by AS createdBy
-     FROM payments p
-     JOIN players pl ON pl.id=p.player_id
-     ${q?"WHERE pl.player_name LIKE ? OR pl.phone_number LIKE ? OR pl.register_number LIKE ?":""}
-     ORDER BY p.payment_date DESC,p.id DESC LIMIT 500`,
+    `SELECT id,submission_id AS submissionId,player_name AS playerName,register_number AS registerNumber,phone,payment_date AS paymentDate,entry_fee AS entryFee,payment_method AS paymentMethod,transaction_reference AS transactionReference,amount_paid AS amountPaid,notes,created_at AS createdAt,created_by AS createdBy
+     FROM payment_records
+     ${q?"WHERE player_name LIKE ? OR phone LIKE ? OR register_number LIKE ?":""}
+     ORDER BY payment_date DESC,created_at DESC LIMIT 300`,
     q?[`%${q}%`,`%${q}%`,`%${q}%`]:[]
    );
    res.json({ok:true,rows});
  }catch(err){console.error("payment lookup failed:",err);res.status(500).json({error:"Unable to load payment records."});}
 });
-
-app.post("/api/payment-admin/payments",requirePaymentAdmin,async(req,res)=>{
+app.post("/api/host/payments",requireHost,async(req,res)=>{
  if(!db)return res.status(503).json({ok:false,error:"Database not configured"});
  const p=cleanPayment(req.body);
  if(!validPayment(p))return res.status(400).json({ok:false,error:"Please complete all required payment fields."});
- const paymentId=req.body?.submissionId?Number(req.body.submissionId):0;
+ const submissionId=req.body?.submissionId?Number(req.body.submissionId):null;
+ const conn=db;
  try{
-   const player=await findOrCreatePlayer({name:p.playerName,registerNumber:p.registerNumber,phone:p.phone});
-   if(paymentId){
-     const [r]=await db.query(
-       `UPDATE payments
-        SET player_id=?,payment_date=?,entry_fee=?,payment_method=?,transaction_reference=?,
-            amount_paid=?,notes=?,status='APPROVED',reviewed_at=NOW(),created_by=?
-        WHERE id=?`,
-       [player.id,p.paymentDate,p.entryFee,p.paymentMethod,p.transactionReference||null,p.amountPaid,p.notes||null,PAYMENT_USERNAME,paymentId]
-     );
-     if(!r.affectedRows)return res.status(404).json({ok:false,error:"Payment submission not found."});
-     return res.json({ok:true,id:paymentId});
-   }
-   const [r]=await db.query(
-     `INSERT INTO payments(player_id,payment_date,entry_fee,payment_method,transaction_reference,amount_paid,notes,status,reviewed_at,created_by)
-      VALUES(?,?,?,?,?,?,?,'APPROVED',NOW(),?)`,
-     [player.id,p.paymentDate,p.entryFee,p.paymentMethod,p.transactionReference||null,p.amountPaid,p.notes||null,PAYMENT_USERNAME]
+   const [r]=await conn.query(
+    `INSERT INTO payment_records(submission_id,player_name,register_number,phone,payment_date,entry_fee,payment_method,transaction_reference,amount_paid,notes,created_by)
+     VALUES(?,?,?,?,?,?,?,?,?,?,?)`,
+    [submissionId||null,p.playerName,p.registerNumber,p.phone,p.paymentDate,p.entryFee,p.paymentMethod,p.transactionReference||null,p.amountPaid,p.notes||null,HOST_USERNAME]
    );
+   if(submissionId){
+     await conn.query(`UPDATE payment_submissions SET status='APPROVED',reviewed_at=NOW() WHERE id=?`,[submissionId]);
+   }
    res.json({ok:true,id:r.insertId});
  }catch(err){console.error("payment record save failed:",err);res.status(500).json({ok:false,error:"Unable to save the payment record."});}
 });
-
-app.post("/api/payment-admin/payment-submissions/:id/reject",requirePaymentAdmin,async(req,res)=>{
+app.post("/api/host/payment-submissions/:id/reject",requireHost,async(req,res)=>{
  if(!db)return res.status(503).json({ok:false,error:"Database not configured"});
  try{
-   const [r]=await db.query(`UPDATE payments SET status='REJECTED',reviewed_at=NOW(),created_by=? WHERE id=?`,[PAYMENT_USERNAME,Number(req.params.id)]);
-   res.json({ok:r.affectedRows>0});
+   await db.query(`UPDATE payment_submissions SET status='REJECTED',reviewed_at=NOW() WHERE id=?`,[Number(req.params.id)]);
+   res.json({ok:true});
  }catch(err){res.status(500).json({ok:false,error:"Unable to reject the submission."});}
 });
-
-app.get("/api/payment-admin/player-logs",requirePaymentAdmin,async(req,res)=>{
+app.get("/api/host/player-logs",requireHost,async(req,res)=>{
  if(!db)return res.status(503).json({error:"Database not configured"});
  const q=String(req.query.q||"").trim();
  try{
    const [rows]=await db.query(
-    `SELECT g.id,g.room_code AS roomCode,g.game_type AS gameType,
-            pl.player_name AS playerName,pl.register_number AS registerNumber,pl.phone_number AS phone,
-            g.played_at AS playedAt,g.entry_fee AS entryFee,g.amount_won AS amountWon,
-            g.result_status AS resultStatus,g.safe_quit AS safeQuit
-     FROM game_results g
-     JOIN players pl ON pl.id=g.player_id
-     ${q?"WHERE pl.player_name LIKE ? OR pl.phone_number LIKE ? OR pl.register_number LIKE ?":""}
-     ORDER BY g.played_at DESC LIMIT 500`,
+    `SELECT id,room_code AS roomCode,game_type AS gameType,player_name AS playerName,register_number AS registerNumber,phone,played_at AS playedAt,entry_fee AS entryFee,amount_won AS amountWon,result_status AS resultStatus,safe_quit AS safeQuit
+     FROM player_game_logs
+     ${q?"WHERE player_name LIKE ? OR phone LIKE ? OR register_number LIKE ?":""}
+     ORDER BY played_at DESC LIMIT 500`,
     q?[`%${q}%`,`%${q}%`,`%${q}%`]:[]
    );
    res.json({ok:true,rows});
- }catch(err){console.error("player history failed:",err);res.status(500).json({error:"Unable to load player history."});}
+ }catch(err){res.status(500).json({error:"Unable to load player history."});}
 });
 
-;
+app.use(express.json());
 app.use(express.static(path.join(__dirname,"public")));
 app.get("/healthz",(req,res)=>res.status(200).json({ok:true,service:"gamesarena"}));
 
 const fallback=[];
-async function ensureColumn(table,column,definition){
- const [rows]=await db.query(
-   `SELECT COUNT(*) AS c FROM information_schema.COLUMNS
-    WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND COLUMN_NAME=?`,
-   [table,column]
- );
- if(!Number(rows[0]?.c)){
-   await db.query(`ALTER TABLE \`${table}\` ADD COLUMN ${definition}`);
- }
-}
-async function ensureIndex(table,indexName,definition){
- const [rows]=await db.query(
-   `SELECT COUNT(*) AS c FROM information_schema.STATISTICS
-    WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND INDEX_NAME=?`,
-   [table,indexName]
- );
- if(!Number(rows[0]?.c)){
-   try{ await db.query(`ALTER TABLE \`${table}\` ADD ${definition}`); }
-   catch(err){ console.warn(`Could not add index ${indexName}:`,err.message); }
- }
-}
-
+let db=null;
 async function initDb(){
- if(!process.env.DB_HOST){
-   console.warn("DB_HOST is not configured; MySQL features will remain unavailable.");
-   return;
- }
- db=await mysql.createPool({
-   host:process.env.DB_HOST,
-   user:process.env.DB_USER,
-   password:process.env.DB_PASSWORD,
-   database:process.env.DB_NAME,
-   port:Number(process.env.DB_PORT||3306),
-   connectionLimit:5,
-   waitForConnections:true,
-   queueLimit:0
- });
-
- await db.query(`CREATE TABLE IF NOT EXISTS questions(
-   id INT AUTO_INCREMENT PRIMARY KEY,
-   text_q TEXT NOT NULL,
-   option_a VARCHAR(500) NOT NULL,
-   option_b VARCHAR(500) NOT NULL,
-   option_c VARCHAR(500) NOT NULL,
-   option_d VARCHAR(500) NOT NULL,
-   answer_idx TINYINT NOT NULL,
-   points INT NOT NULL DEFAULT 100
- )`);
-
- /* These are the four application tables created for GamesArena. */
- await db.query(`CREATE TABLE IF NOT EXISTS host_users(
-   id INT AUTO_INCREMENT PRIMARY KEY,
-   username VARCHAR(100) NOT NULL UNIQUE,
-   password_hash VARCHAR(255) NOT NULL,
-   password_salt VARCHAR(255) NULL,
-   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
- )`);
-
- await db.query(`CREATE TABLE IF NOT EXISTS payment_users(
-   id INT AUTO_INCREMENT PRIMARY KEY,
-   username VARCHAR(100) NOT NULL UNIQUE,
-   password_hash VARCHAR(255) NOT NULL,
-   password_salt VARCHAR(255) NULL,
-   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
- )`);
-
- await db.query(`CREATE TABLE IF NOT EXISTS players(
-   id INT AUTO_INCREMENT PRIMARY KEY,
-   player_name VARCHAR(150) NOT NULL,
-   register_number VARCHAR(100),
-   phone_number VARCHAR(30),
-   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
- )`);
-
- await db.query(`CREATE TABLE IF NOT EXISTS game_results(
-   id INT AUTO_INCREMENT PRIMARY KEY,
-   player_id INT NOT NULL,
+ if(!process.env.DB_HOST)return;
+ db=await mysql.createPool({host:process.env.DB_HOST,user:process.env.DB_USER,password:process.env.DB_PASSWORD,database:process.env.DB_NAME,port:Number(process.env.DB_PORT||3306),connectionLimit:5});
+ await db.query(`CREATE TABLE IF NOT EXISTS questions(id INT AUTO_INCREMENT PRIMARY KEY,text_q TEXT NOT NULL,option_a VARCHAR(500) NOT NULL,option_b VARCHAR(500) NOT NULL,option_c VARCHAR(500) NOT NULL,option_d VARCHAR(500) NOT NULL,answer_idx TINYINT NOT NULL,points INT NOT NULL DEFAULT 100)`);
+ await db.query(`CREATE TABLE IF NOT EXISTS player_game_logs(
+   id BIGINT AUTO_INCREMENT PRIMARY KEY,
+   room_code VARCHAR(20) NOT NULL,
+   game_type VARCHAR(60) NOT NULL DEFAULT 'GamesArena Quiz',
+   player_name VARCHAR(120) NOT NULL,
+   register_number VARCHAR(80) NOT NULL,
+   phone VARCHAR(40) NULL,
    played_at DATETIME NOT NULL,
-   amount_won DECIMAL(10,2) DEFAULT 0,
-   FOREIGN KEY (player_id) REFERENCES players(id)
+   amount_won DECIMAL(10,2) NOT NULL DEFAULT 0,
+   entry_fee DECIMAL(10,2) NOT NULL DEFAULT 0,
+   result_status VARCHAR(40) NOT NULL DEFAULT 'PLAYED',
+   safe_quit TINYINT(1) NOT NULL DEFAULT 0,
+   UNIQUE KEY uq_room_player (room_code,register_number)
  )`);
-
- await db.query(`CREATE TABLE IF NOT EXISTS payments(
-   id INT AUTO_INCREMENT PRIMARY KEY,
-   player_id INT NOT NULL,
-   entry_fee DECIMAL(10,2) DEFAULT 0,
-   payment_method VARCHAR(30) NOT NULL,
-   transaction_reference VARCHAR(160),
-   amount_paid DECIMAL(10,2) NOT NULL,
+ await db.query(`CREATE TABLE IF NOT EXISTS payment_submissions(
+   id BIGINT AUTO_INCREMENT PRIMARY KEY,
+   player_name VARCHAR(120) NOT NULL,
+   register_number VARCHAR(80) NOT NULL,
+   phone VARCHAR(40) NOT NULL,
    payment_date DATE NOT NULL,
-   notes TEXT,
-   FOREIGN KEY (player_id) REFERENCES players(id)
+   entry_fee DECIMAL(10,2) NOT NULL DEFAULT 0,
+   payment_method VARCHAR(30) NOT NULL,
+   transaction_reference VARCHAR(160) NULL,
+   amount_paid DECIMAL(10,2) NOT NULL DEFAULT 0,
+   notes TEXT NULL,
+   status VARCHAR(30) NOT NULL DEFAULT 'PENDING',
+   submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   reviewed_at DATETIME NULL,
+   INDEX idx_payment_phone(phone),
+   INDEX idx_payment_name(player_name)
  )`);
-
- /* Upgrade the simple tables above with the fields needed by the live app.
-    Existing user data is preserved. */
- await ensureColumn("players","register_number","register_number VARCHAR(100)");
- await ensureColumn("players","phone_number","phone_number VARCHAR(30)");
- await ensureColumn("game_results","room_code","room_code VARCHAR(20) NOT NULL DEFAULT ''");
- await ensureColumn("game_results","game_type","game_type VARCHAR(60) NOT NULL DEFAULT 'GamesArena Quiz'");
- await ensureColumn("game_results","entry_fee","entry_fee DECIMAL(10,2) NOT NULL DEFAULT 0");
- await ensureColumn("game_results","result_status","result_status VARCHAR(40) NOT NULL DEFAULT 'PLAYED'");
- await ensureColumn("game_results","safe_quit","safe_quit TINYINT(1) NOT NULL DEFAULT 0");
- await ensureColumn("payments","status","status VARCHAR(20) NOT NULL DEFAULT 'PENDING'");
- await ensureColumn("payments","submitted_at","submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP");
- await ensureColumn("payments","reviewed_at","reviewed_at DATETIME NULL");
- await ensureColumn("payments","created_by","created_by VARCHAR(100) NULL");
-
- await ensureIndex("players","idx_players_register","INDEX idx_players_register (register_number)");
- await ensureIndex("players","idx_players_phone","INDEX idx_players_phone (phone_number)");
- await ensureIndex("game_results","uq_game_room_player","UNIQUE KEY uq_game_room_player (room_code,player_id)");
- await ensureIndex("game_results","idx_game_played_at","INDEX idx_game_played_at (played_at)");
- await ensureIndex("payments","idx_payments_status","INDEX idx_payments_status (status)");
- await ensureIndex("payments","idx_payments_date","INDEX idx_payments_date (payment_date)");
-
- /* Bootstrap the requested host account if it doesn't exist yet.
-    Password is never stored in plaintext; these are the scrypt values
-    already used by the application. */
- await db.query(
-   `INSERT INTO host_users(username,password_hash,password_salt)
-    VALUES(?,?,?)
-    ON DUPLICATE KEY UPDATE username=username`,
-   [HOST_USERNAME,HOST_PASSWORD_HASH,HOST_PASSWORD_SALT]
- );
-
- await db.query(
-   `INSERT INTO payment_users(username,password_hash,password_salt)
-    VALUES(?,?,?)
-    ON DUPLICATE KEY UPDATE password_hash=VALUES(password_hash),password_salt=VALUES(password_salt)`,
-   [PAYMENT_USERNAME,PAYMENT_PASSWORD_HASH,PAYMENT_PASSWORD_SALT]
- );
-
- console.log("GamesArena MySQL schema ready.");
+ await db.query(`CREATE TABLE IF NOT EXISTS payment_records(
+   id BIGINT AUTO_INCREMENT PRIMARY KEY,
+   submission_id BIGINT NULL,
+   player_name VARCHAR(120) NOT NULL,
+   register_number VARCHAR(80) NOT NULL,
+   phone VARCHAR(40) NOT NULL,
+   payment_date DATE NOT NULL,
+   entry_fee DECIMAL(10,2) NOT NULL DEFAULT 0,
+   payment_method VARCHAR(30) NOT NULL,
+   transaction_reference VARCHAR(160) NULL,
+   amount_paid DECIMAL(10,2) NOT NULL DEFAULT 0,
+   notes TEXT NULL,
+   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   created_by VARCHAR(80) NOT NULL DEFAULT 'venkat',
+   INDEX idx_record_phone(phone),
+   INDEX idx_record_name(player_name)
+ )`);
+ // v59: bundled questions.json is authoritative; do not seed the old
+ // fallback questions into the database.
 }
-
 async function questions(){
  const bank=JSON.parse(fs.readFileSync(path.join(__dirname,"questions.json"),"utf8"));
  return structuredClone(bank);
@@ -1131,7 +889,7 @@ io.on("connection",s=>{
    if(r.hostToken!==wanted)continue;
    if(r.hostDisconnectTimer){clearTimeout(r.hostDisconnectTimer);r.hostDisconnectTimer=null}
    r.host=s.id;s.join(code);s.data.room=code;s.data.role="host";
-   s.emit("room",{code,hostToken:r.hostToken,joinUrl:r.joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});
+   s.emit("room",{code,hostToken:r.hostToken,joinUrl:r.joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr,paymentUrl:r.paymentUrl,paymentQr:r.paymentQr});
    emitState(code);
    return;
  }
@@ -1161,6 +919,8 @@ s.on("host:create",async(_payload={},ack)=>{
     r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});
     r.audiencePollUrl=`${base}/audience.html?room=${code}`;
     r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});
+    r.paymentUrl=`${base}/payment.html`;
+    r.paymentQr=await QRCode.toDataURL(r.paymentUrl,{margin:1,width:280});
 
     const payload={
       code,hostToken:r.hostToken,joinUrl,qr:r.joinQr,
@@ -1326,19 +1086,6 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
    return;
  }
  r.contestantId=r.winner.id;
- // Create a history row for every registered participant in this room.
- // The eventual contestant row is then updated as the game progresses.
- const registeredNow=new Date();
- for(const participant of r.users.values()){
-   await upsertGameLog({
-     roomCode:s.data.room,
-     player:participant,
-     amountWon:Number(participant.prizeWon||0),
-     resultStatus:"REGISTERED",
-     safeQuit:false,
-     playedAt:registeredNow
-   });
- }
  // Mark the player as having participated as soon as the host starts the
  // quiz. This prevents the same player from appearing in any later
  // Fastest Finger selection, even if they are eliminated before the quiz is completed.
