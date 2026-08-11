@@ -5,9 +5,17 @@ function show(id){
   ["join","lobby","controller"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
 }
 function connect(){
-  sock=io("/runner");
-  sock.on("joined",m=>{
-    room=m.room; role=m.host?"host":"player"; pid=sock.id;
+  sock=io("/runner",{transports:["websocket","polling"],reconnection:true});
+  sock.on("connect_error",e=>{$("msg").textContent="Connection problem — retrying…";});
+  sock.on("waitingForRoom",m=>{$("msg").textContent=m.message||"Waiting for the Host…";});
+
+  sock.on("reconnect",()=>{
+  const saved=localStorage.getItem("gaRunnerRoom");
+  const name=localStorage.getItem("gaRunnerName")||$("name").value.trim()||"Player";
+  if(saved) sock.emit("resume",{room:saved,name});
+});
+sock.on("joined",m=>{
+    room=m.room; role=m.host?"host":"player"; pid=sock.id; localStorage.setItem("gaRunnerRoom",room); localStorage.setItem("gaRunnerName",$("name").value.trim()||"Player");
     $("code").textContent=room; show("lobby");
   });
   sock.on("state",render);
@@ -20,9 +28,22 @@ function join(kind){
   const name=$("name").value.trim();
   if(!name)return $("msg").textContent="Enter your name.";
   connect();
-  sock.once("connect",()=>sock.emit(kind,kind==="join"?{name,room:$("room").value.trim()}:{name}));
+  sock.once("connect",()=>{
+  const code=kind==="join"?$("room").value.trim():$("room").value.trim();
+  if(kind==="create") sock.emit("create",{name});
+  else sock.emit("join",{name,room:code});
+});
 }
-$("create").onclick=()=>join("create");
+const savedRoom=localStorage.getItem("gaRunnerRoom");
+const savedName=localStorage.getItem("gaRunnerName");
+if(savedName) $("name").value=savedName;
+if(savedRoom) $("room").value=savedRoom;
+
+$("create").onclick=()=>{
+  localStorage.removeItem("gaRunnerRoom");
+  localStorage.removeItem("gaRunnerName");
+  join("create");
+};
 $("join").onclick=()=>join("join");
 $("start").onclick=()=>sock.emit("start");
 

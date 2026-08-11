@@ -519,3 +519,19 @@
   .cardMatchPage .cmParticipantIdentity{padding:10px 12px}
   .cardMatchPage .cmParticipantIdentity b{font-size:17px}
 }
+
+/* Compact GamesArena hero/logo on Card Match lobby screens */
+.cardMatchPage .cmBrokenSafeLogo{
+  display:block!important;
+  width:min(260px,42vw)!important;
+  max-width:260px!important;
+  height:auto!important;
+  max-height:150px!important;
+  object-fit:contain!important;
+  margin:0 auto 12px!important;
+}
+@media(max-width:650px){
+  .cardMatchPage .cmBrokenSafeLogo{
+    width:min(190px,58vw)!important;max-width:190px!important;max-height:110px!important;
+  }
+}

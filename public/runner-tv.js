@@ -1,6 +1,13 @@
 const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");let sock=io("/runner"),room=new URLSearchParams(location.search).get("room")||"",state=null,cam=0;
 function resize(){canvas.width=innerWidth*devicePixelRatio;canvas.height=innerHeight*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}addEventListener("resize",resize);resize();
-sock.on("connect",()=>{if(room)sock.emit("tv",{room})});sock.on("joined",m=>{room=m.room});sock.on("state",s=>{state=s;document.getElementById("room").textContent="ROOM "+s.code;render()});sock.on("errorMsg",m=>document.getElementById("room").textContent=m);
+function findRoom(){
+  if(room) sock.emit("tv",{room});
+}
+sock.on("connect",findRoom);
+sock.on("waitingForRoom",m=>{
+  document.getElementById("room").textContent=`WAITING • ROOM ${m.room||room}`;
+  setTimeout(findRoom,2000);
+});sock.on("joined",m=>{room=m.room});sock.on("state",s=>{state=s;document.getElementById("room").textContent="ROOM "+s.code;render()});sock.on("errorMsg",m=>{document.getElementById("room").textContent=m;setTimeout(findRoom,2500);});
 function render(){if(!state)return;const W=innerWidth,H=innerHeight;cam=Math.max(0,Math.min(3200-W,(state.players.find(p=>!p.finished)||state.players[0])?.x-W*.35||0));ctx.clearRect(0,0,W,H);
 const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,"#75d6dd");grad.addColorStop(.55,"#2d8991");grad.addColorStop(1,"#0a3d45");ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
 drawCloud(280-cam*.2,120);drawCloud(900-cam*.2,180);drawCloud(1900-cam*.2,110);

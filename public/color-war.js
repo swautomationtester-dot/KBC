@@ -11,19 +11,29 @@ function renderPlayers(){
  cw$("playerCount").textContent=`${cwState?.players?.length||0}/4`;
 }
 function makeQr(el,url,size=135){el.innerHTML="";if(window.QRCode&&url)new QRCode(el,{text:url,width:size,height:size,colorDark:"#07191b",colorLight:"#ffffff"});}
+let cwIsHost=false;
 function setupRoom(msg){
+ cwIsHost=true;
  cwCodeValue=msg.code;
  cw$("code").textContent=msg.code;
  cw$("joinUrl").textContent=msg.joinUrl;
  cw$("tvUrl").textContent=msg.tvUrl;
  cw$("tvLink").href=msg.tvUrl;
- makeQr(cw$("qr"),msg.joinUrl,130);makeQr(cw$("tvQr"),msg.tvUrl,130);
+ const qr=cw$("qr"),tvqr=cw$("tvQr");
+ if(qr){qr.innerHTML=""; if(msg.joinQr){const im=new Image();im.src=msg.joinQr;im.alt="Join QR";qr.appendChild(im)}else makeQr(qr,msg.joinUrl,130);}
+ if(tvqr){tvqr.innerHTML=""; if(msg.tvQr){const im=new Image();im.src=msg.tvQr;im.alt="TV QR";tvqr.appendChild(im)}else makeQr(tvqr,msg.tvUrl,130);}
  cwShow("lobby");renderPlayers();
 }
 function render(){
  if(!cwState)return;
  renderPlayers();
- if(cwState.status==="lobby"){cwShow("lobby");cw$("start").disabled=cwState.players.length<2;return}
+ if(cwState.status==="lobby"){
+   cwShow("lobby");
+   cw$("start").classList.toggle("hidden",!cwIsHost);
+   cw$("restart").classList.toggle("hidden",!cwIsHost);
+   cw$("start").disabled=cwState.players.length<2;
+   return;
+ }
  if(cwState.status==="finished"){
    const w=cwState.players.find(p=>p.id===cwState.winner);cw$("winnerText").textContent=w?`${w.name} wins the Color War!`:"Color War complete";
    cw$("winnerSub").textContent="The TV screen has the final battle result. Start another round when you're ready.";
@@ -51,7 +61,7 @@ function render(){
 function capacity(i){const r=Math.floor(i/5),c=i%5;return((r===0||r===4)&&(c===0||c===4))?2:(r===0||r===4||c===0||c===4)?3:4}
 function colorClass(hex){return {"#ff5c7a":"red","#20b7df":"blue","#7b61ff":"purple","#f2b84b":"yellow"}[hex]||""}
 cwSocket.on("cw:room",setupRoom);
-cwSocket.on("cw:joined",m=>{cwMe=m.playerId;cwToken=m.playerToken||cwToken;localStorage.setItem("cwPlayerId",cwMe);if(cwToken)localStorage.setItem("cwPlayerToken",cwToken);cwCodeValue=m.code});
+cwSocket.on("cw:joined",m=>{cwIsHost=false;cwMe=m.playerId;cwToken=m.playerToken||cwToken;localStorage.setItem("cwPlayerId",cwMe);if(cwToken)localStorage.setItem("cwPlayerToken",cwToken);cwCodeValue=m.code});
 cwSocket.on("cw:state",s=>{cwState=s;render()});
 cwSocket.on("cw:error",e=>toast(e.message||"Something went wrong"));
 cwSocket.on("connect",()=>{

@@ -107,7 +107,13 @@ function renderPoll(x){
  if($("pollUrl"))$("pollUrl").textContent=st.audiencePollUrl||"";
  if($("pollQuestionTitle"))$("pollQuestionTitle").textContent=st.question?.text||"Audience Poll";
  let pollTimerBadge=stage.querySelector(".pollTimerBadge");if(!pollTimerBadge){pollTimerBadge=document.createElement("div");pollTimerBadge.className="pollTimerBadge";stage.querySelector(".tvkicker")?.after(pollTimerBadge);}
- const timerText=()=>{let ms=Number(st.pollTimerRemaining||0);if(st.pollTimerRunning&&st.pollTimerStartAt)ms=Math.max(0,ms-(Date.now()-st.pollTimerStartAt));pollTimerBadge.textContent=`HOST TIMER • ${(ms/1000).toFixed(1)}s`;};
+ const timerText=()=>{
+   let ms=Number(st.pollTimerRemaining||60000);
+   if(st.pollTimerRunning&&st.pollTimerStartAt)ms=Math.max(0,ms-(Date.now()-st.pollTimerStartAt));
+   pollTimerBadge.textContent=st.pollTimerRunning
+     ? `HOST TIMER • ${(ms/1000).toFixed(1)}s`
+     : `WAITING FOR HOST • 60s READY`;
+ };
  clearInterval(pollTvClock);timerText();if(st.pollTimerRunning)pollTvClock=setInterval(timerText,100);
  const counts={0:0,1:0,2:0,3:0,...(st.pollCounts||{})},total=Object.values(counts).reduce((a,b)=>a+Number(b||0),0);
  const opts=st.question?.options||["Option A","Option B","Option C","Option D"];

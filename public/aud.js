@@ -28,11 +28,11 @@ function renderAnswers(x){
  if(qEl)qEl.textContent=x.question.text;
  if(!aEl)return;
  aEl.innerHTML=x.question.options.map((o,i)=>
-   `<button class="answer ${selected===i?"selectedAnswer":""} ${submitted&&selected===i?"submittedAnswer":""}" data-choice="${i}" ${submitted?"disabled":""}>
+   `<button class="answer ${selected===i?"selectedAnswer":""} ${submitted&&selected===i?"submittedAnswer":""}" data-choice="${i}" ${submitted||!window.__audienceVotingOpen?"disabled":""}>
     <b>${String.fromCharCode(65+i)}.</b> ${o}
    </button>`).join("");
  aEl.querySelectorAll(".answer").forEach(b=>b.addEventListener("click",()=>{
-   if(!pollActive||submitted)return;
+   if(!pollActive||!window.__audienceVotingOpen||submitted)return;
    selected=Number(b.dataset.choice);
    aEl.querySelectorAll(".answer").forEach(z=>z.classList.remove("selectedAnswer","submittedAnswer"));
    b.classList.add("selectedAnswer");
@@ -64,6 +64,7 @@ s.on("state",x=>{
  const wasSubmitted=submitted;
  const previousChoice=selected;
  pollActive=!!x.pollActive;
+ const votingOpen=!!x.pollVotingOpen; window.__audienceVotingOpen=votingOpen;
  if(!pollActive){submitted=false;selected=null}
  if(x.question)renderAnswers(x);
  if(x.pollCounts)renderPoll(x.pollCounts);
@@ -72,13 +73,13 @@ s.on("state",x=>{
    renderAnswers(x);
  }
  setStatus(pollActive
-   ?(submitted?`✓ Vote submitted: ${String.fromCharCode(65+selected)}. Your vote is counted live.`:"🗳️ Poll is open — select your answer.")
+   ?(submitted?`✓ Vote submitted: ${String.fromCharCode(65+selected)}. Your vote is counted live.`:votingOpen?"🗳️ Poll is live — select your answer.":"📺 Poll is ready. Waiting for the Host to start the 60-second countdown…")
    :"Waiting for the Host to open the audience poll…");
 });
 s.on("poll",c=>{
  renderPoll(c);
  const total=Object.values(c||{}).reduce((a,b)=>a+Number(b||0),0);
- if(pollActive && joined && !submitted) setStatus(`🗳️ Poll is live — ${total} vote${total===1?"":"s"} received. Select your answer.`);
+ if(pollActive && window.__audienceVotingOpen && joined && !submitted) setStatus(`🗳️ Poll is live — ${total} vote${total===1?"":"s"} received. Select your answer.`);
 });
 
 s.on("audiencePollStopped",()=>{pollActive=false;submitted=false;selected=null;renderAnswers({question:null});setStatus("Waiting for the Host to open the audience poll…");});

@@ -64,7 +64,32 @@ function demoPrev(){demoIndex=Math.max(0,demoIndex-1);renderDemo()}function open
     return;
   }
   s.emit("host:startQuiz");
-}function next7(){s.emit("host:nextFastest")}function nextQ(){s.emit("host:nextQuestion")}function toggleAudiencePoll(){audiencePollOpen=!audiencePollOpen;s.emit(audiencePollOpen?"host:audiencePollStart":"host:audiencePollStop");updatePollButton()}function updatePollButton(){const b=$("audiencePollBtn");if(!b)return;b.textContent=audiencePollOpen?"🛑 Stop Audience Poll":"🗳️ Start Audience Poll (30s)";b.classList.toggle("danger",audiencePollOpen)}function participants(){const room=$("code").textContent.trim();if(room&&room!=="----")location.href=`/registered.html?room=${room}`}function restartEvent(){if(confirm("Reset the entire event?"))s.emit("host:restartEvent")}
+}function next7(){s.emit("host:nextFastest")}function nextQ(){s.emit("host:nextQuestion")}function toggleAudiencePoll(){
+  if(audiencePollOpen){
+    s.emit("host:audiencePollStop");
+  }else{
+    s.emit("host:audiencePollStart");
+  }
+}
+function updatePollButton(){
+  const b=$("audiencePollBtn"); if(!b)return;
+  const st=window.__hostState||{};
+  const ready=!!st.pollActive;
+  const running=!!st.pollTimerRunning;
+  const connected=Number(st.audienceConnected||0);
+  if(running){
+    b.textContent="🛑 Stop Audience Poll";
+    b.classList.add("danger");
+    b.disabled=false;
+  }else if(ready){
+    b.textContent=connected>0?`▶️ Start 60s Poll • ${connected} scanned`:"⏳ Waiting for Audience Scan…";
+    b.classList.remove("danger");
+    b.disabled=connected<1;
+  }else{
+    b.textContent="🗳️ Show Audience Poll";
+    b.classList.remove("danger");
+  }
+}function participants(){const room=$("code").textContent.trim();if(room&&room!=="----")location.href=`/registered.html?room=${room}`}function restartEvent(){if(confirm("Reset the entire event?"))s.emit("host:restartEvent")}
 function drawTimer(x){
  clearInterval(fastInterval);
  if(x.phase!=="fastest")$("fastTimer").textContent="";
@@ -160,7 +185,11 @@ function updateFlowControls(x){
   const startBtn=$("startQuizBtn");
   if(startBtn) startBtn.textContent=canStart?"▶️ START QUIZ — "+(x.winner?.name||x.contestant?.name||"WINNER"):"▶️ Start Quiz";
   set("nextQuestionBtn",!canNextQ);
-  set("audiencePollBtn",!canPoll);
+  const pollBtn=$("audiencePollBtn");
+  if(pollBtn){
+    const pollNeedsScan=!!x.pollActive&&!x.pollVotingOpen&&Number(x.audienceConnected||0)<1;
+    pollBtn.disabled=!canPoll||pollNeedsScan;
+  }
   set("pauseQuestionTimerBtn",!(canPoll&&x.questionTimerRunning));
   set("resumeQuestionTimerBtn",!(canPoll&&x.questionTimerPaused&&!x.pollActive));
 
@@ -179,7 +208,7 @@ function updateFlowControls(x){
   if(fs)fs.textContent=labels[phase]||String(phase).toUpperCase();
 }
 
-s.on("state",x=>{ audiencePollOpen=!!x.pollActive;renderHostAudiencePoll(x);updatePollButton();updateFlowControls(x);
+s.on("state",x=>{ window.__hostState=x; audiencePollOpen=!!x.pollActive;renderHostAudiencePoll(x);updatePollButton();updateFlowControls(x);
  $("reg").textContent=x.registered;
  const users=x.users||[];
  const played=users.filter(u=>u.status==="completed"||u.status==="eliminated"||u.played||u.inQuiz).length;
@@ -241,7 +270,11 @@ function renderHostAudiencePoll(x){
  if(!x?.pollActive){panel.classList.add("hidden");results.innerHTML="";return;}
  panel.classList.remove("hidden");
  const q=x.question;
- if($("hostAudiencePollQuestion"))$("hostAudiencePollQuestion").textContent=q?.text||"Audience Poll";
+ if($("hostAudiencePollQuestion")){
+   const connected=Number(x.audienceConnected||0);
+   const phase=x.pollTimerRunning?"LIVE • 60 SECOND COUNTDOWN":connected>0?`READY • ${connected} AUDIENCE SCANNED`:"SCAN THE QR CODE ON TV";
+   $("hostAudiencePollQuestion").textContent=`${q?.text||"Audience Poll"} — ${phase}`;
+ }
  const c={0:0,1:0,2:0,3:0,...(x.pollCounts||{})},total=Object.values(c).reduce((a,b)=>a+Number(b||0),0);
  const opts=q?.options||["Option A","Option B","Option C","Option D"];
  results.innerHTML=opts.map((o,i)=>{const n=Number(c[i]||0),pct=total?Math.round(n*100/total):0;return `<div class="pollVoteRow"><div><b>${String.fromCharCode(65+i)}. ${o}</b><strong>${pct}%</strong></div><div class="pollTrack"><i style="width:${pct}%"></i></div><small>${n} vote${n===1?"":"s"}</small></div>`}).join("")+`<div class="pollTotal">${total} total vote${total===1?"":"s"}</div>`;

@@ -1556,3 +1556,79 @@ body:has(.hostPage){background:radial-gradient(1000px 520px at 15% 0%,rgba(31,17
 .hostQuestionTimerBar,.pollTimerBar{border-radius:16px !important;background:#062f35 !important;border:1px solid rgba(241,204,93,.3) !important;padding:13px 15px !important}
 .timerActions button{border-radius:10px !important}
 @media(max-width:980px){.hostGrid{grid-template-columns:1fr !important}.hostPrizeCard{position:static}.hostPage{padding-left:16px !important;padding-right:16px !important}}
+
+
+/* ===== Host Console compact operator layout ===== */
+body:has(.hostPage) .sitebar{height:64px}
+body:has(.hostPage) .hostPage{padding-top:18px!important}
+body:has(.hostPage) .compactHostHeader{
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  margin-bottom:14px!important;padding:0!important;
+}
+body:has(.hostPage) .hostHeaderTitle{display:flex;align-items:center;gap:14px;min-width:0}
+body:has(.hostPage) .hostHeaderTitle .eyebrow{margin:0}
+body:has(.hostPage) .hostConnectionStatus{
+  margin:0!important;padding:6px 10px!important;background:#ffffff08!important;
+  border:1px solid #ffffff12!important;border-radius:999px!important;
+  font-size:11px!important;color:#b8d8d5!important;
+}
+body:has(.hostPage) .hostHeaderActions{display:flex;align-items:center;gap:8px}
+body:has(.hostPage) .createRoomBtn{
+  height:40px!important;min-height:40px!important;padding:0 14px!important;
+  border-radius:10px!important;box-shadow:none!important;margin:0!important;font-size:12px!important;
+}
+body:has(.hostPage) .homeLink{height:40px;display:inline-flex;align-items:center;padding:0 14px!important}
+body:has(.hostPage) .hostGrid{grid-template-columns:minmax(0,1fr) 280px!important;gap:16px!important}
+body:has(.hostPage) .hostRoomSummary{min-height:130px!important;padding:18px 22px!important}
+body:has(.hostPage) .hostRoomSummary .roomLiveBadge{
+  color:#9af0bd;font-weight:950;font-size:10px;letter-spacing:1.5px;
+  padding:8px 10px;border:1px solid #7de4aa44;border-radius:999px;background:#7de4aa0c;
+}
+body:has(.hostPage) .hostPrizeCard{position:static!important;margin-bottom:14px}
+body:has(.hostPage) .hostJoinCard{
+  border:1px solid #ffffff18;border-radius:18px;padding:16px;
+  background:linear-gradient(180deg,#022a2fd9,#02282cd9);
+}
+body:has(.hostPage) .hostJoinCard .sideTitle{margin-bottom:10px}
+body:has(.hostPage) .hostSideQr{
+  display:block;width:150px!important;height:150px!important;object-fit:contain;
+  margin:4px auto 12px;border-radius:12px;background:#fff;padding:5px;
+}
+body:has(.hostPage) .hostLinkBlock{
+  padding:10px 0;border-top:1px solid #ffffff12;
+}
+body:has(.hostPage) .hostLinkBlock>span{
+  display:block;color:var(--gold);font-size:9px;font-weight:950;letter-spacing:1.4px;margin-bottom:4px;
+}
+body:has(.hostPage) .hostLinkBlock p{margin:0}
+body:has(.hostPage) .hostLinkBlock .screenLink{font-size:11px;word-break:break-all}
+body:has(.hostPage) .hostLinkBlock .roomJoinLink{font-size:12px}
+body:has(.hostPage) .hostFlowCard{margin-top:0}
+body:has(.hostPage) .hostFlowCard .sectionHead p{display:none}
+body:has(.hostPage) .answerReview{
+  position:relative;z-index:5;
+  border-width:2px!important;padding:18px!important;
+}
+body:has(.hostPage) .answerReview .reviewButtons{
+  display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;margin-top:12px!important;
+}
+body:has(.hostPage) .answerReview .reviewButtons button{
+  min-height:48px!important;font-size:13px!important;display:flex!important;
+  align-items:center;justify-content:center;opacity:1!important;visibility:visible!important;
+}
+body:has(.hostPage) .answerReview .approve{background:#86e2ae!important;color:#073c2f!important}
+body:has(.hostPage) .answerReview .reject{background:#6b2730!important;color:#fff!important;border:1px solid #ff6b6b!important}
+@media(max-width:1050px){
+ body:has(.hostPage) .hostGrid{grid-template-columns:1fr!important}
+ body:has(.hostPage) .hostSide{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+ body:has(.hostPage) .hostPrizeCard{margin:0}
+ body:has(.hostPage) .hostJoinCard{margin:0}
+}
+@media(max-width:620px){
+ body:has(.hostPage) .compactHostHeader{align-items:flex-start}
+ body:has(.hostPage) .hostHeaderTitle{display:block}
+ body:has(.hostPage) .hostConnectionStatus{margin-top:5px!important}
+ body:has(.hostPage) .hostHeaderActions .homeLink{display:none}
+ body:has(.hostPage) .hostSide{grid-template-columns:1fr}
+ body:has(.hostPage) .answerReview .reviewButtons{grid-template-columns:1fr!important}
+}

@@ -9,7 +9,12 @@ function render(){
  if(!state)return;
  tv$("tvCode").textContent=state.code;
  tv$("tvRoom").textContent=`ROOM ${state.code}`;
- tv$("tvJoinQr").innerHTML="";if(state.joinUrl&&window.QRCode)new QRCode(tv$("tvJoinQr"),{text:state.joinUrl,width:260,height:260,colorDark:"#07191b",colorLight:"#fff"});
+ tv$("tvJoinQr").innerHTML="";
+ if(state.joinQr){
+   const im=new Image();im.src=state.joinQr;im.alt="Scan to join";tv$("tvJoinQr").appendChild(im);
+ }else if(state.joinUrl&&window.QRCode){
+   new QRCode(tv$("tvJoinQr"),{text:state.joinUrl,width:260,height:260,colorDark:"#07191b",colorLight:"#fff"});
+ }
  tv$("tvRoster").innerHTML=state.players.map(p=>`<div class="cwTvPlayer"><span class="cwDot" style="background:${p.color}"></span> <b>${esc(p.name)}</b></div>`).join("")||"<div class=cwTvPlayer>Waiting for players…</div>";
  if(state.status==="lobby"){tv$("tvLobby").classList.remove("hidden");tv$("tvBattle").classList.add("hidden");tv$("tvWinner").classList.add("hidden");tv$("tvLobbyHint").textContent=state.players.length<2?"Waiting for at least 2 players…":"Players ready — host can start the battle.";return}
  if(state.status==="finished"){
