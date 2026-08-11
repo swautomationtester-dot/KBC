@@ -1,0 +1,27 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GamesArena Runner</title><link rel="stylesheet" href="/runner.css?v=1"></head>
+<body class="runnerBody">
+<header><a href="/"><img src="/assets/gamesarena-logo-premium.png" alt="GamesArena"></a><span>GAMESARENA RUNNER</span></header>
+<main>
+<section id="join" class="panel">
+ <div class="eyebrow">🕹️ MOBILE CONTROLLER</div><h1>GamesArena Runner</h1>
+ <p>Race across the platforms. Collect coins. Reach the finish first.</p>
+ <input id="name" maxlength="18" placeholder="Your name">
+ <div class="joinRow"><input id="room" maxlength="4" inputmode="numeric" placeholder="Room code"><button id="join">JOIN</button></div>
+ <button id="create" class="primary">CREATE GAME</button><p id="msg"></p>
+</section>
+<section id="lobby" class="panel hidden">
+ <div class="eyebrow">ROOM <b id="code">----</b></div>
+ <h2>Players</h2><div id="players"></div>
+ <button id="start" class="primary">START GAME</button><p id="lobbyMsg">Open the TV screen with this room code.</p>
+</section>
+<section id="controller" class="panel hidden">
+ <div class="identity"><span id="dot"></span><div><small>YOU ARE PLAYING AS</small><b id="me"></b></div><strong id="timer">0:00</strong></div>
+ <div class="controllerPad"><button id="left">◀</button><button id="jump">JUMP</button><button id="right">▶</button></div>
+ <div class="hint">Hold ◀ / ▶ to run • Tap JUMP to leap</div>
+ <div id="status"></div>
+</section>
+</main>
+<script src="/socket.io/socket.io.js"></script><script src="/runner.js?v=1"></script>
+</body></html>
