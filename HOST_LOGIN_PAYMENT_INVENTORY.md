@@ -22,10 +22,14 @@ Set:
 - `DB_NAME`
 - `DB_PORT` (optional, defaults to 3306)
 
-The server automatically creates:
-- `player_game_logs`
-- `payment_submissions`
-- `payment_records`
+The server uses the four MySQL tables:
+- `host_users` — Host Console credentials (scrypt hash + salt)
+- `players` — player name, register number and phone
+- `game_results` — play date/time, room, result and amount won
+- `payments` — entry-fee/payment inventory and approval status
+
+The server also performs a small compatibility migration on startup, adding the
+extra status/room/result columns required by the live UI if they are missing.
 
 ## Payment flow
 
@@ -42,7 +46,7 @@ The QR opens `/payment.html`. The player manually enters:
 - Amount paid
 - Notes
 
-After submission, the record appears under **Pending Payments** in the Host Console. The host can review/edit it and click **Save to Database**.
+After submission, the record is stored in `payments` with `status=PENDING` and appears under **Pending Payments** in the Host Console. The host can select the registered player, review/edit the details and click **Save to Database**. Rejecting a submission marks it `REJECTED` rather than deleting it.
 
 **Search Payments** accepts player name, phone number, or register number.
 
