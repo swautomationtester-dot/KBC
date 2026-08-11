@@ -178,8 +178,6 @@ s.on("room",d=>{
   $("url").href=d.joinUrl;$("url").textContent=`Open participant page ↗`;
   $("qr").src=d.qr;
   $("screenUrl").innerHTML=`📺 TV URL: <a href="${d.screenUrl}" target="_blank" rel="noopener">${d.screenUrl}</a>`;
-  if($("paymentQr"))$("paymentQr").src=d.paymentQr||"";
-  if($("paymentUrl")){$("paymentUrl").href=d.paymentUrl||"/payment.html";$("paymentUrl").textContent="Open payment form ↗";}
   $("area").classList.remove("hidden");
 
   createRoomPending=false;
@@ -376,99 +374,4 @@ s.on("audiencePollRejected",d=>{if($("status"))$("status").innerHTML=`↶ <b>Aud
 s.on("audiencePollTimeUp",()=>{audiencePollOpen=false;updatePollButton();if($("status"))$("status").innerHTML="⏱️ <b>Audience Poll time is up.</b> The question timer has resumed."});
 
 
-/* ===== Payment Inventory / Player Log ===== */
-function showPaymentPanel(html){const p=$("paymentInventoryPanel");if(!p)return;p.classList.remove("hidden");p.innerHTML=html}
-async function apiHost(url,options={}){
- const r=await fetch(url,{credentials:"same-origin",...options});
- const j=await r.json().catch(()=>({error:"Invalid server response"}));
- if(r.status===401){$("hostLoginModal")?.classList.remove("hidden");throw new Error("Host login required.")}
- if(!r.ok)throw new Error(j.error||"Request failed");
- return j;
-}
-function paymentRow(row,action=true){
- const payload=encodeURIComponent(JSON.stringify(row));
- return `<div class="paymentRow"><b>${escapeHtml(row.playerName)}</b><small>Register: ${escapeHtml(row.registerNumber)} • Phone: ${escapeHtml(row.phone)}</small><small>${escapeHtml(row.paymentDate)} • ${escapeHtml(row.paymentMethod)} • ₹${Number(row.amountPaid||0).toFixed(2)}</small><small>${row.transactionReference?`Ref: ${escapeHtml(row.transactionReference)}`:"No reference number"}${row.status?` • ${escapeHtml(row.status)}`:""}</small>${action?`<button class="primary" onclick="reviewPaymentEncoded('${payload}')">Review &amp; Save</button>`:""}</div>`
-}
-function reviewPaymentEncoded(payload){reviewPayment(JSON.parse(decodeURIComponent(payload)))}
-function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
-async function loadPaymentSubmissions(){
- try{
-  const j=await apiHost("/api/host/payment-submissions");
-  showPaymentPanel(`<div style="font-weight:900;margin-bottom:8px">PENDING SUBMISSIONS (${j.rows.length})</div>${j.rows.length?j.rows.map(x=>paymentRow(x,true)).join(""):"<small>No pending payment submissions.</small>"}`);
- }catch(e){showPaymentPanel(`<div class="paymentRow">${escapeHtml(e.message)}</div>`)}
-}
-let hostPlayersCache=[];
-async function loadHostPlayers(selectedRegister=""){
- try{
-  const j=await apiHost("/api/host/players");
-  hostPlayersCache=j.rows||[];
-  const sel=$("payPlayerSelect");
-  if(!sel)return;
-  sel.innerHTML='<option value="">Select a registered player…</option>'+
-    hostPlayersCache.map(p=>`<option value="${escapeHtml(String(p.id))}">${escapeHtml(p.playerName)} • ${escapeHtml(p.registerNumber||"No register")} • ${escapeHtml(p.phoneNumber||"No phone")}</option>`).join("");
-  const match=hostPlayersCache.find(p=>String(p.registerNumber||"")===String(selectedRegister||""));
-  if(match)sel.value=String(match.id);
- }catch(err){
-  console.warn("Could not load registered players:",err.message);
- }
-}
-function fillPaymentPlayerFromSelection(){
- const sel=$("payPlayerSelect"),id=sel?.value;
- const p=hostPlayersCache.find(x=>String(x.id)===String(id));
- if(!p)return;
- $("payPlayerName").value=p.playerName||"";
- $("payRegisterNumber").value=p.registerNumber||"";
- $("payPhone").value=p.phoneNumber||"";
-}
-$("payPlayerSelect")?.addEventListener("change",fillPaymentPlayerFromSelection);
-async function reviewPayment(row){
- $("paymentSubmissionId").value=row.id||"";
- $("payPlayerName").value=row.playerName||"";
- $("payRegisterNumber").value=row.registerNumber||"";
- $("payPhone").value=row.phone||"";
- $("payDate").value=String(row.paymentDate||"").slice(0,10);
- $("payEntryFee").value=Number(row.entryFee||0);
- $("payAmountPaid").value=Number(row.amountPaid||0);
- $("payMethod").value=row.paymentMethod||"Other";
- $("payReference").value=row.transactionReference||"";
- $("payNotes").value=row.notes||"";
- $("paymentEditModal").classList.remove("hidden");
- await loadHostPlayers(row.registerNumber||"");
-}
-function closePaymentModal(){$("paymentEditModal")?.classList.add("hidden")}
-$("paymentEditForm")?.addEventListener("submit",async e=>{
- e.preventDefault();
- const b=e.target.querySelector("button[type=submit]");b.disabled=true;b.textContent="Saving…";
- try{
-  await apiHost("/api/host/payments",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-   submissionId:Number($("paymentSubmissionId").value)||null,
-   playerName:$("payPlayerName").value,registerNumber:$("payRegisterNumber").value,phone:$("payPhone").value,
-   paymentDate:$("payDate").value,entryFee:Number($("payEntryFee").value),amountPaid:Number($("payAmountPaid").value),
-   paymentMethod:$("payMethod").value,transactionReference:$("payReference").value,notes:$("payNotes").value
-  })});
-  closePaymentModal();await loadPaymentSubmissions();alert("Payment record saved to the database.");
- }catch(err){alert(err.message)}
- finally{b.disabled=false;b.textContent="✓ Save to Database"}
-});
-function openPaymentSearch(){
- showPaymentPanel(`<div class="paymentSearch"><input id="paymentSearchInput" placeholder="Search name, phone or register number"><button class="primary" onclick="searchPayments()">Search</button></div><div id="paymentSearchResults"><small>Enter a search term.</small></div>`);
- $("paymentSearchInput")?.focus();
-}
-async function searchPayments(){
- const q=$("paymentSearchInput")?.value.trim()||"";
- try{
-  const j=await apiHost("/api/host/payments?q="+encodeURIComponent(q));
-  $("paymentSearchResults").innerHTML=j.rows.length?j.rows.map(x=>paymentRow(x,false)).join(""):"<small>No payment records found.</small>";
- }catch(e){$("paymentSearchResults").innerHTML=`<div class="paymentRow">${escapeHtml(e.message)}</div>`}
-}
-async function loadPlayerLogs(){
- showPaymentPanel(`<div class="paymentSearch"><input id="playerLogSearchInput" placeholder="Search player name, phone or register number"><button class="primary" onclick="searchPlayerLogs()">Search</button></div><div id="playerLogResults"><small>Enter a search term or click Search to load recent history.</small></div>`);
- await searchPlayerLogs();
-}
-async function searchPlayerLogs(){
- const q=$("playerLogSearchInput")?.value.trim()||"";
- try{
-  const j=await apiHost("/api/host/player-logs?q="+encodeURIComponent(q));
-  $("playerLogResults").innerHTML=j.rows.length?j.rows.map(x=>`<div class="paymentRow"><b>${escapeHtml(x.playerName)}</b><small>Register: ${escapeHtml(x.registerNumber)} • Phone: ${escapeHtml(x.phone||"—")}</small><small>${escapeHtml(new Date(x.playedAt).toLocaleString())} • ${escapeHtml(x.resultStatus)} • Won ₹${Number(x.amountWon||0).toFixed(2)}</small><small>Room ${escapeHtml(x.roomCode)} • Entry ₹${Number(x.entryFee||0).toFixed(2)} ${x.safeQuit?"• SAFE QUIT":""}</small></div>`).join(""):"<small>No player history found.</small>";
- }catch(e){$("playerLogResults").innerHTML=`<div class="paymentRow">${escapeHtml(e.message)}</div>`}
-}
+

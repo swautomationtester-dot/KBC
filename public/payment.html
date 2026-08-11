@@ -19,7 +19,7 @@ body{min-height:100vh;background:radial-gradient(circle at 50% 0%,#11565a,#042d3
 <header class="sitebar"><img src="/assets/gamesarena-logo-premium.png" class="brand"><span class="chip">ENTRY PAYMENT</span></header>
 <main class="paymentWrap">
  <section class="paymentCard">
-  <div class="paymentBrand"><img src="/assets/gamesarena-logo-premium.png" alt="GamesArena"><div><h1>GamesArena Entry Payment</h1><small>Submit your payment details for the Host to verify.</small></div></div>
+  <div class="paymentBrand"><img src="/assets/gamesarena-logo-premium.png" alt="GamesArena"><div><h1>GamesArena Entry Payment</h1><small>Submit your payment details for the Host to verify. This page is designed to open directly after scanning the GamesArena payment QR.</small></div></div>
   <form id="paymentForm">
    <div class="paymentGrid">
     <div class="field"><label>Player name *</label><input name="playerName" required autocomplete="name"></div>
@@ -44,7 +44,7 @@ body{min-height:100vh;background:radial-gradient(circle at 50% 0%,#11565a,#042d3
 </main>
 <script>
 const f=document.getElementById("paymentForm"), n=document.getElementById("notice"), b=document.getElementById("submitBtn");
-document.getElementById("paymentDate").value=new Date().toISOString().slice(0,10);
+document.getElementById("paymentDate").value=new Date().toLocaleDateString("en-CA");
 f.addEventListener("submit",async e=>{
  e.preventDefault(); b.disabled=true;b.textContent="Submitting…";n.hidden=true;
  const data=Object.fromEntries(new FormData(f).entries());
@@ -53,7 +53,7 @@ f.addEventListener("submit",async e=>{
   const r=await fetch("/api/payment-submissions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
   const j=await r.json(); if(!r.ok)throw new Error(j.error||"Unable to submit.");
   n.hidden=false;n.className="paymentNotice success";n.textContent="✓ Submitted successfully. The host will review and save your payment record.";
-  f.reset();document.getElementById("paymentDate").value=new Date().toISOString().slice(0,10);
+  f.reset();document.getElementById("paymentDate").value=new Date().toLocaleDateString("en-CA");
  }catch(err){n.hidden=false;n.className="paymentNotice error";n.textContent=err.message}
  finally{b.disabled=false;b.textContent="Submit Payment Details"}
 });
