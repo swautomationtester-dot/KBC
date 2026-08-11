@@ -93,7 +93,7 @@ const GAME_POINTS=[10,20,30,40,50];
 const GAME_DIFFICULTY=[1,2,3,4,5];
 const TOTAL_QUESTIONS=5;
 const QUESTION_TIME_MS=30000;
-const AUDIENCE_POLL_TIME_MS=30000;
+const AUDIENCE_POLL_TIME_MS=60000;
 const QUESTION_BANK_VERSION="GAMESARENA-KBC-KIDS-WARMUP-HARD-FINISH-v3";
 
 function shuffleCopy(arr){
@@ -159,7 +159,7 @@ function pollCounts(poll){
   return c;
 }
 
-function makeRoom(){return{host:null,users:new Map(),questions:[],current:-1,phase:"lobby",pool:[],winner:null,completed:new Set(),played:new Set(),failed:new Set(),answers:new Map(),pendingAnswer:null,pendingPollRequest:null,poll:new Map(),lifelines:new Set(),fiftyFiftyRemoved:new Map(),timer:null,fastestSize:7,fastestStartAt:0,fastestDurationMs:15000,fastestSequence:[],fastestTimes:new Map(),fastestProgress:new Map(),fastestToken:"",fastestJoinUrl:"",fastestJoinQr:"",screenToken:"",screenUrl:"",screenQr:"",audiencePollUrl:"",audiencePollQr:"",pollActive:false,winnerCelebrationUntil:0,contestantId:null,eliminatedContestant:null,ladder:[10,20,30,40,50],safeHavens:[20,40],contestantQuit:null,pendingQuit:null,usedQuestionIds:new Set(),questionTimerTimeout:null,questionTimerStartAt:0,questionTimerRemainingMs:QUESTION_TIME_MS,questionTimerPaused:false,pollTimerTimeout:null,pollTimerStartAt:0,pollTimerRemainingMs:AUDIENCE_POLL_TIME_MS,pollTimerRunning:false}}
+function makeRoom(){return{host:null,users:new Map(),questions:[],current:-1,phase:"lobby",pool:[],winner:null,completed:new Set(),played:new Set(),failed:new Set(),answers:new Map(),pendingAnswer:null,pendingPollRequest:null,poll:new Map(),lifelines:new Set(),fiftyFiftyRemoved:new Map(),timer:null,fastestSize:7,fastestStartAt:0,fastestDurationMs:15000,fastestSequence:[],fastestTimes:new Map(),fastestProgress:new Map(),fastestToken:"",fastestJoinUrl:"",fastestJoinQr:"",screenToken:"",screenUrl:"",screenQr:"",audiencePollUrl:"",audiencePollQr:"",pollActive:false,pollVotingOpen:false,winnerCelebrationUntil:0,contestantId:null,eliminatedContestant:null,ladder:[10,20,30,40,50],safeHavens:[20,40],contestantQuit:null,pendingQuit:null,usedQuestionIds:new Set(),questionTimerTimeout:null,questionTimerStartAt:0,questionTimerRemainingMs:QUESTION_TIME_MS,questionTimerPaused:false,pollTimerTimeout:null,pollTimerStartAt:0,pollTimerRemainingMs:AUDIENCE_POLL_TIME_MS,pollTimerRunning:false}}
 function active(r){return [...r.users.values()].filter(u=>u.status==="active")}
 function clearQuestionTimer(r){clearTimeout(r.questionTimerTimeout);r.questionTimerTimeout=null;}
 function questionRemaining(r){if(r.phase!=="question")return 0;if(r.questionTimerPaused)return Math.max(0,Number(r.questionTimerRemainingMs||0));if(r.questionTimerStartAt)return Math.max(0,Number(r.questionTimerRemainingMs||QUESTION_TIME_MS)-(Date.now()-r.questionTimerStartAt));return Math.max(0,Number(r.questionTimerRemainingMs||QUESTION_TIME_MS));}
@@ -168,8 +168,24 @@ function startQuestionTimer(r,remaining=QUESTION_TIME_MS){clearQuestionTimer(r);
 function questionTimeExpired(r){if(r.phase!=="question"||r.current<0)return;r.questionTimerRemainingMs=0;r.questionTimerStartAt=0;r.questionTimerPaused=false;r.questionTimerTimeout=null;if(r.pendingAnswer){const code=[...rooms.entries()].find(([,room])=>room===r)?.[0];if(code)emitState(code);return;}const u=r.winner&&r.users.get(r.winner.id);if(!u)return;u.prizeWon=0;u.status="eliminated";r.eliminatedContestant={id:u.id,name:u.name,employeeCode:u.employeeCode,score:u.score,pointsEarned:0,prizeWon:0,eliminatedAt:Date.now(),reason:"TIME_UP",until:Date.now()+30000};const code=[...rooms.entries()].find(([,room])=>room===r)?.[0];if(code){io.to(code).emit("answerResult",{correct:false,eliminated:true,timeout:true,approved:true,contestant:{name:u.name,employeeCode:u.employeeCode},pointsEarned:0,prizeWon:0});io.to(u.id).emit("eliminationNotice",{name:u.name,employeeCode:u.employeeCode,score:u.score,pointsEarned:0,prizeWon:0,until:Date.now()+30000,reason:"TIME_UP"});nextContestant(code);}}
 function clearAudiencePollTimer(r){clearTimeout(r.pollTimerTimeout);r.pollTimerTimeout=null;r.pollTimerStartAt=0;r.pollTimerRunning=false;r.pollTimerRemainingMs=AUDIENCE_POLL_TIME_MS;}
 function pollRemaining(r){if(!r.pollTimerRunning)return Math.max(0,Number(r.pollTimerRemainingMs||0));return Math.max(0,Number(r.pollTimerRemainingMs||0)-(Date.now()-r.pollTimerStartAt));}
-function startAudiencePollTimer(r){clearAudiencePollTimer(r);r.pollTimerRemainingMs=AUDIENCE_POLL_TIME_MS;r.pollTimerStartAt=Date.now();r.pollTimerRunning=true;r.pollTimerTimeout=setTimeout(()=>stopAudiencePoll(r,true),AUDIENCE_POLL_TIME_MS);}
-function stopAudiencePoll(r,expired=false){if(!r.pollActive&&!r.pollTimerRunning)return;r.pollTimerRemainingMs=pollRemaining(r);clearAudiencePollTimer(r);r.pollActive=false;const code=[...rooms.entries()].find(([,room])=>room===r)?.[0];if(code)io.to(code).emit(expired?"audiencePollTimeUp":"audiencePollStopped");if(r.phase==="question"&&!r.pendingAnswer)startQuestionTimer(r,questionRemaining(r)||QUESTION_TIME_MS);if(code)emitState(code);}
+function audienceConnectedCount(code){
+ const ids=io.sockets.adapter.rooms.get(code)||new Set();let count=0;
+ ids.forEach(id=>{const sock=io.sockets.sockets.get(id);if(sock?.data?.room===code&&sock.data.role==="audience")count++;});
+ return count;
+}
+function startAudiencePollTimer(r){
+ clearAudiencePollTimer(r);r.pollActive=true;r.pollVotingOpen=true;r.pollTimerRemainingMs=AUDIENCE_POLL_TIME_MS;
+ r.pollTimerStartAt=Date.now();r.pollTimerRunning=true;
+ r.pollTimerTimeout=setTimeout(()=>stopAudiencePoll(r,true),AUDIENCE_POLL_TIME_MS);
+}
+function stopAudiencePoll(r,expired=false){
+ if(!r.pollActive&&!r.pollTimerRunning)return;
+ r.pollTimerRemainingMs=pollRemaining(r);clearAudiencePollTimer(r);r.pollActive=false;r.pollVotingOpen=false;
+ const code=[...rooms.entries()].find(([,room])=>room===r)?.[0];
+ if(code)io.to(code).emit(expired?"audiencePollTimeUp":"audiencePollStopped");
+ if(r.phase==="question"&&!r.pendingAnswer)startQuestionTimer(r,questionRemaining(r)||QUESTION_TIME_MS);
+ if(code)emitState(code);
+}
 function resetQuestionClock(r){clearQuestionTimer(r);r.questionTimerStartAt=0;r.questionTimerRemainingMs=QUESTION_TIME_MS;r.questionTimerPaused=false;clearAudiencePollTimer(r);}
 function emitState(code){
  const r=rooms.get(code);if(!r)return;
@@ -195,6 +211,8 @@ function emitState(code){
   audiencePollUrl:r.audiencePollUrl,
   audiencePollQr:r.audiencePollQr,
   pollActive:r.pollActive,
+  pollVotingOpen:!!r.pollVotingOpen,
+  audienceConnected:audienceConnectedCount(code),
   // Expose poll results as answer-choice counts (0..3), never as
   // audience socket-id -> choice pairs. This keeps every client in sync
   // after the state broadcast that follows a vote.
@@ -366,9 +384,9 @@ function cwNeighbors(i){
 function cwBoard(){return Array.from({length:CW_SIZE*CW_SIZE},()=>({owner:null,count:0}))}
 function cwState(r){
   return {
-    code:r.code,status:r.status,hostOnline:!!r.host,
+    code:r.code,status:r.status,hostOnline:!!r.host,hostId:r.host,
     tvToken:r.tvToken,
-    joinUrl:r.joinUrl,tvUrl:r.tvUrl,
+    joinUrl:r.joinUrl,tvUrl:r.tvUrl,joinQr:r.joinQr,tvQr:r.tvQr,
     current:r.current,
     board:r.board,
     winner:r.winner||null,
@@ -424,12 +442,16 @@ function cwApplyMove(r,pid,index){
   return {ok:true};
 }
 io.on("connection",s=>{
-  s.on("cw:create",()=>{
+  s.on("cw:create",async()=>{
     const code=cwCode(),channel="colorwar-"+code,tvToken=crypto.randomBytes(24).toString("hex");
     const base=getPublicUrlForSocket(s);
-    const r={code,channel,tv:s.id,tvToken,host:s.id,players:[],board:cwBoard(),current:0,status:"lobby",winner:null,joinUrl:`${base}/color-war.html?join=${code}`,tvUrl:`${base}/color-war-tv.html?room=${code}&token=${tvToken}`};
+    const joinUrl=`${base}/color-war.html?join=${code}`;
+    const tvUrl=`${base}/color-war-tv.html?room=${code}&token=${tvToken}`;
+    const joinQr=await QRCode.toDataURL(joinUrl,{margin:1,width:320});
+    const tvQr=await QRCode.toDataURL(tvUrl,{margin:1,width:320});
+    const r={code,channel,tv:s.id,tvToken,host:s.id,players:[],board:cwBoard(),current:0,status:"lobby",winner:null,joinUrl,tvUrl,joinQr,tvQr};
     colorWarRooms.set(code,r);s.join(channel);s.data.cwRoom=code;s.data.cwRole="host";
-    s.emit("cw:room",{code,tvToken,joinUrl:r.joinUrl,tvUrl:r.tvUrl});cwBroadcast(r);
+    s.emit("cw:room",{code,tvToken,joinUrl,tvUrl,joinQr,tvQr});cwBroadcast(r);
   });
   s.on("cw:join",({code,name}={})=>{
     const r=colorWarRooms.get(String(code||"").trim());
@@ -720,7 +742,7 @@ s.on("host:showParticipants",()=>{
   const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;
   s.emit("participantsList",[...r.users.values()].map(u=>({name:u.name,employeeCode:u.employeeCode,score:u.score,status:u.status,registeredAt:u.registeredAt})));
 });
-s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;r.pollActive=false;r.poll.clear();r.phase="registration";emitState(s.data.room)});
+s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;r.pollActive=false;r.pollVotingOpen=false;r.poll.clear();r.phase="registration";emitState(s.data.room)});
  s.on("player:requestAudiencePoll",()=>{
   const r=rooms.get(s.data.room);if(!r||r.phase!=="question")return;
   const u=r.users.get(s.id);if(!u||u.status!=="active"||!r.winner||r.winner.id!==s.id)return;
@@ -731,15 +753,13 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  });
  s.on("host:approveAudiencePoll",()=>{
   const r=rooms.get(s.data.room);if(!r||r.host!==s.id||!r.pendingPollRequest||r.phase!=="question")return;
-  const req=r.pendingPollRequest;r.pendingPollRequest=null;r.poll.clear();r.pollActive=false;
-  const lifelineKey=`${req.id}:${r.current}:audience`;
-  r.lifelines.add(lifelineKey);
-  if(r.winner?.id===req.id) r.winner.lifelinesUsed={...(r.winner.lifelinesUsed||{}),audience:true};
-  io.to(req.id).emit("audiencePollApproved",{contestant:req,counts:pollCounts(r.poll)});
-  io.to(s.data.room).emit("audiencePollApproved",{contestant:req});
+  const req=r.pendingPollRequest;r.pendingPollRequest=null;r.poll.clear();
+  r.pollActive=true;r.pollVotingOpen=false;clearAudiencePollTimer(r);pauseQuestionTimer(r);
+  io.to(req.id).emit("audiencePollApproved",{contestant:req,counts:pollCounts(r.poll),waitingForHost:true});
+  io.to(s.data.room).emit("audiencePollStarted",{contestant:{name:req.name,employeeCode:req.employeeCode},waitingForAudience:true});
   emitState(s.data.room);
- });
- s.on("host:rejectAudiencePoll",()=>{
+});
+s.on("host:rejectAudiencePoll",()=>{
   const r=rooms.get(s.data.room);if(!r||r.host!==s.id||!r.pendingPollRequest)return;
   const req=r.pendingPollRequest;r.pendingPollRequest=null;
   io.to(req.id).emit("audiencePollRejected",{contestant:req});
@@ -749,24 +769,23 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  s.on("host:audiencePollStart",()=>{
  const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question")return;
  if(!r.winner)return;
- const key=`${r.winner.id}:${r.current}:audience`;
- if(r.lifelines.has(key)){
-   s.emit("errorMsg","Audience Poll has already been used for this question.");
+ if(r.pollActive&&r.pollVotingOpen){stopAudiencePoll(r,false);return;}
+ if(!r.pollActive){r.poll.clear();pauseQuestionTimer(r);r.pollActive=true;r.pollVotingOpen=false;clearAudiencePollTimer(r);}
+ const connected=audienceConnectedCount(s.data.room);
+ if(connected<1){
+   emitState(s.data.room);
+   s.emit("errorMsg","Show the Audience Poll and wait for at least one audience member to scan the QR.");
    return;
  }
- r.pendingPollRequest=null;
- r.poll.clear();
- pauseQuestionTimer(r);
- r.pollActive=true;
- startAudiencePollTimer(r);
  const lifelineKey=`${r.winner.id}:${r.current}:audience`;
  r.lifelines.add(lifelineKey);
  r.winner.lifelinesUsed={...(r.winner.lifelinesUsed||{}),audience:true};
+ startAudiencePollTimer(r);
  io.to(r.winner.id).emit("audiencePollApproved",{contestant:{name:r.winner.name,employeeCode:r.winner.employeeCode},counts:pollCounts(r.poll)});
- io.to(s.data.room).emit("audiencePollStarted",{contestant:{name:r.winner.name,employeeCode:r.winner.employeeCode}});
+ io.to(s.data.room).emit("audiencePollStarted",{contestant:{name:r.winner.name,employeeCode:r.winner.employeeCode},started:true,durationMs:AUDIENCE_POLL_TIME_MS});
  emitState(s.data.room);
 });
- s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;stopAudiencePoll(r,false)});
+s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;stopAudiencePoll(r,false)});
  s.on("host:pauseQuestionTimer",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question")return;pauseQuestionTimer(r);emitState(s.data.room);});
  s.on("host:resumeQuestionTimer",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question")return;if(r.pollActive)return;startQuestionTimer(r,questionRemaining(r)||QUESTION_TIME_MS);emitState(s.data.room);});
  s.on("host:pick7",async()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;await pick7(r);emitState(s.data.room)});
@@ -838,7 +857,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  const bank=await questions();
  r.questions=buildGameQuestions(bank,r.usedQuestionIds);
  r.questions.forEach(q=>r.usedQuestionIds.add(q.id));
- r.phase="question";r.current=0;r.answers.clear();r.pendingAnswer=null;r.pendingQuit=null;r.pendingPollRequest=null;r.poll.clear();r.lifelines.clear();r.fiftyFiftyRemoved.clear();r.eliminatedContestant=null;r.contestantQuit=null;resetQuestionClock(r);if(r.winner){
+ r.phase="question";r.current=0;r.answers.clear();r.pendingAnswer=null;r.pendingQuit=null;r.pendingPollRequest=null;r.poll.clear();r.pollActive=false;r.pollVotingOpen=false;r.lifelines.clear();r.fiftyFiftyRemoved.clear();r.eliminatedContestant=null;r.contestantQuit=null;resetQuestionClock(r);if(r.winner){
    r.winner.lifelinesUsed={"5050":false,"audience":false,"phone":false};
    const contestantUser=r.users.get(r.winner.id);
    if(contestantUser){contestantUser.lifelinesUsed={"5050":false,"audience":false,"phone":false};contestantUser.assuredMoney=0;contestantUser.prizeWon=0;}
@@ -853,7 +872,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  if(r.pendingQuit){s.emit("errorMsg","Approve or reject the pending Safe Quit request before moving to the next question.");return;}
  clearQuestionTimer(r);clearAudiencePollTimer(r);
  r.current++;
- r.answers.clear();r.pendingAnswer=null;r.pendingPollRequest=null;r.poll.clear();r.lifelines.clear();
+ r.answers.clear();r.pendingAnswer=null;r.pendingPollRequest=null;r.poll.clear();r.pollActive=false;r.pollVotingOpen=false;r.lifelines.clear();
  if(r.current>=TOTAL_QUESTIONS||r.current>=r.questions.length){
    r.phase="finished";r.current=-1;
    clearTimeout(r.timer);
@@ -866,7 +885,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  }else {r.phase="question";resetQuestionClock(r);startQuestionTimer(r);}
  emitState(s.data.room);
 });
- s.on("host:restartEvent",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;for(const u of r.users.values()){u.score=0;u.assuredMoney=0;u.prizeWon=0;u.status="active";u.inPool=false;u.lifelinesUsed={"5050":false,"audience":false,"phone":false}}r.contestantId=null;r.failed.clear();r.completed.clear();r.played.clear();r.pool=[];r.usedQuestionIds.clear();r.winner=null;r.current=-1;r.fiftyFiftyRemoved.clear();r.eliminatedContestant=null;r.contestantQuit=null;r.pendingQuit=null;r.phase="registration";emitState(s.data.room)});
+ s.on("host:restartEvent",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;for(const u of r.users.values()){u.score=0;u.assuredMoney=0;u.prizeWon=0;u.status="active";u.inPool=false;u.lifelinesUsed={"5050":false,"audience":false,"phone":false}}r.contestantId=null;r.failed.clear();r.completed.clear();r.played.clear();r.pool=[];r.usedQuestionIds.clear();r.winner=null;r.current=-1;r.fiftyFiftyRemoved.clear();r.eliminatedContestant=null;r.contestantQuit=null;r.pendingQuit=null;r.pollActive=false;r.pollVotingOpen=false;r.phase="registration";emitState(s.data.room)});
  s.on("player:answer",({choice})=>{
   const r=rooms.get(s.data.room);if(!r||r.phase!=="question")return;
   const u=r.users.get(s.id);
@@ -1044,7 +1063,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
   const ok=(value)=>{if(typeof ack==="function")ack(value)};
   const r=rooms.get(s.data.room);
   if(!r){ok({ok:false,error:"You are not connected to a quiz room."});return}
-  if(r.phase!=="question"||!r.pollActive){ok({ok:false,error:"The audience poll is closed."});return}
+  if(r.phase!=="question"||!r.pollActive||!r.pollVotingOpen){ok({ok:false,error:"The Host is preparing the poll. Please wait for the 60-second countdown."});return}
   // One vote per connected audience device for the current poll.
   if(r.poll.has(s.id)){ok({ok:false,error:"You have already voted in this audience poll."});return}
   const v=Number(choice);
@@ -1093,6 +1112,7 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  s.on("disconnect",()=>{
  const roomCode=s.data.room,r=rooms.get(roomCode);
  if(!r)return;
+ if(s.data.role==="audience" && r.pollActive)emitState(roomCode);
  if(r.host===s.id){
    // Keep the room alive during transient proxy/Wi-Fi/socket reconnects.
    // The host can resume using the token stored in the browser.
@@ -1116,6 +1136,17 @@ s.on("host:openRegistration",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
 // ========================= GamesArena Runner =========================
 // Original GamesArena platformer inspired by classic side-scrolling platform games.
 // Phones are controllers; the TV browser renders the shared game world.
+const RUNNER_ROOM_GRACE_MS=10*60*1000;
+function runnerKeepAlive(r){
+  if(r.cleanupTimer)clearTimeout(r.cleanupTimer);
+  r.cleanupTimer=setTimeout(()=>{
+    const x=runnerRooms.get(r.code);
+    if(x && !x.players.size && !x.host){
+      clearInterval(x.timer);
+      runnerRooms.delete(r.code);
+    }
+  },RUNNER_ROOM_GRACE_MS);
+}
 const runnerNs=io.of('/runner');
 const runnerRooms=new Map();
 const RUNNER_COLORS=['#ff5b5b','#20b7df','#7b61ff','#f2b84b'];
@@ -1185,9 +1216,13 @@ function runnerTick(r){
 }
 runnerNs.on('connection',socket=>{
  socket.on('tv',({room}={})=>{
-   const code=String(room||'').toUpperCase(),r=runnerRooms.get(code);
-   if(!r)return socket.emit('errorMsg','Room not found.');
-   socket.join(code);socket.data.room=code;socket.data.tv=true;
+   const code=String(room||'').trim().toUpperCase(),r=runnerRooms.get(code);
+   socket.data.requestedRoom=code; socket.data.tv=true;
+   if(!r){
+     socket.emit('waitingForRoom',{room:code,message:'Waiting for the Host to create or reconnect the game…'});
+     return;
+   }
+   socket.join(code);socket.data.room=code;
    socket.emit('joined',{room:code,tv:true});runnerBroadcast(code);
  });
  socket.on('create',({name='Player'}={})=>{
@@ -1205,6 +1240,24 @@ runnerNs.on('connection',socket=>{
    const i=r.players.size,p={id:socket.id,name:String(name).slice(0,18)||'Player',color:RUNNER_COLORS[i],...runnerSpawn(i)};
    r.players.set(socket.id,p);socket.join(code);socket.data.room=code;
    socket.emit('joined',{room:code,host:false});runnerBroadcast(code);
+ });
+ socket.on('resume',({room,name='Host'}={})=>{
+   const code=String(room||'').trim().toUpperCase(),r=runnerRooms.get(code);
+   if(!r)return socket.emit('errorMsg','Room not found. Start a new game from the Runner controller.');
+   if(r.host && r.host!==socket.id)return socket.emit('errorMsg','This room already has an active Host.');
+   r.host=socket.id;
+   r.hostDisconnectTimer&&clearTimeout(r.hostDisconnectTimer); r.hostDisconnectTimer=null;
+   socket.join(code);socket.data.room=code;socket.data.host=true;
+   // Reclaim the Host's player slot by matching the saved Host name.
+   const oldHost=[...r.players.values()].find(p=>p.name===String(name).slice(0,18));
+   if(oldHost){
+     const oldId=oldHost.id; oldHost.id=socket.id;
+     r.players.delete(oldId); r.players.set(socket.id,oldHost);
+   }else{
+     const p={id:socket.id,name:String(name).slice(0,18)||'Host',color:RUNNER_COLORS[0],...runnerSpawn(0)};
+     r.players.set(socket.id,p);
+   }
+   socket.emit('joined',{room:code,host:true,resumed:true});runnerBroadcast(code);
  });
  socket.on('start',()=>{
    const r=runnerRooms.get(socket.data.room);
@@ -1226,10 +1279,13 @@ runnerNs.on('connection',socket=>{
  socket.on('disconnect',()=>{
    const code=socket.data.room,r=runnerRooms.get(code);if(!r)return;
    if(socket.data.tv)return;
-   r.players.delete(socket.id);
-   if(r.host===socket.id)r.host=r.players.values().next().value?.id||null;
-   if(!r.players.size){clearInterval(r.timer);runnerRooms.delete(code);}
-   else runnerBroadcast(code);
+   if(r.host===socket.id){
+     // Keep the room alive for mobile/Wi-Fi reconnects instead of deleting it.
+     r.host=null;
+     runnerKeepAlive(r);
+   }
+   // Do not remove a player immediately; their controller can reconnect.
+   runnerBroadcast(code);
  });
 });
 

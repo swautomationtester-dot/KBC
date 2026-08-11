@@ -111,3 +111,17 @@ Added `/color-war.html` and `/color-war-tv.html` for a 2–4 player live Color W
 ## Mini Kart Race
 
 Added `/kart.html` for phone controllers and `/kart-tv.html?room=XXXX` for the big-screen race. Up to four players use a virtual joystick on their phones; the TV renders the live track, karts, laps, standings, countdown and winner.
+
+
+## Latest integrated updates
+
+- Compact Host Console with small Create Room action in the header.
+- QR code, participant link and TV link moved to the Host Console side panel below the Prize Ladder.
+- Prize ladder copy corrected to ₹50 total (5 levels: ₹10/₹20/₹30/₹40/₹50).
+- Safe Quit requests show persistent Approve / Reject actions for the host.
+- Audience Poll is now a two-step flow: show QR/ready screen, wait for an audience scan, then start a server-controlled 60-second voting timer.
+- Audience voting is blocked until the host starts the 60-second timer.
+- Color War QR codes are server-generated for reliable rendering, and the Start Battle control is host-only.
+- Color War toast notifications are constrained so they cannot become a large overlay.
+- Card Match lobby logo is constrained to a compact size so the room/QR content stays above the fold.
+- Mini Kart Race, Color War and existing GamesArena games remain integrated.
