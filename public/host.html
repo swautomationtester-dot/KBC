@@ -210,6 +210,11 @@
       <form id="paymentEditForm">
         <input type="hidden" id="paymentSubmissionId">
         <div class="paymentEditGrid">
+          <label class="wide">Select player
+            <select id="payPlayerSelect">
+              <option value="">Select a registered player…</option>
+            </select>
+          </label>
           <label>Player name<input id="payPlayerName" required></label>
           <label>Register number<input id="payRegisterNumber" required></label>
           <label>Phone number<input id="payPhone" required></label>
@@ -241,6 +246,6 @@
 </main>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/host.js?v=84"></script>
+<script src="/host.js?v=90"></script>
 </body>
 </html>

@@ -387,7 +387,7 @@ async function apiHost(url,options={}){
 }
 function paymentRow(row,action=true){
  const payload=encodeURIComponent(JSON.stringify(row));
- return `<div class="paymentRow"><b>${escapeHtml(row.playerName)}</b><small>Register: ${escapeHtml(row.registerNumber)} • Phone: ${escapeHtml(row.phone)}</small><small>${escapeHtml(row.paymentDate)} • ${escapeHtml(row.paymentMethod)} • ₹${Number(row.amountPaid||0).toFixed(2)}</small><small>${row.transactionReference?`Ref: ${escapeHtml(row.transactionReference)}`:"No reference number"}</small>${action?`<button class="primary" onclick="reviewPaymentEncoded('${payload}')">Review &amp; Save</button>`:""}</div>`
+ return `<div class="paymentRow"><b>${escapeHtml(row.playerName)}</b><small>Register: ${escapeHtml(row.registerNumber)} • Phone: ${escapeHtml(row.phone)}</small><small>${escapeHtml(row.paymentDate)} • ${escapeHtml(row.paymentMethod)} • ₹${Number(row.amountPaid||0).toFixed(2)}</small><small>${row.transactionReference?`Ref: ${escapeHtml(row.transactionReference)}`:"No reference number"}${row.status?` • ${escapeHtml(row.status)}`:""}</small>${action?`<button class="primary" onclick="reviewPaymentEncoded('${payload}')">Review &amp; Save</button>`:""}</div>`
 }
 function reviewPaymentEncoded(payload){reviewPayment(JSON.parse(decodeURIComponent(payload)))}
 function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
@@ -397,7 +397,31 @@ async function loadPaymentSubmissions(){
   showPaymentPanel(`<div style="font-weight:900;margin-bottom:8px">PENDING SUBMISSIONS (${j.rows.length})</div>${j.rows.length?j.rows.map(x=>paymentRow(x,true)).join(""):"<small>No pending payment submissions.</small>"}`);
  }catch(e){showPaymentPanel(`<div class="paymentRow">${escapeHtml(e.message)}</div>`)}
 }
-function reviewPayment(row){
+let hostPlayersCache=[];
+async function loadHostPlayers(selectedRegister=""){
+ try{
+  const j=await apiHost("/api/host/players");
+  hostPlayersCache=j.rows||[];
+  const sel=$("payPlayerSelect");
+  if(!sel)return;
+  sel.innerHTML='<option value="">Select a registered player…</option>'+
+    hostPlayersCache.map(p=>`<option value="${escapeHtml(String(p.id))}">${escapeHtml(p.playerName)} • ${escapeHtml(p.registerNumber||"No register")} • ${escapeHtml(p.phoneNumber||"No phone")}</option>`).join("");
+  const match=hostPlayersCache.find(p=>String(p.registerNumber||"")===String(selectedRegister||""));
+  if(match)sel.value=String(match.id);
+ }catch(err){
+  console.warn("Could not load registered players:",err.message);
+ }
+}
+function fillPaymentPlayerFromSelection(){
+ const sel=$("payPlayerSelect"),id=sel?.value;
+ const p=hostPlayersCache.find(x=>String(x.id)===String(id));
+ if(!p)return;
+ $("payPlayerName").value=p.playerName||"";
+ $("payRegisterNumber").value=p.registerNumber||"";
+ $("payPhone").value=p.phoneNumber||"";
+}
+$("payPlayerSelect")?.addEventListener("change",fillPaymentPlayerFromSelection);
+async function reviewPayment(row){
  $("paymentSubmissionId").value=row.id||"";
  $("payPlayerName").value=row.playerName||"";
  $("payRegisterNumber").value=row.registerNumber||"";
@@ -409,6 +433,7 @@ function reviewPayment(row){
  $("payReference").value=row.transactionReference||"";
  $("payNotes").value=row.notes||"";
  $("paymentEditModal").classList.remove("hidden");
+ await loadHostPlayers(row.registerNumber||"");
 }
 function closePaymentModal(){$("paymentEditModal")?.classList.add("hidden")}
 $("paymentEditForm")?.addEventListener("submit",async e=>{
