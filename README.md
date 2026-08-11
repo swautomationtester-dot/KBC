@@ -108,7 +108,7 @@ The current `questions.json` contains 520 unique questions across South Indian C
 ## Color War
 Added `/color-war.html` and `/color-war-tv.html` for a 2–4 player live Color War mini-game with a dedicated audience TV screen. See `README_COLOR_WAR.md`.
 
-## Mini Kart Race
+## 
 
 Added `/kart.html` for phone controllers and `/kart-tv.html?room=XXXX` for the big-screen race. Up to four players use a virtual joystick on their phones; the TV renders the live track, karts, laps, standings, countdown and winner.
 
@@ -124,4 +124,4 @@ Added `/kart.html` for phone controllers and `/kart-tv.html?room=XXXX` for the b
 - Color War QR codes are server-generated for reliable rendering, and the Start Battle control is host-only.
 - Color War toast notifications are constrained so they cannot become a large overlay.
 - Card Match lobby logo is constrained to a compact size so the room/QR content stays above the fold.
-- Mini Kart Race, Color War and existing GamesArena games remain integrated.
+- , Color War and existing GamesArena games remain integrated.

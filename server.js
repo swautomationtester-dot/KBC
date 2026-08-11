@@ -769,22 +769,32 @@ s.on("host:rejectAudiencePoll",()=>{
  s.on("host:audiencePollStart",()=>{
  const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question")return;
  if(!r.winner)return;
- if(r.pollActive&&r.pollVotingOpen){stopAudiencePoll(r,false);return;}
- if(!r.pollActive){r.poll.clear();pauseQuestionTimer(r);r.pollActive=true;r.pollVotingOpen=false;clearAudiencePollTimer(r);}
- const connected=audienceConnectedCount(s.data.room);
- if(connected<1){
-   emitState(s.data.room);
-   s.emit("errorMsg","Show the Audience Poll and wait for at least one audience member to scan the QR.");
-   return;
+ if(r.pollTimerRunning){stopAudiencePoll(r,false);return;}
+ if(!r.pollActive){
+   r.poll.clear();
+   pauseQuestionTimer(r);
+   r.pollActive=true;
+   r.pollVotingOpen=false;
+   clearAudiencePollTimer(r);
  }
- const lifelineKey=`${r.winner.id}:${r.current}:audience`;
- r.lifelines.add(lifelineKey);
- r.winner.lifelinesUsed={...(r.winner.lifelinesUsed||{}),audience:true};
- startAudiencePollTimer(r);
- io.to(r.winner.id).emit("audiencePollApproved",{contestant:{name:r.winner.name,employeeCode:r.winner.employeeCode},counts:pollCounts(r.poll)});
- io.to(s.data.room).emit("audiencePollStarted",{contestant:{name:r.winner.name,employeeCode:r.winner.employeeCode},started:true,durationMs:AUDIENCE_POLL_TIME_MS});
  emitState(s.data.room);
 });
+ s.on("host:startAudiencePollTimer",()=>{
+   const r=rooms.get(s.data.room);
+   if(!r||r.host!==s.id||r.phase!=="question"||!r.winner||!r.pollActive||r.pollTimerRunning)return;
+   const connected=audienceConnectedCount(s.data.room);
+   if(connected<1){
+     emitState(s.data.room);
+     return s.emit("errorMsg","Wait for at least one audience member to scan the QR before starting the 60-second poll.");
+   }
+   const lifelineKey=`${r.winner.id}:${r.current}:audience`;
+   r.lifelines.add(lifelineKey);
+   r.winner.lifelinesUsed={...(r.winner.lifelinesUsed||{}),audience:true};
+   startAudiencePollTimer(r);
+   io.to(r.winner.id).emit("audiencePollApproved",{contestant:{name:r.winner.name,employeeCode:r.winner.employeeCode},counts:pollCounts(r.poll)});
+   io.to(s.data.room).emit("audiencePollStarted",{contestant:{name:r.winner.name,employeeCode:r.winner.employeeCode},started:true,durationMs:AUDIENCE_POLL_TIME_MS});
+   emitState(s.data.room);
+ });
 s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id)return;stopAudiencePoll(r,false)});
  s.on("host:pauseQuestionTimer",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question")return;pauseQuestionTimer(r);emitState(s.data.room);});
  s.on("host:resumeQuestionTimer",()=>{const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question")return;if(r.pollActive)return;startQuestionTimer(r,questionRemaining(r)||QUESTION_TIME_MS);emitState(s.data.room);});
@@ -1134,8 +1144,8 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
 
 
 // ========================= GamesArena Runner =========================
-// Original GamesArena platformer inspired by classic side-scrolling platform games.
-// Phones are controllers; the TV browser renders the shared game world.
+// Original GamesArena platformer. Phones are controllers; TV renders the shared world.
+// Runner now uses the same QR/token-based room joining flow as Card Match.
 const RUNNER_ROOM_GRACE_MS=10*60*1000;
 function runnerKeepAlive(r){
   if(r.cleanupTimer)clearTimeout(r.cleanupTimer);
@@ -1163,19 +1173,20 @@ const RUNNER_COINS=[
 ];
 const RUNNER_FINISH={x:3090,y:430};
 function runnerCode(){let c;do c=String(Math.floor(1000+Math.random()*9000));while(runnerRooms.has(c));return c;}
-function runnerRoom(){return{code:'',host:null,players:new Map(),phase:'lobby',startAt:0,timer:null,elapsed:0,coins:new Set(),winner:null};}
+function runnerRoom(){return{code:'',channel:'',host:null,hostToken:null,players:new Map(),phase:'lobby',startAt:0,timer:null,elapsed:0,coins:new Set(),winner:null,joinUrl:'',tvUrl:'',joinQr:'',tvQr:'',hostDisconnectTimer:null,cleanupTimer:null};}
 function runnerSpawn(i){
  return {x:90,y:560-i*42,vx:0,vy:0,onGround:false,coins:0,finished:false,finishTime:null,inputX:0,jump:false};
 }
-function runnerPublic(r){
+function runnerState(r){
  return {
   code:r.code,phase:r.phase,elapsed:r.phase==='race'?Date.now()-r.startAt:r.elapsed,
   platforms:RUNNER_PLATFORMS,coins:RUNNER_COINS.map((c,i)=>({...c,taken:r.coins.has(i)})),finish:RUNNER_FINISH,
-  winner:r.winner,
+  winner:r.winner,joinUrl:r.joinUrl,tvUrl:r.tvUrl,joinQr:r.joinQr,tvQr:r.tvQr,
+  hostOnline:!!r.host,
   players:[...r.players.values()].map(p=>({id:p.id,name:p.name,color:p.color,x:p.x,y:p.y,vx:p.vx,vy:p.vy,coins:p.coins,finished:p.finished,finishTime:p.finishTime}))
  };
 }
-function runnerBroadcast(code){const r=runnerRooms.get(code);if(r)runnerNs.to(code).emit('state',runnerPublic(r));}
+function runnerBroadcast(code){const r=runnerRooms.get(code);if(r)runnerNs.to(r.channel).emit('state',runnerState(r));}
 function runnerTick(r){
  if(r.phase!=='race')return;
  const now=Date.now(),dt=Math.min(.05,(now-r._last)/1000);r._last=now;
@@ -1215,54 +1226,84 @@ function runnerTick(r){
  runnerBroadcast(r.code);
 }
 runnerNs.on('connection',socket=>{
- socket.on('tv',({room}={})=>{
+ socket.on('tv',({room,token}={})=>{
    const code=String(room||'').trim().toUpperCase(),r=runnerRooms.get(code);
    socket.data.requestedRoom=code; socket.data.tv=true;
    if(!r){
-     socket.emit('waitingForRoom',{room:code,message:'Waiting for the Host to create or reconnect the game…'});
+     socket.emit('waitingForRoom',{room:code,message:'Waiting for the Host to create the game…'});
      return;
    }
-   socket.join(code);socket.data.room=code;
+   // Token is preferred (same pattern as Card Match). Manual room-code entry
+   // remains supported so event staff can type the code on a TV.
+   if(token && r.tvToken && token!==r.tvToken){
+     socket.emit('errorMsg','This Runner TV link is no longer valid. Open the TV link from the Host screen.');
+     return;
+   }
+   socket.join(r.channel);socket.data.room=code;socket.data.runnerRole='tv';
    socket.emit('joined',{room:code,tv:true});runnerBroadcast(code);
  });
- socket.on('create',({name='Player'}={})=>{
+ socket.on('create',async({name='Host'}={})=>{
    if(socket.data.room)return;
-   const code=runnerCode(),r=runnerRoom();r.code=code;r.host=socket.id;
-   const p={id:socket.id,name:String(name).slice(0,18)||'Player',color:RUNNER_COLORS[0],...runnerSpawn(0)};
-   r.players.set(socket.id,p);runnerRooms.set(code,r);socket.join(code);socket.data.room=code;
-   socket.emit('joined',{room:code,host:true});runnerBroadcast(code);
+   const code=runnerCode(),r=runnerRoom();r.code=code;r.channel=`runner-${code}`;
+   r.host=socket.id;r.hostToken=crypto.randomBytes(24).toString('hex');
+   r.tvToken=crypto.randomBytes(24).toString('hex');
+   const base=getPublicUrlForSocket(socket);
+   r.joinUrl=`${base}/runner.html?join=${code}`;
+   r.tvUrl=`${base}/runner-tv.html?room=${code}&token=${r.tvToken}`;
+   r.joinQr=await QRCode.toDataURL(r.joinUrl,{margin:1,width:320});
+   r.tvQr=await QRCode.toDataURL(r.tvUrl,{margin:1,width:320});
+   const p={id:socket.id,token:crypto.randomBytes(24).toString('hex'),name:String(name).slice(0,18)||'Player',color:RUNNER_COLORS[0],...runnerSpawn(0)};
+   r.hostPlayerToken=p.token;
+   r.players.set(socket.id,p);runnerRooms.set(code,r);socket.join(r.channel);
+   socket.data.room=code;socket.data.runnerRole='host';socket.data.runnerHostToken=r.hostToken;socket.data.runnerPlayerToken=p.token;
+   socket.emit('joined',{room:code,host:true,playerId:p.id,playerToken:p.token,hostToken:r.hostToken,joinUrl:r.joinUrl,tvUrl:r.tvUrl,joinQr:r.joinQr,tvQr:r.tvQr});
+   runnerBroadcast(code);
  });
  socket.on('join',({room,name='Player'}={})=>{
-   const code=String(room||'').toUpperCase(),r=runnerRooms.get(code);
-   if(!r)return socket.emit('errorMsg','Room not found.');
-   if(r.players.size>=RUNNER_MAX)return socket.emit('errorMsg','Room is full.');
-   if(r.phase!=='lobby')return socket.emit('errorMsg','Race already started.');
-   const i=r.players.size,p={id:socket.id,name:String(name).slice(0,18)||'Player',color:RUNNER_COLORS[i],...runnerSpawn(i)};
-   r.players.set(socket.id,p);socket.join(code);socket.data.room=code;
-   socket.emit('joined',{room:code,host:false});runnerBroadcast(code);
- });
- socket.on('resume',({room,name='Host'}={})=>{
    const code=String(room||'').trim().toUpperCase(),r=runnerRooms.get(code);
-   if(!r)return socket.emit('errorMsg','Room not found. Start a new game from the Runner controller.');
-   if(r.host && r.host!==socket.id)return socket.emit('errorMsg','This room already has an active Host.');
+   if(!r)return socket.emit('errorMsg','Room not found. Ask the Host to create a new Runner game.');
+   if(r.players.size>=RUNNER_MAX)return socket.emit('errorMsg','Room is full — maximum 4 players.');
+   if(r.phase!=='lobby')return socket.emit('errorMsg','Race already started. Ask the Host to create a new room.');
+   const i=r.players.size,p={id:socket.id,token:crypto.randomBytes(24).toString('hex'),name:String(name).slice(0,18)||'Player',color:RUNNER_COLORS[i],...runnerSpawn(i)};
+   r.players.set(socket.id,p);socket.join(r.channel);socket.data.room=code;socket.data.runnerRole='player';socket.data.runnerPlayerToken=p.token;
+   socket.emit('joined',{room:code,host:false,playerId:p.id,playerToken:p.token,joinUrl:r.joinUrl,tvUrl:r.tvUrl});
+   runnerBroadcast(code);
+ });
+ socket.on('resumePlayer',({room,playerToken,name}={})=>{
+   const code=String(room||'').trim().toUpperCase(),r=runnerRooms.get(code);
+   if(!r)return socket.emit('errorMsg','Room not found. Create a new Runner game and scan its QR again.');
+   const p=[...r.players.values()].find(x=>x.token===String(playerToken||''));
+   if(!p)return socket.emit('errorMsg','Player session expired. Please scan the Runner QR and join again.');
+   const oldId=p.id;p.id=socket.id;if(r.players.has(oldId))r.players.delete(oldId);r.players.set(socket.id,p);
+   if(name&&String(name).trim())p.name=String(name).trim().slice(0,18);
+   socket.join(r.channel);socket.data.room=code;socket.data.runnerRole='player';socket.data.runnerPlayerToken=p.token;
+   socket.emit('joined',{room:code,host:false,playerId:p.id,playerToken:p.token,resumed:true,joinUrl:r.joinUrl,tvUrl:r.tvUrl});
+   socket.emit('state',runnerState(r));runnerBroadcast(code);
+ });
+ socket.on('resumeHost',({room,hostToken,name,playerToken}={})=>{
+   const code=String(room||'').trim().toUpperCase(),r=runnerRooms.get(code);
+   if(!r)return socket.emit('errorMsg','Room not found. Create a new Runner game.');
+   if(String(hostToken||'')!==String(r.hostToken||''))return socket.emit('errorMsg','Host session expired. Create a new Runner game.');
+   if(r.host && r.host!==socket.id)return socket.emit('errorMsg','This Runner room already has an active Host.');
    r.host=socket.id;
-   r.hostDisconnectTimer&&clearTimeout(r.hostDisconnectTimer); r.hostDisconnectTimer=null;
-   socket.join(code);socket.data.room=code;socket.data.host=true;
-   // Reclaim the Host's player slot by matching the saved Host name.
-   const oldHost=[...r.players.values()].find(p=>p.name===String(name).slice(0,18));
-   if(oldHost){
-     const oldId=oldHost.id; oldHost.id=socket.id;
-     r.players.delete(oldId); r.players.set(socket.id,oldHost);
+   if(r.hostDisconnectTimer)clearTimeout(r.hostDisconnectTimer);r.hostDisconnectTimer=null;
+   const p=[...r.players.values()].find(x=>x.token===String(playerToken||r.hostPlayerToken||''));
+   if(p){
+     const oldId=p.id;p.id=socket.id;if(r.players.has(oldId))r.players.delete(oldId);r.players.set(socket.id,p);
+     if(name&&String(name).trim())p.name=String(name).trim().slice(0,18);
    }else{
-     const p={id:socket.id,name:String(name).slice(0,18)||'Host',color:RUNNER_COLORS[0],...runnerSpawn(0)};
-     r.players.set(socket.id,p);
+     const hp={id:socket.id,token:r.hostPlayerToken||crypto.randomBytes(24).toString('hex'),name:String(name||'Host').slice(0,18)||'Host',color:RUNNER_COLORS[0],...runnerSpawn(0)};
+     r.hostPlayerToken=hp.token;r.players.set(socket.id,hp);
    }
-   socket.emit('joined',{room:code,host:true,resumed:true});runnerBroadcast(code);
+   socket.join(r.channel);socket.data.room=code;socket.data.runnerRole='host';socket.data.runnerHostToken=r.hostToken;socket.data.runnerPlayerToken=r.hostPlayerToken;
+   socket.emit('joined',{room:code,host:true,resumed:true,playerId:socket.id,playerToken:r.hostPlayerToken,hostToken:r.hostToken,joinUrl:r.joinUrl,tvUrl:r.tvUrl,joinQr:r.joinQr,tvQr:r.tvQr});
+   socket.emit('state',runnerState(r));runnerBroadcast(code);
  });
  socket.on('start',()=>{
    const r=runnerRooms.get(socket.data.room);
-   if(!r||r.host!==socket.id||r.players.size<1||r.phase!=='lobby')return;
+   if(!r||r.host!==socket.id||r.players.size<2||r.phase!=='lobby')return;
    r.phase='race';r.startAt=Date.now();r._last=Date.now();r.coins=new Set();r.winner=null;
+   for(const p of r.players.values()){p.finished=false;p.finishTime=null;p.coins=0;p.inputX=0;p.jump=false;}
    r.timer=setInterval(()=>runnerTick(r),RUNNER_TICK);runnerBroadcast(r.code);
  });
  socket.on('input',({x=0,jump=false}={})=>{
@@ -1278,79 +1319,17 @@ runnerNs.on('connection',socket=>{
  });
  socket.on('disconnect',()=>{
    const code=socket.data.room,r=runnerRooms.get(code);if(!r)return;
-   if(socket.data.tv)return;
+   if(socket.data.runnerRole==='tv')return;
    if(r.host===socket.id){
-     // Keep the room alive for mobile/Wi-Fi reconnects instead of deleting it.
      r.host=null;
-     runnerKeepAlive(r);
+     if(r.hostDisconnectTimer)clearTimeout(r.hostDisconnectTimer);
+     r.hostDisconnectTimer=setTimeout(()=>{
+       const x=runnerRooms.get(code);
+       if(x && !x.host){
+         runnerKeepAlive(x);
+       }
+     },90000);
    }
-   // Do not remove a player immediately; their controller can reconnect.
    runnerBroadcast(code);
  });
 });
-
-// ========================= Mini Kart Race =========================
-const kartNs=io.of('/kart');
-const kartRooms=new Map();
-const KART_COLORS=['#ff5b5b','#20b7df','#7b61ff','#f2b84b'];
-const KART_MAX=4, KART_LAPS=3, KART_TICK=50;
-function kartCode(){let c;do c=String(Math.floor(1000+Math.random()*9000));while(kartRooms.has(c));return c;}
-function kartRoom(){return{code:'',host:null,players:new Map(),phase:'lobby',countdownUntil:0,startAt:0,lastTick:Date.now(),timer:null};}
-function kartPublic(r){
- return {code:r.code,phase:r.phase,countdownRemaining:Math.max(0,r.countdownUntil-Date.now()),raceTime:r.phase==='race'?Date.now()-r.startAt:0,
- players:[...r.players.values()].map(x=>({id:x.id,name:x.name,color:x.color,x:x.x,y:x.y,vx:x.vx,vy:x.vy,lap:x.lap,progress:x.progress,finished:x.finished,finishTime:x.finishTime})),laps:KART_LAPS};
-}
-function kartBroadcast(code){const r=kartRooms.get(code);if(r)kartNs.to(code).emit('state',kartPublic(r));}
-function kartSpawn(i){const row=Math.floor(i/2),side=i%2;return{x:0.5+(side?0.055:-0.055),y:0.84+row*0.055,vx:0.0058,vy:0,lap:0,progress:0,finished:false,finishTime:null,prevAngle:null};}
-function kartAngle(x,y){const cx=.5,cy=.5,rx=.34,ry=.35;return Math.atan2((y-cy)/ry,(x-cx)/rx);}
-function kartProgress(x,y){let a=kartAngle(x,y);let p=(a+Math.PI*0.5)%(Math.PI*2);if(p<0)p+=Math.PI*2;return p/(Math.PI*2);}
-function kartTick(r){
- const now=Date.now(),dt=Math.min(.08,(now-r.lastTick)/1000);r.lastTick=now;
- if(r.phase!=='race')return;
- for(const pl of r.players.values()){
-   const steer=pl.inputX||0, throttle=pl.inputY||0;
-   const accel=0.00024, max=.0105, drag=.92;
-   const speed=Math.hypot(pl.vx,pl.vy);
-   const angle=Math.atan2(pl.vy,pl.vx);
-   const desired=angle + steer*.065*(0.7+Math.min(1,speed/.006));
-   pl.vx += Math.cos(desired)*accel*throttle;
-   pl.vy += Math.sin(desired)*accel*throttle;
-   pl.vx*=drag;pl.vy*=drag;
-   const sp=Math.hypot(pl.vx,pl.vy);
-   if(sp>max){pl.vx=pl.vx/sp*max;pl.vy=pl.vy/sp*max;}
-   let nx=pl.x+pl.vx*(dt/.05),ny=pl.y+pl.vy*(dt/.05);
-   const dx=(nx-.5)/.34,dy=(ny-.5)/.35,rad=Math.hypot(dx,dy);
-   // Keep cars on the oval track. A soft push toward the road center acts like a wall.
-   if(rad>1.035){nx=.5+(nx-.5)/rad*1.035*.34;ny=.5+(ny-.5)/rad*1.035*.35;pl.vx*=.45;pl.vy*=.45;}
-   if(rad<.72){nx=.5+(nx-.5)/Math.max(.72,rad)*.72*.34;ny=.5+(ny-.5)/Math.max(.72,rad)*.72*.35;}
-   pl.x=Math.max(.06,Math.min(.94,nx));pl.y=Math.max(.06,Math.min(.94,ny));
-   const prog=kartProgress(pl.x,pl.y);
-   if(pl.prevProgress!==undefined && pl.prevProgress>.85 && prog<.15 && speed>.001){pl.lap++;}
-   pl.prevProgress=prog;pl.progress=prog;
-   if(pl.lap>=KART_LAPS&&!pl.finished){pl.finished=true;pl.finishTime=now-r.startAt;pl.vx*=.2;pl.vy*=.2;}
- }
- const finished=[...r.players.values()].filter(p=>p.finished).sort((a,b)=>a.finishTime-b.finishTime);
- if(finished.length===r.players.size){r.phase='finished';clearInterval(r.timer);}
- kartBroadcast(r.code);
-}
-kartNs.on('connection',socket=>{
- socket.on('tv',({room}={})=>{const r=kartRooms.get(String(room||'').toUpperCase());if(!r)return socket.emit('errorMsg','Room not found.');socket.join(r.code);socket.data.room=r.code;socket.data.tv=true;socket.emit('joined',{room:r.code,tv:true});kartBroadcast(r.code);});
- socket.on('create',({name='Player'}={})=>{
-   if(socket.data.room)return;const code=kartCode(),r=kartRoom();r.code=code; r.host=socket.id;
-   const p={id:socket.id,name:String(name).slice(0,18)||'Player',color:KART_COLORS[0],...kartSpawn(0),inputX:0,inputY:0};r.players.set(socket.id,p);kartRooms.set(code,r);socket.join(code);socket.data.room=code;
-   socket.emit('joined',{room:code,host:true});kartBroadcast(code);
- });
- socket.on('join',({room,name='Player'}={})=>{
-   const code=String(room||'').toUpperCase(),r=kartRooms.get(code);if(!r)return socket.emit('errorMsg','Room not found.');
-   if(r.players.size>=KART_MAX)return socket.emit('errorMsg','Room is full.');
-   if(r.phase!=='lobby')return socket.emit('errorMsg','Race already started.');
-   const i=r.players.size,p={id:socket.id,name:String(name).slice(0,18)||'Player',color:KART_COLORS[i],...kartSpawn(i),inputX:0,inputY:0};r.players.set(socket.id,p);socket.join(code);socket.data.room=code;
-   socket.emit('joined',{room:code,host:false});kartBroadcast(code);
- });
- socket.on('start',()=>{const r=kartRooms.get(socket.data.room);if(!r||r.host!==socket.id||r.players.size<2||r.phase!=='lobby')return;r.phase='countdown';r.countdownUntil=Date.now()+4000;r.lastTick=Date.now();kartBroadcast(r.code);setTimeout(()=>{const x=kartRooms.get(r.code);if(!x||x.phase!=='countdown')return;x.phase='race';x.startAt=Date.now();x.lastTick=Date.now();x.timer=setInterval(()=>kartTick(x),KART_TICK);kartBroadcast(x.code);},4000);});
- socket.on('input',({x=0,y=0}={})=>{const r=kartRooms.get(socket.data.room),p=r?.players.get(socket.id);if(!p||r.phase!=='race')return;p.inputX=Math.max(-1,Math.min(1,Number(x)||0));p.inputY=Math.max(-1,Math.min(1,Number(y)||0));});
- socket.on('restart',()=>{const r=kartRooms.get(socket.data.room);if(!r||r.host!==socket.id)return;clearInterval(r.timer);let i=0;for(const p of r.players.values()){Object.assign(p,kartSpawn(i++),{inputX:0,inputY:0});}r.phase='lobby';r.countdownUntil=0;r.startAt=0;kartBroadcast(r.code);});
- socket.on('disconnect',()=>{const code=socket.data.room,r=kartRooms.get(code);if(!r)return;r.players.delete(socket.id);if(r.host===socket.id){const next=r.players.values().next().value;r.host=next?.id||null;}if(!r.players.size){clearInterval(r.timer);kartRooms.delete(code);}else{if(r.phase!=='lobby'&&r.players.size<2){clearInterval(r.timer);r.phase='lobby';}kartBroadcast(code);}});
-});
-
-initDb().then(()=>server.listen(PORT,"0.0.0.0",()=>console.log(`Perficient Office Quiz Arena v4 listening on 0.0.0.0:${PORT}`))).catch(e=>{console.error("Startup error:",e);process.exit(1)});
