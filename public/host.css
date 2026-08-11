@@ -4,3 +4,46 @@
 .roomJoinLink:hover{text-decoration:underline}
 
 .gold{background:#f2c45f!important;color:#0b2b2f!important;border-color:#d9a83e!important}.hidden{display:none!important}
+
+/* Room code + Safe Quit actions live directly beneath the QR in the host sidebar. */
+.hostSideRoomCode{
+  margin:10px 0 0;
+  padding:10px 12px;
+  border:1px solid rgba(244,215,122,.38);
+  border-radius:12px;
+  background:rgba(244,215,122,.06);
+  text-align:center;
+}
+.hostSideRoomCode span{
+  display:block;
+  font-size:9px;
+  letter-spacing:.16em;
+  font-weight:900;
+  color:#f4d77a;
+  margin-bottom:2px;
+}
+.hostSideRoomCode strong{
+  display:block;
+  font-size:28px;
+  line-height:1;
+  letter-spacing:.08em;
+  color:#fff;
+}
+.hostRoomLiveTitle{font-size:22px!important;letter-spacing:.02em}
+.safeQuitSidePanel{
+  margin:12px 0 0;
+  padding:14px;
+  border:2px solid #7dff38;
+  border-radius:14px;
+  background:linear-gradient(180deg,rgba(125,255,56,.10),rgba(0,0,0,.12));
+  box-shadow:0 0 0 3px rgba(125,255,56,.08),0 12px 28px rgba(0,0,0,.18);
+}
+.safeQuitSideKicker{font-size:10px;letter-spacing:.14em;font-weight:950;color:#baff8f}
+.safeQuitSideName{margin-top:6px;font-size:16px;font-weight:950;color:#fff;overflow-wrap:anywhere}
+.safeQuitSideText{margin-top:8px;font-size:11px;opacity:.78}
+.safeQuitSideAmount{margin:3px 0 12px;font-size:27px;line-height:1;font-weight:950;color:#f4d77a}
+.safeQuitSideButtons{display:grid;grid-template-columns:1fr;gap:7px}
+.safeQuitSideButtons button{width:100%;min-height:40px;font-weight:950;border-radius:10px}
+.safeQuitSideButtons .approve{background:#63d99a;color:#06241c;border-color:#63d99a}
+.safeQuitSideButtons .reject{background:#ff7777;color:#310606;border-color:#ff7777}
+@media(max-width:900px){.hostSideRoomCode strong{font-size:24px}}

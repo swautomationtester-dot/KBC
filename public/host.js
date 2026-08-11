@@ -1,7 +1,46 @@
 const s=io({transports:["polling","websocket"],reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:500,reconnectionDelayMax:3000,timeout:10000}),$=id=>document.getElementById(id);
 let hostRoomToken=localStorage.getItem("gamesarena_host_token")||"";
-let createRoomPending=false;
+let createRoomPending=false,hostAuthenticated=false;
+
+async function checkHostAuth(){
+  try{
+    const r=await fetch("/api/host/me",{credentials:"same-origin"});
+    const j=await r.json();
+    hostAuthenticated=!!j.ok;
+  }catch{hostAuthenticated=false}
+  const modal=$("hostLoginModal");
+  if(modal)modal.classList.toggle("hidden",hostAuthenticated);
+  if(!hostAuthenticated){
+    hostRoomToken="";
+    localStorage.removeItem("gamesarena_host_token");
+    if(s.connected)s.disconnect();
+  }else if(!s.connected){
+    s.connect();
+  }
+}
+async function hostLogin(e){
+  e.preventDefault();
+  const err=$("hostLoginError"),btn=e.target.querySelector("button[type=submit]");
+  err.hidden=true;btn.disabled=true;btn.textContent="Signing in…";
+  try{
+    const r=await fetch("/api/host/login",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({username:$("hostUsername").value,password:$("hostPassword").value})});
+    const j=await r.json(); if(!r.ok)throw new Error(j.error||"Invalid credentials");
+    hostAuthenticated=true;$("hostLoginModal").classList.add("hidden");
+    if(s.connected)s.disconnect();
+    s.connect();
+  }catch(ex){err.hidden=false;err.textContent=ex.message}
+  finally{btn.disabled=false;btn.textContent="🔐 Sign in"}
+}
+async function hostLogout(){
+  try{await fetch("/api/host/logout",{method:"POST",credentials:"same-origin"})}catch{}
+  hostAuthenticated=false;hostRoomToken="";localStorage.removeItem("gamesarena_host_token");
+  location.reload();
+}
+document.getElementById("hostLoginForm")?.addEventListener("submit",hostLogin);
+checkHostAuth();
+
 s.on("connect",()=>{
+  if(!hostAuthenticated)return;
   if(hostRoomToken) {
     s.emit("host:resume",{token:hostRoomToken});
   } else if(createRoomPending) {
@@ -9,8 +48,15 @@ s.on("connect",()=>{
     createRoom();
   }
 });
+s.on("hostAuthRequired",()=>{
+  hostAuthenticated=false;
+  $("hostLoginModal")?.classList.remove("hidden");
+  $("hostLoginError").textContent="Please sign in again.";
+  $("hostLoginError").hidden=false;
+});
 let fastInterval=null,audiencePollOpen=false;
 function createRoom(){
+  if(!hostAuthenticated){$("hostLoginModal")?.classList.remove("hidden");return;}
   if(createRoomPending)return;
 
   // A click always means "give me a fresh room". Do not resume the
@@ -132,6 +178,8 @@ s.on("room",d=>{
   $("url").href=d.joinUrl;$("url").textContent=`Open participant page ↗`;
   $("qr").src=d.qr;
   $("screenUrl").innerHTML=`📺 TV URL: <a href="${d.screenUrl}" target="_blank" rel="noopener">${d.screenUrl}</a>`;
+  if($("paymentQr"))$("paymentQr").src=d.paymentQr||"";
+  if($("paymentUrl")){$("paymentUrl").href=d.paymentUrl||"/payment.html";$("paymentUrl").textContent="Open payment form ↗";}
   $("area").classList.remove("hidden");
 
   createRoomPending=false;
@@ -163,30 +211,49 @@ function rejectAnswer(){s.emit("host:rejectAnswer")}
 function approveQuit(){s.emit("host:approveQuit")}
 function rejectQuit(){s.emit("host:rejectQuit")}
 
+function clearSafeQuitSidePanel(){
+ const panel=$("safeQuitSidePanel");
+ if(panel){panel.classList.add("hidden");panel.innerHTML="";}
+}
 function showSafeQuitRequest(a){
  const review=$("answerReview");
  const name=a?.contestant?.name||a?.name||"Contestant";
  const amount=Number(a?.amount||0);
  window.__pendingQuitUi={name,amount};
- if(review){
-   review.classList.remove("hidden");
-   review.innerHTML=`<div class="reviewTitle">🚪 SAFE QUIT REQUEST</div><div class="reviewAnswer"><b>${name}</b> is requesting to leave with the guaranteed <strong>₹${amount.toLocaleString("en-IN")}</strong>.</div><div class="reviewButtons"><button type="button" class="approve" onclick="approveQuit()">✓ APPROVE SAFE QUIT</button><button type="button" class="reject" onclick="rejectQuit()">✕ REJECT — CONTINUE</button></div>`;
+
+ // Keep the high-priority Safe Quit action immediately below the QR.
+ const side=$("safeQuitSidePanel");
+ if(side){
+   side.classList.remove("hidden");
+   side.innerHTML=`<div class="safeQuitSideKicker">🚪 SAFE QUIT REQUEST</div>
+     <div class="safeQuitSideName">${name}</div>
+     <div class="safeQuitSideText">Requesting to walk away with</div>
+     <div class="safeQuitSideAmount">₹${amount.toLocaleString("en-IN")}</div>
+     <div class="safeQuitSideButtons">
+       <button type="button" class="approve" onclick="approveQuit()">✓ APPROVE</button>
+       <button type="button" class="reject" onclick="rejectQuit()">✕ REJECT</button>
+     </div>`;
  }
+ // Do not duplicate Safe Quit in the main review area.
+ if(review){review.classList.add("hidden");review.innerHTML="";}
  const el=$("status");
  if(el){el.classList.remove("hidden");el.innerHTML=`🚪 <b>Safe Quit Request</b> — ${name} is waiting for Host approval.`;}
 }
 s.on("quitRequested",a=>showSafeQuitRequest(a));
 s.on("quitRejected",a=>{
  window.__pendingQuitUi=null;
+ clearSafeQuitSidePanel();
  const review=$("answerReview"); if(review){review.classList.add("hidden");review.innerHTML="";}
  const el=$("status"); if(el){el.classList.remove("hidden");el.innerHTML=`↩️ Safe Quit rejected for ${a.contestant?.name||"contestant"}. The game continues.`;}
 });
 s.on("contestantQuit",a=>{
  window.__pendingQuitUi=null;
+ clearSafeQuitSidePanel();
  const review=$("answerReview"); if(review){review.classList.add("hidden");review.innerHTML="";}
  const el=$("status");if(el){el.classList.remove("hidden");el.innerHTML=`🚪 <b>${a.contestant?.name||"Contestant"} walked away with ₹${Number(a.amount||0).toLocaleString("en-IN")}</b>.`;}
 });
 function updateFlowControls(x){
+  if(!x.pendingQuit && !window.__pendingQuitUi) clearSafeQuitSidePanel();
   window.__hostPhase=x.phase||"";
   window.__hostWinnerName=x.winner?.name||x.contestant?.name||"";
   const phase=x.phase||"";
@@ -307,3 +374,76 @@ s.on("poll",counts=>{ if(!audiencePollOpen)return; renderHostAudiencePoll({pollA
 s.on("audiencePollStarted",d=>{if($("status"))$("status").innerHTML=`🗳️ <b>Audience Poll approved</b> — ${d.contestant?.name||"Contestant"} can use the audience lifeline.`});
 s.on("audiencePollRejected",d=>{if($("status"))$("status").innerHTML=`↶ <b>Audience Poll rejected</b> — ${d.contestant?.name||"Contestant"}`});
 s.on("audiencePollTimeUp",()=>{audiencePollOpen=false;updatePollButton();if($("status"))$("status").innerHTML="⏱️ <b>Audience Poll time is up.</b> The question timer has resumed."});
+
+
+/* ===== Payment Inventory / Player Log ===== */
+function showPaymentPanel(html){const p=$("paymentInventoryPanel");if(!p)return;p.classList.remove("hidden");p.innerHTML=html}
+async function apiHost(url,options={}){
+ const r=await fetch(url,{credentials:"same-origin",...options});
+ const j=await r.json().catch(()=>({error:"Invalid server response"}));
+ if(r.status===401){$("hostLoginModal")?.classList.remove("hidden");throw new Error("Host login required.")}
+ if(!r.ok)throw new Error(j.error||"Request failed");
+ return j;
+}
+function paymentRow(row,action=true){
+ const payload=encodeURIComponent(JSON.stringify(row));
+ return `<div class="paymentRow"><b>${escapeHtml(row.playerName)}</b><small>Register: ${escapeHtml(row.registerNumber)} • Phone: ${escapeHtml(row.phone)}</small><small>${escapeHtml(row.paymentDate)} • ${escapeHtml(row.paymentMethod)} • ₹${Number(row.amountPaid||0).toFixed(2)}</small><small>${row.transactionReference?`Ref: ${escapeHtml(row.transactionReference)}`:"No reference number"}</small>${action?`<button class="primary" onclick="reviewPaymentEncoded('${payload}')">Review &amp; Save</button>`:""}</div>`
+}
+function reviewPaymentEncoded(payload){reviewPayment(JSON.parse(decodeURIComponent(payload)))}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+async function loadPaymentSubmissions(){
+ try{
+  const j=await apiHost("/api/host/payment-submissions");
+  showPaymentPanel(`<div style="font-weight:900;margin-bottom:8px">PENDING SUBMISSIONS (${j.rows.length})</div>${j.rows.length?j.rows.map(x=>paymentRow(x,true)).join(""):"<small>No pending payment submissions.</small>"}`);
+ }catch(e){showPaymentPanel(`<div class="paymentRow">${escapeHtml(e.message)}</div>`)}
+}
+function reviewPayment(row){
+ $("paymentSubmissionId").value=row.id||"";
+ $("payPlayerName").value=row.playerName||"";
+ $("payRegisterNumber").value=row.registerNumber||"";
+ $("payPhone").value=row.phone||"";
+ $("payDate").value=String(row.paymentDate||"").slice(0,10);
+ $("payEntryFee").value=Number(row.entryFee||0);
+ $("payAmountPaid").value=Number(row.amountPaid||0);
+ $("payMethod").value=row.paymentMethod||"Other";
+ $("payReference").value=row.transactionReference||"";
+ $("payNotes").value=row.notes||"";
+ $("paymentEditModal").classList.remove("hidden");
+}
+function closePaymentModal(){$("paymentEditModal")?.classList.add("hidden")}
+$("paymentEditForm")?.addEventListener("submit",async e=>{
+ e.preventDefault();
+ const b=e.target.querySelector("button[type=submit]");b.disabled=true;b.textContent="Saving…";
+ try{
+  await apiHost("/api/host/payments",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+   submissionId:Number($("paymentSubmissionId").value)||null,
+   playerName:$("payPlayerName").value,registerNumber:$("payRegisterNumber").value,phone:$("payPhone").value,
+   paymentDate:$("payDate").value,entryFee:Number($("payEntryFee").value),amountPaid:Number($("payAmountPaid").value),
+   paymentMethod:$("payMethod").value,transactionReference:$("payReference").value,notes:$("payNotes").value
+  })});
+  closePaymentModal();await loadPaymentSubmissions();alert("Payment record saved to the database.");
+ }catch(err){alert(err.message)}
+ finally{b.disabled=false;b.textContent="✓ Save to Database"}
+});
+function openPaymentSearch(){
+ showPaymentPanel(`<div class="paymentSearch"><input id="paymentSearchInput" placeholder="Search name, phone or register number"><button class="primary" onclick="searchPayments()">Search</button></div><div id="paymentSearchResults"><small>Enter a search term.</small></div>`);
+ $("paymentSearchInput")?.focus();
+}
+async function searchPayments(){
+ const q=$("paymentSearchInput")?.value.trim()||"";
+ try{
+  const j=await apiHost("/api/host/payments?q="+encodeURIComponent(q));
+  $("paymentSearchResults").innerHTML=j.rows.length?j.rows.map(x=>paymentRow(x,false)).join(""):"<small>No payment records found.</small>";
+ }catch(e){$("paymentSearchResults").innerHTML=`<div class="paymentRow">${escapeHtml(e.message)}</div>`}
+}
+async function loadPlayerLogs(){
+ showPaymentPanel(`<div class="paymentSearch"><input id="playerLogSearchInput" placeholder="Search player name, phone or register number"><button class="primary" onclick="searchPlayerLogs()">Search</button></div><div id="playerLogResults"><small>Enter a search term or click Search to load recent history.</small></div>`);
+ await searchPlayerLogs();
+}
+async function searchPlayerLogs(){
+ const q=$("playerLogSearchInput")?.value.trim()||"";
+ try{
+  const j=await apiHost("/api/host/player-logs?q="+encodeURIComponent(q));
+  $("playerLogResults").innerHTML=j.rows.length?j.rows.map(x=>`<div class="paymentRow"><b>${escapeHtml(x.playerName)}</b><small>Register: ${escapeHtml(x.registerNumber)} • Phone: ${escapeHtml(x.phone||"—")}</small><small>${escapeHtml(new Date(x.playedAt).toLocaleString())} • ${escapeHtml(x.resultStatus)} • Won ₹${Number(x.amountWon||0).toFixed(2)}</small><small>Room ${escapeHtml(x.roomCode)} • Entry ₹${Number(x.entryFee||0).toFixed(2)} ${x.safeQuit?"• SAFE QUIT":""}</small></div>`).join(""):"<small>No player history found.</small>";
+ }catch(e){$("playerLogResults").innerHTML=`<div class="paymentRow">${escapeHtml(e.message)}</div>`}
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GamesArena • Entry Payment</title>
+<link rel="stylesheet" href="/style.css?v=76">
+<style>
+body{min-height:100vh;background:radial-gradient(circle at 50% 0%,#11565a,#042d31 55%,#021f23);color:#f6f3ea}
+.paymentWrap{max-width:720px;margin:40px auto;padding:0 18px}
+.paymentCard{background:rgba(5,43,47,.92);border:1px solid rgba(244,194,79,.45);border-radius:24px;padding:28px;box-shadow:0 25px 70px rgba(0,0,0,.28)}
+.paymentBrand{display:flex;align-items:center;gap:14px;margin-bottom:24px}.paymentBrand img{width:54px;height:54px;object-fit:contain}.paymentBrand h1{margin:0;font-size:24px}.paymentBrand small{color:#9fd0cf}
+.paymentGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#f3c95b}.field input,.field select,.field textarea{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.16);background:#062f34;color:#fff;border-radius:12px;padding:13px 14px;font:inherit;outline:none}.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#f3c95b;box-shadow:0 0 0 3px rgba(243,201,91,.12)}
+.payMethods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.payMethod{display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px;background:#06363a;font-weight:700;font-size:13px}.payMethod input{width:auto;margin-right:6px}
+.submitPayment{width:100%;margin-top:18px;border:0;border-radius:13px;padding:15px;background:#f3c95b;color:#102d2e;font-weight:900;font-size:16px;cursor:pointer}.submitPayment:disabled{opacity:.6}.paymentNotice{margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(0,0,0,.16);font-weight:700}.success{border:1px solid #54d69b;color:#b8ffd9}.error{border:1px solid #ff6e7f;color:#ffd0d5}
+@media(max-width:620px){.paymentGrid{grid-template-columns:1fr}.payMethods{grid-template-columns:1fr 1fr}.paymentCard{padding:20px}.paymentWrap{margin:20px auto}}
+</style>
+</head>
+<body>
+<header class="sitebar"><img src="/assets/gamesarena-logo-premium.png" class="brand"><span class="chip">ENTRY PAYMENT</span></header>
+<main class="paymentWrap">
+ <section class="paymentCard">
+  <div class="paymentBrand"><img src="/assets/gamesarena-logo-premium.png" alt="GamesArena"><div><h1>GamesArena Entry Payment</h1><small>Submit your payment details for the Host to verify.</small></div></div>
+  <form id="paymentForm">
+   <div class="paymentGrid">
+    <div class="field"><label>Player name *</label><input name="playerName" required autocomplete="name"></div>
+    <div class="field"><label>Register number *</label><input name="registerNumber" required inputmode="numeric"></div>
+    <div class="field"><label>Phone number *</label><input name="phone" required inputmode="tel" autocomplete="tel"></div>
+    <div class="field"><label>Date *</label><input id="paymentDate" name="paymentDate" type="date" required></div>
+    <div class="field"><label>Entry fee *</label><input name="entryFee" type="number" min="0" step="0.01" required></div>
+    <div class="field"><label>Amount paid *</label><input name="amountPaid" type="number" min="0" step="0.01" required></div>
+    <div class="field full"><label>Payment method *</label><div class="payMethods">
+      <label class="payMethod"><input type="radio" name="paymentMethod" value="Cash" required> Cash</label>
+      <label class="payMethod"><input type="radio" name="paymentMethod" value="UPI"> UPI</label>
+      <label class="payMethod"><input type="radio" name="paymentMethod" value="Card"> Card</label>
+      <label class="payMethod"><input type="radio" name="paymentMethod" value="Other"> Other</label>
+    </div></div>
+    <div class="field full"><label>Transaction / reference number</label><input name="transactionReference" maxlength="160"></div>
+    <div class="field full"><label>Notes</label><textarea name="notes" maxlength="2000" placeholder="Optional details"></textarea></div>
+   </div>
+   <button class="submitPayment" id="submitBtn">Submit Payment Details</button>
+   <div id="notice" class="paymentNotice" hidden></div>
+  </form>
+ </section>
+</main>
+<script>
+const f=document.getElementById("paymentForm"), n=document.getElementById("notice"), b=document.getElementById("submitBtn");
+document.getElementById("paymentDate").value=new Date().toISOString().slice(0,10);
+f.addEventListener("submit",async e=>{
+ e.preventDefault(); b.disabled=true;b.textContent="Submitting…";n.hidden=true;
+ const data=Object.fromEntries(new FormData(f).entries());
+ data.entryFee=Number(data.entryFee);data.amountPaid=Number(data.amountPaid);
+ try{
+  const r=await fetch("/api/payment-submissions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+  const j=await r.json(); if(!r.ok)throw new Error(j.error||"Unable to submit.");
+  n.hidden=false;n.className="paymentNotice success";n.textContent="✓ Submitted successfully. The host will review and save your payment record.";
+  f.reset();document.getElementById("paymentDate").value=new Date().toISOString().slice(0,10);
+ }catch(err){n.hidden=false;n.className="paymentNotice error";n.textContent=err.message}
+ finally{b.disabled=false;b.textContent="Submit Payment Details"}
+});
+</script>
+</body></html>

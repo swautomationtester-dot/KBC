@@ -1644,3 +1644,24 @@ body:has(.hostPage) .answerReview .reject{background:#6b2730!important;color:#ff
 .reviewButtons .reject{background:#5b2028;color:#fff;border-color:#ff9696aa;}
 .reviewButtons button:hover{filter:brightness(1.06);transform:translateY(-1px);}
 @media(max-width:700px){.reviewButtons{flex-direction:column}.reviewButtons button{width:100%;flex-basis:auto;}}
+
+
+/* ===== Host auth + payment inventory ===== */
+.hostLoginModal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,20,24,.86);backdrop-filter:blur(10px);padding:20px}
+.hostLoginModal.hidden{display:none}
+.hostLoginCard,.paymentEditCard{width:min(430px,100%);background:#06383d;border:1px solid rgba(244,194,79,.55);border-radius:22px;padding:28px;box-shadow:0 30px 100px rgba(0,0,0,.45);color:#fff}
+.hostLoginCard>img{width:62px;height:62px;object-fit:contain;margin-bottom:8px}.hostLoginCard h2,.paymentEditCard h2{margin:6px 0 8px}.hostLoginCard p,.paymentEditCard p{color:#a8cece}
+.hostLoginCard form{display:grid;gap:13px}.hostLoginCard label,.paymentEditGrid label{display:grid;gap:6px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#f3c95b}
+.hostLoginCard input,.paymentEditGrid input,.paymentEditGrid select,.paymentEditGrid textarea{border:1px solid rgba(255,255,255,.16);background:#052e33;color:#fff;border-radius:11px;padding:12px;font:inherit;text-transform:none;letter-spacing:normal}
+.hostLoginError{padding:10px 12px;border:1px solid #ff687b;border-radius:10px;color:#ffd2d8;background:rgba(255,80,100,.08)}
+#hostLogoutBtn{border:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;cursor:pointer}
+.hostPaymentCard{margin-top:14px;background:rgba(3,42,46,.82);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px}
+.hostPaymentQr{width:170px;height:170px;display:block;margin:12px auto;background:#fff;padding:7px;border-radius:12px}.paymentScanLink{display:block;text-align:center;color:#f3c95b;font-weight:800;margin-bottom:12px}
+.paymentHostActions{display:grid;grid-template-columns:1fr;gap:8px}.paymentHostActions button{width:100%}
+.paymentInventoryPanel{margin-top:12px;border-top:1px solid rgba(255,255,255,.1);padding-top:12px;max-height:420px;overflow:auto}.paymentInventoryPanel.hidden{display:none}
+.paymentRow{border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:11px;margin-bottom:8px;background:rgba(255,255,255,.025)}
+.paymentRow b{color:#fff}.paymentRow small{display:block;color:#9bc4c4;margin-top:3px}.paymentRow button{margin-top:8px;width:100%}
+.paymentSearch{display:flex;gap:7px;margin-bottom:10px}.paymentSearch input{flex:1;min-width:0}
+.paymentEditCard{width:min(760px,100%);max-height:90vh;overflow:auto;position:relative}.modalX{position:absolute;right:14px;top:10px;background:transparent;border:0;color:#fff;font-size:28px;cursor:pointer}
+.paymentEditGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:15px 0}.paymentEditGrid .wide{grid-column:1/-1}.paymentEditGrid textarea{min-height:80px}
+@media(max-width:700px){.paymentEditGrid{grid-template-columns:1fr}.paymentEditGrid .wide{grid-column:auto}}

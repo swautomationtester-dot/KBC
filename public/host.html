@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Host Console</title>
-<link rel="stylesheet" href="/style.css?v=76">
+<link rel="stylesheet" href="/style.css?v=77">
 </head>
 <body>
 <header class="sitebar">
@@ -20,7 +20,7 @@
     </div>
     <div class="hostHeaderActions">
       <button id="create" class="primary createRoomBtn" onclick="createRoom()">＋ Create Room</button>
-      <a class="homeLink" href="/">Home</a>
+      <button id="hostLogoutBtn" class="homeLink" onclick="hostLogout()">Logout</button><a class="homeLink" href="/">Home</a>
     </div>
   </div>
 
@@ -30,8 +30,8 @@
 
         <div class="room hostRoomSummary">
           <div>
-            <div class="eyebrow">ROOM CODE</div>
-            <strong id="code">----</strong>
+            <div class="eyebrow">LIVE ROOM</div>
+            <strong class="hostRoomLiveTitle">GamesArena Live</strong>
             <p class="muted">Use the controls below to run the live event.</p>
           </div>
           <div class="roomLiveBadge">● LIVE ROOM</div>
@@ -153,6 +153,11 @@
             <div><h3>Join &amp; TV</h3><small>Scan or open a link</small></div>
           </div>
           <img id="qr" class="qr hostSideQr" alt="Registration QR">
+          <div class="hostSideRoomCode">
+            <span>ROOM CODE</span>
+            <strong id="code">----</strong>
+          </div>
+          <div id="safeQuitSidePanel" class="safeQuitSidePanel hidden" aria-live="assertive"></div>
           <div class="hostLinkBlock">
             <span>PARTICIPANT LINK</span>
             <a id="url" class="roomJoinLink" href="#" target="_blank" rel="noopener noreferrer">Open participant page ↗</a>
@@ -162,7 +167,61 @@
             <p id="screenUrl" class="screenLink"></p>
           </div>
         </section>
+
+        <section class="hostPaymentCard" aria-label="Payment inventory">
+          <div class="sideTitle">
+            <span>💳</span>
+            <div><h3>Payment Inventory</h3><small>Scan to submit entry-fee details</small></div>
+          </div>
+          <img id="paymentQr" class="qr hostPaymentQr" alt="Payment submission QR">
+          <a id="paymentUrl" class="paymentScanLink" href="/payment.html" target="_blank" rel="noopener">Open payment form ↗</a>
+          <div class="paymentHostActions">
+            <button onclick="loadPaymentSubmissions()">🔄 Pending Payments</button>
+            <button onclick="openPaymentSearch()">🔎 Search Payments</button>
+            <button onclick="loadPlayerLogs()">📋 Player Log</button>
+          </div>
+          <div id="paymentInventoryPanel" class="paymentInventoryPanel hidden"></div>
+        </section>
       </aside>
+    </div>
+  </div>
+
+  <div id="hostLoginModal" class="hostLoginModal">
+    <div class="hostLoginCard">
+      <img src="/assets/gamesarena-logo-premium.png" alt="GamesArena">
+      <div class="eyebrow">SECURE HOST ACCESS</div>
+      <h2>Host Console Login</h2>
+      <p>Sign in to control live games and payment records.</p>
+      <form id="hostLoginForm">
+        <label>Username<input id="hostUsername" autocomplete="username" required></label>
+        <label>Password<input id="hostPassword" type="password" autocomplete="current-password" required></label>
+        <button class="primary" type="submit">🔐 Sign in</button>
+        <div id="hostLoginError" class="hostLoginError" hidden></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="paymentEditModal" class="hostLoginModal hidden">
+    <div class="paymentEditCard">
+      <button class="modalX" onclick="closePaymentModal()">×</button>
+      <div class="eyebrow">PAYMENT REVIEW</div>
+      <h2>Save Payment Record</h2>
+      <p>Review the submitted details, correct anything necessary, then save it to the database.</p>
+      <form id="paymentEditForm">
+        <input type="hidden" id="paymentSubmissionId">
+        <div class="paymentEditGrid">
+          <label>Player name<input id="payPlayerName" required></label>
+          <label>Register number<input id="payRegisterNumber" required></label>
+          <label>Phone number<input id="payPhone" required></label>
+          <label>Date<input id="payDate" type="date" required></label>
+          <label>Entry fee<input id="payEntryFee" type="number" min="0" step=".01" required></label>
+          <label>Amount paid<input id="payAmountPaid" type="number" min="0" step=".01" required></label>
+          <label>Payment method<select id="payMethod" required><option>Cash</option><option>UPI</option><option>Card</option><option>Other</option></select></label>
+          <label>Transaction/reference<input id="payReference"></label>
+          <label class="wide">Notes<textarea id="payNotes"></textarea></label>
+        </div>
+        <button class="primary" type="submit">✓ Save to Database</button>
+      </form>
     </div>
   </div>
 
@@ -182,6 +241,6 @@
 </main>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/host.js?v=76"></script>
+<script src="/host.js?v=84"></script>
 </body>
 </html>
