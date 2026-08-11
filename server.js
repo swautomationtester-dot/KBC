@@ -145,6 +145,66 @@ app.post("/api/host/logout",(req,res)=>{
 });
 app.get("/api/host/me",(req,res)=>res.json({ok:isHostSession(req),username:HOST_USERNAME}));
 
+/* ===== Payment Inventory authentication =====
+   Separate credentials/session from the live Host Console. Password is stored
+   as a scrypt hash in MySQL (payment_users), never in the browser.
+*/
+const PAYMENT_USERNAME=process.env.PAYMENT_USERNAME||"venkat";
+const PAYMENT_PASSWORD_HASH=process.env.PAYMENT_PASSWORD_HASH||"88a3714143b921be53017a72f26bd92020597b4e35ebae15a63519c241770bcde03125f53d3adc0b8526516a122a2b10eb1562fb0babcc28816e552c99fdd898";
+const PAYMENT_PASSWORD_SALT=process.env.PAYMENT_PASSWORD_SALT||"20acaae0dc77f6ea8f652490aa01515e";
+const paymentSessions=new Map();
+function makePaymentSession(){
+ const token=crypto.randomBytes(32).toString("hex");
+ paymentSessions.set(token,{createdAt:Date.now(),username:PAYMENT_USERNAME});
+ return token;
+}
+function isPaymentSession(req){
+ const token=getCookie(req,"gamesarena_payment_session");
+ return !!token && paymentSessions.has(token);
+}
+function requirePaymentAdmin(req,res,next){
+ if(!isPaymentSession(req))return res.status(401).json({error:"Payment inventory login required."});
+ next();
+}
+async function validPaymentAdminPassword(username,password){
+ try{
+   if(db){
+     const [rows]=await db.query(`SELECT username,password_hash,password_salt FROM payment_users WHERE username=? LIMIT 1`,[String(username||"").trim()]);
+     if(rows[0])return verifyScryptPassword(password,rows[0].password_hash,rows[0].password_salt);
+   }
+ }catch(err){console.error("payment credential lookup failed:",err.message)}
+ return String(username||"")===PAYMENT_USERNAME && verifyScryptPassword(password,PAYMENT_PASSWORD_HASH,PAYMENT_PASSWORD_SALT);
+}
+app.post("/api/payment-admin/login",async(req,res)=>{
+ const {username,password}=req.body||{};
+ if(!await validPaymentAdminPassword(username,password))return res.status(401).json({ok:false,error:"Invalid payment inventory username or password."});
+ const token=makePaymentSession();
+ res.setHeader("Set-Cookie",`gamesarena_payment_session=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=28800`);
+ res.json({ok:true,username:String(username).trim()});
+});
+app.post("/api/payment-admin/logout",(req,res)=>{
+ const token=getCookie(req,"gamesarena_payment_session");
+ if(token)paymentSessions.delete(token);
+ res.setHeader("Set-Cookie","gamesarena_payment_session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0");
+ res.json({ok:true});
+});
+app.get("/api/payment-admin/me",(req,res)=>res.json({ok:isPaymentSession(req),username:PAYMENT_USERNAME}));
+
+function requestBaseUrl(req){
+ const configured=String(PUBLIC_URL||"").trim();
+ if(configured && !/localhost|127\\.0\\.0\\.1/i.test(configured))return configured;
+ const proto=String(req.headers["x-forwarded-proto"]||req.protocol||"http").split(",")[0].trim();
+ const host=String(req.headers["x-forwarded-host"]||req.get("host")||"").split(",")[0].trim();
+ return host ? `${proto}://${host}` : `http://localhost:${PORT}`;
+}
+app.get("/api/payment-qr",async(req,res)=>{
+ try{
+   const url=`${requestBaseUrl(req)}/payment.html?source=qr`;
+   const qr=await QRCode.toDataURL(url,{margin:2,width:520,errorCorrectionLevel:"H"});
+   res.json({ok:true,url,qr});
+ }catch(err){console.error("payment QR failed:",err);res.status(500).json({ok:false,error:"Unable to create payment QR."});}
+});
+
 async function findOrCreatePlayer({name,registerNumber,phone}={}){
  if(!db)throw new Error("Database not configured");
  const playerName=String(name||"").trim().slice(0,150);
@@ -240,7 +300,7 @@ app.post("/api/payment-submissions",async(req,res)=>{
  }catch(err){console.error("payment submission failed:",err);res.status(500).json({ok:false,error:"Unable to save the payment submission."});}
 });
 
-app.get("/api/host/players",requireHost,async(req,res)=>{
+app.get("/api/payment-admin/players",requirePaymentAdmin,async(req,res)=>{
  if(!db)return res.status(503).json({error:"Database not configured"});
  try{
    const [rows]=await db.query(
@@ -251,7 +311,7 @@ app.get("/api/host/players",requireHost,async(req,res)=>{
  }catch(err){res.status(500).json({error:"Unable to load players."});}
 });
 
-app.get("/api/host/payment-submissions",requireHost,async(req,res)=>{
+app.get("/api/payment-admin/payment-submissions",requirePaymentAdmin,async(req,res)=>{
  if(!db)return res.status(503).json({error:"Database not configured"});
  try{
    const [rows]=await db.query(
@@ -269,7 +329,7 @@ app.get("/api/host/payment-submissions",requireHost,async(req,res)=>{
  }catch(err){console.error("pending payments failed:",err.message);res.status(500).json({error:"Unable to load payment submissions."});}
 });
 
-app.get("/api/host/payments",requireHost,async(req,res)=>{
+app.get("/api/payment-admin/payments",requirePaymentAdmin,async(req,res)=>{
  if(!db)return res.status(503).json({error:"Database not configured"});
  const q=String(req.query.q||"").trim();
  try{
@@ -289,7 +349,7 @@ app.get("/api/host/payments",requireHost,async(req,res)=>{
  }catch(err){console.error("payment lookup failed:",err);res.status(500).json({error:"Unable to load payment records."});}
 });
 
-app.post("/api/host/payments",requireHost,async(req,res)=>{
+app.post("/api/payment-admin/payments",requirePaymentAdmin,async(req,res)=>{
  if(!db)return res.status(503).json({ok:false,error:"Database not configured"});
  const p=cleanPayment(req.body);
  if(!validPayment(p))return res.status(400).json({ok:false,error:"Please complete all required payment fields."});
@@ -302,7 +362,7 @@ app.post("/api/host/payments",requireHost,async(req,res)=>{
         SET player_id=?,payment_date=?,entry_fee=?,payment_method=?,transaction_reference=?,
             amount_paid=?,notes=?,status='APPROVED',reviewed_at=NOW(),created_by=?
         WHERE id=?`,
-       [player.id,p.paymentDate,p.entryFee,p.paymentMethod,p.transactionReference||null,p.amountPaid,p.notes||null,HOST_USERNAME,paymentId]
+       [player.id,p.paymentDate,p.entryFee,p.paymentMethod,p.transactionReference||null,p.amountPaid,p.notes||null,PAYMENT_USERNAME,paymentId]
      );
      if(!r.affectedRows)return res.status(404).json({ok:false,error:"Payment submission not found."});
      return res.json({ok:true,id:paymentId});
@@ -310,21 +370,21 @@ app.post("/api/host/payments",requireHost,async(req,res)=>{
    const [r]=await db.query(
      `INSERT INTO payments(player_id,payment_date,entry_fee,payment_method,transaction_reference,amount_paid,notes,status,reviewed_at,created_by)
       VALUES(?,?,?,?,?,?,?,'APPROVED',NOW(),?)`,
-     [player.id,p.paymentDate,p.entryFee,p.paymentMethod,p.transactionReference||null,p.amountPaid,p.notes||null,HOST_USERNAME]
+     [player.id,p.paymentDate,p.entryFee,p.paymentMethod,p.transactionReference||null,p.amountPaid,p.notes||null,PAYMENT_USERNAME]
    );
    res.json({ok:true,id:r.insertId});
  }catch(err){console.error("payment record save failed:",err);res.status(500).json({ok:false,error:"Unable to save the payment record."});}
 });
 
-app.post("/api/host/payment-submissions/:id/reject",requireHost,async(req,res)=>{
+app.post("/api/payment-admin/payment-submissions/:id/reject",requirePaymentAdmin,async(req,res)=>{
  if(!db)return res.status(503).json({ok:false,error:"Database not configured"});
  try{
-   const [r]=await db.query(`UPDATE payments SET status='REJECTED',reviewed_at=NOW(),created_by=? WHERE id=?`,[HOST_USERNAME,Number(req.params.id)]);
+   const [r]=await db.query(`UPDATE payments SET status='REJECTED',reviewed_at=NOW(),created_by=? WHERE id=?`,[PAYMENT_USERNAME,Number(req.params.id)]);
    res.json({ok:r.affectedRows>0});
  }catch(err){res.status(500).json({ok:false,error:"Unable to reject the submission."});}
 });
 
-app.get("/api/host/player-logs",requireHost,async(req,res)=>{
+app.get("/api/payment-admin/player-logs",requirePaymentAdmin,async(req,res)=>{
  if(!db)return res.status(503).json({error:"Database not configured"});
  const q=String(req.query.q||"").trim();
  try{
@@ -406,6 +466,14 @@ async function initDb(){
    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
  )`);
 
+ await db.query(`CREATE TABLE IF NOT EXISTS payment_users(
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   username VARCHAR(100) NOT NULL UNIQUE,
+   password_hash VARCHAR(255) NOT NULL,
+   password_salt VARCHAR(255) NULL,
+   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+ )`);
+
  await db.query(`CREATE TABLE IF NOT EXISTS players(
    id INT AUTO_INCREMENT PRIMARY KEY,
    player_name VARCHAR(150) NOT NULL,
@@ -463,6 +531,13 @@ async function initDb(){
     VALUES(?,?,?)
     ON DUPLICATE KEY UPDATE username=username`,
    [HOST_USERNAME,HOST_PASSWORD_HASH,HOST_PASSWORD_SALT]
+ );
+
+ await db.query(
+   `INSERT INTO payment_users(username,password_hash,password_salt)
+    VALUES(?,?,?)
+    ON DUPLICATE KEY UPDATE password_hash=VALUES(password_hash),password_salt=VALUES(password_salt)`,
+   [PAYMENT_USERNAME,PAYMENT_PASSWORD_HASH,PAYMENT_PASSWORD_SALT]
  );
 
  console.log("GamesArena MySQL schema ready.");
@@ -1056,7 +1131,7 @@ io.on("connection",s=>{
    if(r.hostToken!==wanted)continue;
    if(r.hostDisconnectTimer){clearTimeout(r.hostDisconnectTimer);r.hostDisconnectTimer=null}
    r.host=s.id;s.join(code);s.data.room=code;s.data.role="host";
-   s.emit("room",{code,hostToken:r.hostToken,joinUrl:r.joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr,paymentUrl:r.paymentUrl,paymentQr:r.paymentQr});
+   s.emit("room",{code,hostToken:r.hostToken,joinUrl:r.joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});
    emitState(code);
    return;
  }
@@ -1086,8 +1161,6 @@ s.on("host:create",async(_payload={},ack)=>{
     r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});
     r.audiencePollUrl=`${base}/audience.html?room=${code}`;
     r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});
-    r.paymentUrl=`${base}/payment.html`;
-    r.paymentQr=await QRCode.toDataURL(r.paymentUrl,{margin:1,width:280});
 
     const payload={
       code,hostToken:r.hostToken,joinUrl,qr:r.joinQr,
