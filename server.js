@@ -69,6 +69,177 @@ function requireAdmin(req,res,next){
  if(!isAdmin(req))return res.status(401).json({error:"Admin login required."});
  next();
 }
+
+
+/* ===== Host Console authentication =====
+   The default credentials are represented by a one-way scrypt hash. In
+   production, HOST_USERNAME/HOST_PASSWORD may be supplied through Hostinger
+   environment variables instead of using the built-in defaults.
+*/
+const HOST_USERNAME=process.env.HOST_USERNAME||"venkat";
+const HOST_PASSWORD_HASH=process.env.HOST_PASSWORD_HASH||"2c18d6138ed31b81065e58fe1856fea35d3d61802193be58408644ec4e81c0c66e1c056f77b4e4734aac078b36eebfb9b3e782a112d086a5581e20254f0570e2";
+const HOST_PASSWORD_SALT=process.env.HOST_PASSWORD_SALT||"3d0424e1a76ec11a32e0e1c447a12dc6";
+const hostSessions=new Map();
+
+function safeEqualText(a,b){
+ const aa=Buffer.from(String(a||""));
+ const bb=Buffer.from(String(b||""));
+ return aa.length===bb.length && crypto.timingSafeEqual(aa,bb);
+}
+function validHostPassword(password){
+ try{
+   const derived=crypto.scryptSync(String(password||""),Buffer.from(HOST_PASSWORD_SALT,"hex"),64).toString("hex");
+   return safeEqualText(derived,HOST_PASSWORD_HASH);
+ }catch{return false}
+}
+function makeHostSession(){
+ const token=crypto.randomBytes(32).toString("hex");
+ hostSessions.set(token,{createdAt:Date.now()});
+ return token;
+}
+function isHostSession(req){
+ const token=getCookie(req,"gamesarena_host_session");
+ return !!token && hostSessions.has(token);
+}
+function requireHost(req,res,next){
+ if(!isHostSession(req))return res.status(401).json({error:"Host login required."});
+ next();
+}
+function socketHasHostSession(s){
+ const raw=s.handshake?.headers?.cookie||"";
+ const m=raw.match(/(?:^|;\\s*)gamesarena_host_session=([^;]+)/);
+ return !!m && hostSessions.has(decodeURIComponent(m[1]));
+}
+
+app.post("/api/host/login",(req,res)=>{
+ const {username,password}=req.body||{};
+ if(String(username||"")!==HOST_USERNAME || !validHostPassword(password))
+   return res.status(401).json({ok:false,error:"Invalid host username or password."});
+ const token=makeHostSession();
+ res.setHeader("Set-Cookie",`gamesarena_host_session=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=28800`);
+ res.json({ok:true});
+});
+app.post("/api/host/logout",(req,res)=>{
+ const token=getCookie(req,"gamesarena_host_session");
+ if(token)hostSessions.delete(token);
+ res.setHeader("Set-Cookie","gamesarena_host_session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0");
+ res.json({ok:true});
+});
+app.get("/api/host/me",(req,res)=>res.json({ok:isHostSession(req),username:HOST_USERNAME}));
+
+async function upsertGameLog({roomCode,player,amountWon=0,resultStatus="PLAYED",safeQuit=false,entryFee=0,playedAt=new Date()}){
+ if(!db||!player)return;
+ try{
+   let phone="";
+   const [payRows]=await db.query(`SELECT phone FROM payment_records WHERE register_number=? ORDER BY payment_date DESC,created_at DESC LIMIT 1`,[String(player.employeeCode||"")]);
+   if(payRows[0]?.phone)phone=payRows[0].phone;
+   await db.query(
+    `INSERT INTO player_game_logs(room_code,game_type,player_name,register_number,phone,played_at,amount_won,entry_fee,result_status,safe_quit)
+     VALUES(?,?,?,?,?,?,?,?,?,?)
+     ON DUPLICATE KEY UPDATE
+       player_name=VALUES(player_name),phone=COALESCE(NULLIF(VALUES(phone),''),phone),
+       amount_won=VALUES(amount_won),result_status=VALUES(result_status),safe_quit=VALUES(safe_quit),entry_fee=VALUES(entry_fee)`,
+    [String(roomCode||""),"GamesArena Quiz",String(player.name||"").slice(0,120),String(player.employeeCode||"").slice(0,80),phone,playedAt,Number(amountWon||0),Number(entryFee||0),String(resultStatus||"PLAYED"),safeQuit?1:0]
+   );
+ }catch(err){console.error("player game log failed:",err.message)}
+}
+function cleanPayment(body){
+ const b=body||{};
+ const method=String(b.paymentMethod||b.method||"").trim();
+ const allowed=["Cash","UPI","Card","Other"];
+ return {
+   playerName:String(b.playerName||"").trim().slice(0,120),
+   registerNumber:String(b.registerNumber||"").trim().slice(0,80),
+   phone:String(b.phone||"").trim().slice(0,40),
+   paymentDate:String(b.paymentDate||"").trim(),
+   entryFee:Number(b.entryFee||0),
+   paymentMethod:allowed.includes(method)?method:"",
+   transactionReference:String(b.transactionReference||"").trim().slice(0,160),
+   amountPaid:Number(b.amountPaid||0),
+   notes:String(b.notes||"").trim().slice(0,2000)
+ };
+}
+function validPayment(p){
+ return p.playerName && p.registerNumber && p.phone && /^\d{4}-\d{2}-\d{2}$/.test(p.paymentDate)
+   && Number.isFinite(p.entryFee)&&p.entryFee>=0
+   && p.paymentMethod && Number.isFinite(p.amountPaid)&&p.amountPaid>=0;
+}
+
+app.post("/api/payment-submissions",async(req,res)=>{
+ if(!db)return res.status(503).json({ok:false,error:"Payment database is not configured. Please contact the host."});
+ const p=cleanPayment(req.body);
+ if(!validPayment(p))return res.status(400).json({ok:false,error:"Please complete all required payment fields."});
+ try{
+   const [r]=await db.query(
+    `INSERT INTO payment_submissions(player_name,register_number,phone,payment_date,entry_fee,payment_method,transaction_reference,amount_paid,notes)
+     VALUES(?,?,?,?,?,?,?,?,?)`,
+    [p.playerName,p.registerNumber,p.phone,p.paymentDate,p.entryFee,p.paymentMethod,p.transactionReference||null,p.amountPaid,p.notes||null]
+   );
+   res.json({ok:true,id:r.insertId,message:"Payment submitted. The host will review it."});
+ }catch(err){console.error("payment submission failed:",err);res.status(500).json({ok:false,error:"Unable to save the payment submission."});}
+});
+
+app.get("/api/host/payment-submissions",requireHost,async(req,res)=>{
+ if(!db)return res.status(503).json({error:"Database not configured"});
+ try{
+   const [rows]=await db.query(`SELECT id,player_name AS playerName,register_number AS registerNumber,phone,payment_date AS paymentDate,entry_fee AS entryFee,payment_method AS paymentMethod,transaction_reference AS transactionReference,amount_paid AS amountPaid,notes,status,submitted_at AS submittedAt FROM payment_submissions WHERE status='PENDING' ORDER BY submitted_at DESC LIMIT 200`);
+   res.json({ok:true,rows});
+ }catch(err){res.status(500).json({error:"Unable to load payment submissions."});}
+});
+app.get("/api/host/payments",requireHost,async(req,res)=>{
+ if(!db)return res.status(503).json({error:"Database not configured"});
+ const q=String(req.query.q||"").trim();
+ try{
+   const [rows]=await db.query(
+    `SELECT id,submission_id AS submissionId,player_name AS playerName,register_number AS registerNumber,phone,payment_date AS paymentDate,entry_fee AS entryFee,payment_method AS paymentMethod,transaction_reference AS transactionReference,amount_paid AS amountPaid,notes,created_at AS createdAt,created_by AS createdBy
+     FROM payment_records
+     ${q?"WHERE player_name LIKE ? OR phone LIKE ? OR register_number LIKE ?":""}
+     ORDER BY payment_date DESC,created_at DESC LIMIT 300`,
+    q?[`%${q}%`,`%${q}%`,`%${q}%`]:[]
+   );
+   res.json({ok:true,rows});
+ }catch(err){console.error("payment lookup failed:",err);res.status(500).json({error:"Unable to load payment records."});}
+});
+app.post("/api/host/payments",requireHost,async(req,res)=>{
+ if(!db)return res.status(503).json({ok:false,error:"Database not configured"});
+ const p=cleanPayment(req.body);
+ if(!validPayment(p))return res.status(400).json({ok:false,error:"Please complete all required payment fields."});
+ const submissionId=req.body?.submissionId?Number(req.body.submissionId):null;
+ const conn=db;
+ try{
+   const [r]=await conn.query(
+    `INSERT INTO payment_records(submission_id,player_name,register_number,phone,payment_date,entry_fee,payment_method,transaction_reference,amount_paid,notes,created_by)
+     VALUES(?,?,?,?,?,?,?,?,?,?,?)`,
+    [submissionId||null,p.playerName,p.registerNumber,p.phone,p.paymentDate,p.entryFee,p.paymentMethod,p.transactionReference||null,p.amountPaid,p.notes||null,HOST_USERNAME]
+   );
+   if(submissionId){
+     await conn.query(`UPDATE payment_submissions SET status='APPROVED',reviewed_at=NOW() WHERE id=?`,[submissionId]);
+   }
+   res.json({ok:true,id:r.insertId});
+ }catch(err){console.error("payment record save failed:",err);res.status(500).json({ok:false,error:"Unable to save the payment record."});}
+});
+app.post("/api/host/payment-submissions/:id/reject",requireHost,async(req,res)=>{
+ if(!db)return res.status(503).json({ok:false,error:"Database not configured"});
+ try{
+   await db.query(`UPDATE payment_submissions SET status='REJECTED',reviewed_at=NOW() WHERE id=?`,[Number(req.params.id)]);
+   res.json({ok:true});
+ }catch(err){res.status(500).json({ok:false,error:"Unable to reject the submission."});}
+});
+app.get("/api/host/player-logs",requireHost,async(req,res)=>{
+ if(!db)return res.status(503).json({error:"Database not configured"});
+ const q=String(req.query.q||"").trim();
+ try{
+   const [rows]=await db.query(
+    `SELECT id,room_code AS roomCode,game_type AS gameType,player_name AS playerName,register_number AS registerNumber,phone,played_at AS playedAt,entry_fee AS entryFee,amount_won AS amountWon,result_status AS resultStatus,safe_quit AS safeQuit
+     FROM player_game_logs
+     ${q?"WHERE player_name LIKE ? OR phone LIKE ? OR register_number LIKE ?":""}
+     ORDER BY played_at DESC LIMIT 500`,
+    q?[`%${q}%`,`%${q}%`,`%${q}%`]:[]
+   );
+   res.json({ok:true,rows});
+ }catch(err){res.status(500).json({error:"Unable to load player history."});}
+});
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname,"public")));
 app.get("/healthz",(req,res)=>res.status(200).json({ok:true,service:"gamesarena"}));
@@ -79,6 +250,54 @@ async function initDb(){
  if(!process.env.DB_HOST)return;
  db=await mysql.createPool({host:process.env.DB_HOST,user:process.env.DB_USER,password:process.env.DB_PASSWORD,database:process.env.DB_NAME,port:Number(process.env.DB_PORT||3306),connectionLimit:5});
  await db.query(`CREATE TABLE IF NOT EXISTS questions(id INT AUTO_INCREMENT PRIMARY KEY,text_q TEXT NOT NULL,option_a VARCHAR(500) NOT NULL,option_b VARCHAR(500) NOT NULL,option_c VARCHAR(500) NOT NULL,option_d VARCHAR(500) NOT NULL,answer_idx TINYINT NOT NULL,points INT NOT NULL DEFAULT 100)`);
+ await db.query(`CREATE TABLE IF NOT EXISTS player_game_logs(
+   id BIGINT AUTO_INCREMENT PRIMARY KEY,
+   room_code VARCHAR(20) NOT NULL,
+   game_type VARCHAR(60) NOT NULL DEFAULT 'GamesArena Quiz',
+   player_name VARCHAR(120) NOT NULL,
+   register_number VARCHAR(80) NOT NULL,
+   phone VARCHAR(40) NULL,
+   played_at DATETIME NOT NULL,
+   amount_won DECIMAL(10,2) NOT NULL DEFAULT 0,
+   entry_fee DECIMAL(10,2) NOT NULL DEFAULT 0,
+   result_status VARCHAR(40) NOT NULL DEFAULT 'PLAYED',
+   safe_quit TINYINT(1) NOT NULL DEFAULT 0,
+   UNIQUE KEY uq_room_player (room_code,register_number)
+ )`);
+ await db.query(`CREATE TABLE IF NOT EXISTS payment_submissions(
+   id BIGINT AUTO_INCREMENT PRIMARY KEY,
+   player_name VARCHAR(120) NOT NULL,
+   register_number VARCHAR(80) NOT NULL,
+   phone VARCHAR(40) NOT NULL,
+   payment_date DATE NOT NULL,
+   entry_fee DECIMAL(10,2) NOT NULL DEFAULT 0,
+   payment_method VARCHAR(30) NOT NULL,
+   transaction_reference VARCHAR(160) NULL,
+   amount_paid DECIMAL(10,2) NOT NULL DEFAULT 0,
+   notes TEXT NULL,
+   status VARCHAR(30) NOT NULL DEFAULT 'PENDING',
+   submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   reviewed_at DATETIME NULL,
+   INDEX idx_payment_phone(phone),
+   INDEX idx_payment_name(player_name)
+ )`);
+ await db.query(`CREATE TABLE IF NOT EXISTS payment_records(
+   id BIGINT AUTO_INCREMENT PRIMARY KEY,
+   submission_id BIGINT NULL,
+   player_name VARCHAR(120) NOT NULL,
+   register_number VARCHAR(80) NOT NULL,
+   phone VARCHAR(40) NOT NULL,
+   payment_date DATE NOT NULL,
+   entry_fee DECIMAL(10,2) NOT NULL DEFAULT 0,
+   payment_method VARCHAR(30) NOT NULL,
+   transaction_reference VARCHAR(160) NULL,
+   amount_paid DECIMAL(10,2) NOT NULL DEFAULT 0,
+   notes TEXT NULL,
+   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   created_by VARCHAR(80) NOT NULL DEFAULT 'venkat',
+   INDEX idx_record_phone(phone),
+   INDEX idx_record_name(player_name)
+ )`);
  // v59: bundled questions.json is authoritative; do not seed the old
  // fallback questions into the database.
 }
@@ -167,7 +386,7 @@ function clearQuestionTimer(r){clearTimeout(r.questionTimerTimeout);r.questionTi
 function questionRemaining(r){if(r.phase!=="question")return 0;if(r.questionTimerPaused)return Math.max(0,Number(r.questionTimerRemainingMs||0));if(r.questionTimerStartAt)return Math.max(0,Number(r.questionTimerRemainingMs||QUESTION_TIME_MS)-(Date.now()-r.questionTimerStartAt));return Math.max(0,Number(r.questionTimerRemainingMs||QUESTION_TIME_MS));}
 function pauseQuestionTimer(r){if(r.phase!=="question"||r.questionTimerPaused)return false;r.questionTimerRemainingMs=questionRemaining(r);r.questionTimerStartAt=0;r.questionTimerPaused=true;clearQuestionTimer(r);return true;}
 function startQuestionTimer(r,remaining=QUESTION_TIME_MS){clearQuestionTimer(r);r.questionTimerRemainingMs=Math.max(0,Number(remaining||0));r.questionTimerPaused=false;r.questionTimerStartAt=Date.now();if(r.questionTimerRemainingMs<=0){questionTimeExpired(r);return;}r.questionTimerTimeout=setTimeout(()=>questionTimeExpired(r),r.questionTimerRemainingMs);}
-function questionTimeExpired(r){if(r.phase!=="question"||r.current<0)return;r.questionTimerRemainingMs=0;r.questionTimerStartAt=0;r.questionTimerPaused=false;r.questionTimerTimeout=null;if(r.pendingAnswer){const code=[...rooms.entries()].find(([,room])=>room===r)?.[0];if(code)emitState(code);return;}const u=r.winner&&r.users.get(r.winner.id);if(!u)return;u.prizeWon=0;u.status="eliminated";r.eliminatedContestant={id:u.id,name:u.name,employeeCode:u.employeeCode,score:u.score,pointsEarned:0,prizeWon:0,eliminatedAt:Date.now(),reason:"TIME_UP",until:Date.now()+30000};const code=[...rooms.entries()].find(([,room])=>room===r)?.[0];if(code){io.to(code).emit("answerResult",{correct:false,eliminated:true,timeout:true,approved:true,contestant:{name:u.name,employeeCode:u.employeeCode},pointsEarned:0,prizeWon:0});io.to(u.id).emit("eliminationNotice",{name:u.name,employeeCode:u.employeeCode,score:u.score,pointsEarned:0,prizeWon:0,until:Date.now()+30000,reason:"TIME_UP"});nextContestant(code);}}
+function questionTimeExpired(r){if(r.phase!=="question"||r.current<0)return;r.questionTimerRemainingMs=0;r.questionTimerStartAt=0;r.questionTimerPaused=false;r.questionTimerTimeout=null;if(r.pendingAnswer){const code=[...rooms.entries()].find(([,room])=>room===r)?.[0];if(code)emitState(code);return;}const u=r.winner&&r.users.get(r.winner.id);if(!u)return;u.prizeWon=0;u.status="eliminated";upsertGameLog({roomCode:[...rooms.entries()].find(([,room])=>room===r)?.[0]||"",player:u,amountWon:0,resultStatus:"TIME_UP",safeQuit:false});r.eliminatedContestant={id:u.id,name:u.name,employeeCode:u.employeeCode,score:u.score,pointsEarned:0,prizeWon:0,eliminatedAt:Date.now(),reason:"TIME_UP",until:Date.now()+30000};const code=[...rooms.entries()].find(([,room])=>room===r)?.[0];if(code){io.to(code).emit("answerResult",{correct:false,eliminated:true,timeout:true,approved:true,contestant:{name:u.name,employeeCode:u.employeeCode},pointsEarned:0,prizeWon:0});io.to(u.id).emit("eliminationNotice",{name:u.name,employeeCode:u.employeeCode,score:u.score,pointsEarned:0,prizeWon:0,until:Date.now()+30000,reason:"TIME_UP"});nextContestant(code);}}
 function clearAudiencePollTimer(r){clearTimeout(r.pollTimerTimeout);r.pollTimerTimeout=null;r.pollTimerStartAt=0;r.pollTimerRunning=false;r.pollTimerRemainingMs=AUDIENCE_POLL_TIME_MS;}
 function pollRemaining(r){if(!r.pollTimerRunning)return Math.max(0,Number(r.pollTimerRemainingMs||0));return Math.max(0,Number(r.pollTimerRemainingMs||0)-(Date.now()-r.pollTimerStartAt));}
 function audienceConnectedCount(code){
@@ -663,18 +882,20 @@ io.on("connection",s=>{
    if(r.tv===s.id) r.tv=null;
  });
  s.on("host:resume",({token}={})=>{
+ if(!socketHasHostSession(s))return s.emit("hostAuthRequired");
  const wanted=String(token||"").trim();
  if(!wanted)return;
  for(const [code,r] of rooms){
    if(r.hostToken!==wanted)continue;
    if(r.hostDisconnectTimer){clearTimeout(r.hostDisconnectTimer);r.hostDisconnectTimer=null}
    r.host=s.id;s.join(code);s.data.room=code;s.data.role="host";
-   s.emit("room",{code,hostToken:r.hostToken,joinUrl:r.joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr});
+   s.emit("room",{code,hostToken:r.hostToken,joinUrl:r.joinUrl,qr:r.joinQr,screenUrl:r.screenUrl,screenQr:r.screenQr,audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr,paymentUrl:r.paymentUrl,paymentQr:r.paymentQr});
    emitState(code);
    return;
  }
 });
 s.on("host:create",async(_payload={},ack)=>{
+  if(!socketHasHostSession(s)){if(typeof ack==="function")ack({ok:false,error:"Host login required."});return s.emit("hostAuthRequired");}
   try{
     // Always create a fresh room; never reuse the previous host session.
     let code;do code=String(Math.floor(1000+Math.random()*9000));while(rooms.has(code));
@@ -698,11 +919,14 @@ s.on("host:create",async(_payload={},ack)=>{
     r.screenQr=await QRCode.toDataURL(r.screenUrl,{margin:1,width:280});
     r.audiencePollUrl=`${base}/audience.html?room=${code}`;
     r.audiencePollQr=await QRCode.toDataURL(r.audiencePollUrl,{margin:1,width:320});
+    r.paymentUrl=`${base}/payment.html`;
+    r.paymentQr=await QRCode.toDataURL(r.paymentUrl,{margin:1,width:280});
 
     const payload={
       code,hostToken:r.hostToken,joinUrl,qr:r.joinQr,
       screenUrl:r.screenUrl,screenQr:r.screenQr,
-      audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr
+      audiencePollUrl:r.audiencePollUrl,audiencePollQr:r.audiencePollQr,
+      paymentUrl:r.paymentUrl,paymentQr:r.paymentQr
     };
     s.emit("room",payload);
     if(typeof ack==="function")ack({ok:true,...payload});
@@ -866,6 +1090,8 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
  // quiz. This prevents the same player from appearing in any later
  // Fastest Finger selection, even if they are eliminated before the quiz is completed.
  r.played.add(r.winner.employeeCode);
+ const contestantForLog=r.users.get(r.winner.id)||r.winner;
+ await upsertGameLog({roomCode:s.data.room,player:contestantForLog,resultStatus:"IN_PROGRESS",playedAt:new Date()});
  const bank=await questions();
  r.questions=buildGameQuestions(bank,r.usedQuestionIds);
  r.questions.forEach(q=>r.usedQuestionIds.add(q.id));
@@ -914,7 +1140,7 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
   emitState(s.data.room);
  });
 
- s.on("host:approveAnswer",()=>{
+ s.on("host:approveAnswer",async()=>{
   const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question"||!r.pendingAnswer)return;
   const pending=r.pendingAnswer,u=r.users.get(pending.playerId),q=r.questions[r.current];
   if(!u)return;
@@ -932,6 +1158,7 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
     if(r.current===1)u.assuredMoney=20;
     if(r.current===3)u.assuredMoney=40;
     u.prizeWon=Number(u.assuredMoney||0);
+    await upsertGameLog({roomCode:s.data.room,player:u,amountWon:u.prizeWon,resultStatus:r.current===4?"WON":"CONTINUING",safeQuit:false});
     io.to(s.data.room).emit("answerResult",{correct:true,points:q.points,approved:true,assuredMoney:u.assuredMoney||0});
     emitState(s.data.room);
     clearTimeout(r.timer);
@@ -977,6 +1204,7 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
   }else{
     u.prizeWon=0;
     u.status="eliminated";
+    await upsertGameLog({roomCode:s.data.room,player:u,amountWon:0,resultStatus:"WRONG_ANSWER",safeQuit:false});
     r.eliminatedContestant={
       id:u.id,
       name:u.name,
@@ -1035,7 +1263,7 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
   emitState(s.data.room);
  });
 
- s.on("host:approveQuit",()=>{
+ s.on("host:approveQuit",async()=>{
   const r=rooms.get(s.data.room);if(!r||r.host!==s.id||r.phase!=="question"||!r.pendingQuit)return;
   const pending=r.pendingQuit,u=r.users.get(pending.playerId);
   if(!u){r.pendingQuit=null;emitState(s.data.room);return;}
@@ -1046,6 +1274,7 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
     emitState(s.data.room);return;
   }
   u.prizeWon=amount;u.status="quit";
+  await upsertGameLog({roomCode:s.data.room,player:u,amountWon:amount,resultStatus:"SAFE_QUIT",safeQuit:true});
   r.contestantQuit={id:u.id,name:u.name,employeeCode:u.employeeCode,amount,at:Date.now()};
   r.pendingQuit=null;
   io.to(s.data.room).emit("contestantQuit",{contestant:{name:u.name,employeeCode:u.employeeCode},amount});
