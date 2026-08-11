@@ -1,34 +1,92 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GamesArena • Welcome</title>
-<link rel="stylesheet" href="/style.css?v=75">
-<link rel="stylesheet" href="/gamesarena-home.css?v=3">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#032d32">
+<title>GamesArena • Play • Think • Win</title>
+<link rel="stylesheet" href="/style.css?v=76">
+<link rel="stylesheet" href="/gamesarena-home.css?v=4">
 </head>
 <body class="gaHome">
+<div class="gaAmbient gaAmbientOne"></div>
+<div class="gaAmbient gaAmbientTwo"></div>
+<div class="gaGridGlow"></div>
+
 <header class="gaHeader">
-  <a class="gaHeaderLogo" href="/"><img src="/assets/gamesarena-logo-premium.png" alt="GamesArena"></a>
-  <span class="gaChip">WELCOME TO GAMESARENA</span>
-</header>
-<main>
-<section class="gaHero">
-  <div class="gaEyebrow">GAMESARENA • LIVE GAME EVENT</div>
-  <img class="gaHeroLogo" src="/assets/gamesarena-logo-premium.png" alt="GamesArena">
-  <h1>Welcome to <span>GamesArena</span></h1>
-  <p>Live Events&nbsp;&nbsp;•&nbsp;&nbsp;Quizzes&nbsp;&nbsp;•&nbsp;&nbsp;Mini Games</p>
-</section>
-<section class="gaGameShowcase" aria-label="GamesArena games">
-  <div class="gaSectionIntro"><div><span class="gaEyebrow">PLAY TONIGHT</span><h2>Pick your game</h2><p>Live quiz battles, memory matches and fast multiplayer challenges.</p></div><span class="gaLiveBadge"><i></i> LIVE READY</span></div>
-  <div class="gaTiles">
-    <a href="/host.html" class="gaTile gaQuizTile"><img src="/assets/gamecards/quiz.svg" alt="Quiz Show"><div class="gaTileBody"><b>Quiz Show</b><small>KBC-style questions, lifelines and a live 30-second timer.</small><span class="gaAction">Host Game →</span></div></a>
-    <a href="/card-match.html" class="gaTile gaFeatured"><img src="/assets/gamecards/card-match.svg" alt="Card Match"><div class="gaTileBody"><b>Card Match</b><small>Multiplayer memory battle with player-color pair highlights.</small><span class="gaAction">Play Match →</span></div></a>
-    <a href="/runner.html" class="gaTile gaRunnerTile"><img src="/assets/gamecards/runner.svg" alt="GamesArena Runner"><div class="gaTileBody"><b>GamesArena Runner</b><small>Create a room, scan to join from your phone, and race on the big screen.</small><span class="gaAction">Run Now →</span></div></a>
-    <a href="/color-war.html" class="gaTile gaColorWarTile"><img src="/assets/gamecards/color-wars.svg" alt="Color Wars"><div class="gaTileBody"><b>Color Wars</b><small>2–4 player chain-reaction battle with a live TV audience screen.</small><span class="gaAction">Play Color War →</span></div></a>
-    <a href="/join.html" class="gaTile"><img src="/assets/gamecards/fastest-finger.svg" alt="Fastest Finger"><div class="gaTileBody"><b>Fastest Finger</b><small>Race the room to earn the next seat in the main quiz.</small><span class="gaAction">Join →</span></div></a>
-    <a href="/tv.html" class="gaTile"><img src="/assets/gamecards/audience.svg" alt="Audience Poll"><div class="gaTileBody"><b>Audience Poll</b><small>Turn the crowd into a live lifeline on the big screen.</small><span class="gaAction">Open TV →</span></div></a>
-    <a href="/admin.html" class="gaTile"><img src="/assets/gamecards/admin.svg" alt="Game Control"><div class="gaTileBody"><b>Game Control</b><small>Manage questions, rooms, registrations and live events.</small><span class="gaAction">Manage →</span></div></a>
+  <a class="gaHeaderLogo" href="/" aria-label="GamesArena home">
+    <img src="/assets/gamesarena-logo-premium.png" alt="GamesArena">
+  </a>
+  <div class="gaHeaderRight">
+    <span class="gaStatus"><i></i> LIVE PLATFORM</span>
+    <a class="gaHeaderHost" href="/host.html">Host Console <span>↗</span></a>
   </div>
-</section>
-<section class="gaRibbon"><span>🏆</span><b>Teamwork</b><i>•</i><b>Strategy</b><i>•</i><b>Fun</b><i>•</i><b>Recognition</b><em>GamesArena • Play • Think • Win</em></section>
+</header>
+
+<main>
+  <section class="gaHero">
+    <div class="gaHeroCopy">
+      <div class="gaEyebrow"><span></span> GAMESARENA • LIVE PLAY PLATFORM</div>
+      <h1>Play big.<br><span>Win together.</span></h1>
+      <p>Interactive quiz shows, multiplayer games and big-screen experiences built for teams, events and celebrations.</p>
+      <div class="gaHeroActions">
+        <a class="gaPrimaryCta" href="#games">Explore Games <span>↓</span></a>
+        <a class="gaSecondaryCta" href="/host.html">Start a Live Event <span>↗</span></a>
+      </div>
+      <div class="gaTrustRow">
+        <span><b>04</b> live games</span><i></i><span><b>TV</b> + mobile</span><i></i><span><b>LIVE</b> multiplayer</span>
+      </div>
+    </div>
+    <div class="gaHeroVisual" aria-hidden="true">
+      <div class="gaOrb gaOrbBack"></div>
+      <div class="gaOrb gaOrbFront"></div>
+      <div class="gaLogoStage">
+        <div class="gaLogoRing"></div>
+        <img src="/assets/gamesarena-logo-premium.png" alt="">
+        <div class="gaFloatChip gaChipQuiz">✦ QUIZ LIVE</div>
+        <div class="gaFloatChip gaChipPlay">● 4 PLAYERS</div>
+        <div class="gaFloatChip gaChipWin">🏆 WIN TOGETHER</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="games" class="gaGameShowcase" aria-label="GamesArena games">
+    <div class="gaSectionIntro">
+      <div>
+        <span class="gaEyebrow">CHOOSE YOUR EXPERIENCE</span>
+        <h2>What are we playing?</h2>
+        <p>Pick a game and jump straight into the action.</p>
+      </div>
+      <span class="gaLiveBadge"><i></i> READY TO PLAY</span>
+    </div>
+
+    <div class="gaTiles">
+      <a href="/host.html" class="gaTile gaQuizTile">
+        <div class="gaTileMedia"><img src="/assets/gamecards/quiz.svg" alt="Quiz Show"><span class="gaTileTag">LIVE SHOW</span></div>
+        <div class="gaTileBody"><div class="gaTileTop"><b>Quiz Show</b><span>01</span></div><small>KBC-style questions, lifelines, timers and a big-screen host experience.</small><span class="gaAction">Host Game <b>→</b></span></div>
+      </a>
+      <a href="/card-match.html" class="gaTile gaFeatured">
+        <div class="gaTileMedia"><img src="/assets/gamecards/card-match.svg" alt="Card Match"><span class="gaTileTag">MULTIPLAYER</span></div>
+        <div class="gaTileBody"><div class="gaTileTop"><b>Card Match</b><span>02</span></div><small>Memory battle with live player colors, matching rounds and a competitive finish.</small><span class="gaAction">Play Match <b>→</b></span></div>
+      </a>
+      <a href="/runner.html" class="gaTile gaRunnerTile">
+        <div class="gaTileMedia"><img src="/assets/gamecards/runner.svg" alt="GamesArena Runner"><span class="gaTileTag">4 PLAYERS</span></div>
+        <div class="gaTileBody"><div class="gaTileTop"><b>GamesArena Runner</b><span>03</span></div><small>Use your phone as a controller and race across the shared TV game board.</small><span class="gaAction">Run Now <b>→</b></span></div>
+      </a>
+      <a href="/color-war.html" class="gaTile gaColorWarTile">
+        <div class="gaTileMedia"><img src="/assets/gamecards/color-wars.svg" alt="Color Wars"><span class="gaTileTag">BATTLE</span></div>
+        <div class="gaTileBody"><div class="gaTileTop"><b>Color Wars</b><span>04</span></div><small>Fast chain-reaction competition with a shared TV board and live multiplayer scoring.</small><span class="gaAction">Play Color War <b>→</b></span></div>
+      </a>
+    </div>
+  </section>
+
+  <section class="gaFeatureStrip">
+    <div><span>01</span><b>One room, one code</b><small>Bring everyone into the same live game.</small></div>
+    <div><span>02</span><b>Phone + TV</b><small>Players control the action while the audience watches.</small></div>
+    <div><span>03</span><b>Live results</b><small>Scores, winners and game state update instantly.</small></div>
+  </section>
 </main>
-<footer class="gaFooter"><span>GamesArena</span><span>Made for live team events</span><span>GamesArena • Play • Think • Win</span></footer>
-</body></html>
+
+<footer class="gaFooter"><span>GamesArena</span><span>Play • Think • Win</span><span>Made for live team events</span></footer>
+</body>
+</html>
