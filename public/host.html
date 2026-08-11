@@ -20,7 +20,7 @@
     </div>
     <div class="hostHeaderActions">
       <button id="create" class="primary createRoomBtn" onclick="createRoom()">＋ Create Room</button>
-      <button id="hostLogoutBtn" class="homeLink" onclick="hostLogout()">Logout</button><a class="homeLink" href="/">Home</a>
+      <a class="homeLink" href="/payment-inventory.html" target="_blank" rel="noopener">💳 Payment Inventory</a><button id="hostLogoutBtn" class="homeLink" onclick="hostLogout()">Logout</button><a class="homeLink" href="/">Home</a>
     </div>
   </div>
 
@@ -168,6 +168,13 @@
           </div>
         </section>
 
+        <section class="hostPaymentCard" aria-label="Payment inventory">
+          <div class="sideTitle">
+            <span>💳</span>
+            <div><h3>Payment Inventory</h3><small>Separate secure payment management</small></div>
+          </div>
+          <a class="paymentInventoryOpen" href="/payment-inventory.html" target="_blank" rel="noopener">Open Payment Inventory ↗</a>
+        </section>
 
       </aside>
     </div>
@@ -188,30 +195,6 @@
     </div>
   </div>
 
-  <div id="paymentEditModal" class="hostLoginModal hidden">
-    <div class="paymentEditCard">
-      <button class="modalX" onclick="closePaymentModal()">×</button>
-      <div class="eyebrow">PAYMENT REVIEW</div>
-      <h2>Save Payment Record</h2>
-      <p>Review the submitted details, correct anything necessary, then save it to the database.</p>
-      <form id="paymentEditForm">
-        <input type="hidden" id="paymentSubmissionId">
-        <div class="paymentEditGrid">
-          <label>Player name<input id="payPlayerName" required></label>
-          <label>Register number<input id="payRegisterNumber" required></label>
-          <label>Phone number<input id="payPhone" required></label>
-          <label>Date<input id="payDate" type="date" required></label>
-          <label>Entry fee<input id="payEntryFee" type="number" min="0" step=".01" required></label>
-          <label>Amount paid<input id="payAmountPaid" type="number" min="0" step=".01" required></label>
-          <label>Payment method<select id="payMethod" required><option>Cash</option><option>UPI</option><option>Card</option><option>Other</option></select></label>
-          <label>Transaction/reference<input id="payReference"></label>
-          <label class="wide">Notes<textarea id="payNotes"></textarea></label>
-        </div>
-        <button class="primary" type="submit">✓ Save to Database</button>
-      </form>
-    </div>
-  </div>
-
   <div id="demoModal" class="demoModal hidden">
     <div class="demoCard">
       <button class="demoClose" onclick="closeDemo()">×</button>
@@ -228,6 +211,6 @@
 </main>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/host.js?v=84"></script>
+<script src="/host.js?v=83"></script>
 </body>
 </html>

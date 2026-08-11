@@ -289,6 +289,11 @@ s.on("answerRevealed",a=>{
   const result=document.createElement("div");result.className=`answerLock ${a.correct?"correctResult":"wrongResult"}`;
   result.innerHTML=a.correct?`<span>✓ CORRECT ANSWER</span> ${a.contestant.name} selected <b>${String.fromCharCode(65+a.choice)}. ${a.option}</b>`:`<span>✕ WRONG ANSWER</span> ${a.contestant.name} selected <b>${String.fromCharCode(65+a.choice)}. ${a.option}</b>`;
   panel.appendChild(result);
+  if(a.explanation||a.image){
+    const info=document.createElement("div");info.className="answerLearningPanel";
+    info.innerHTML=`${a.image?`<img src="${a.image}" alt="Reference image" loading="lazy">`:""}<div class="answerLearningCopy"><div class="learningTitle">💡 DID YOU KNOW?</div>${a.explanation?`<p>${escapeHtml(a.explanation)}</p>`:""}${a.imageCredit?`<small>${escapeHtml(a.imageCredit)}</small>`:""}</div>`;
+    panel.appendChild(info);
+  }
   a.correct?fanfare():wrong();
 });
 s.on("poll",c=>{
