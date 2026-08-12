@@ -145,6 +145,23 @@ app.post("/api/host/logout",(req,res)=>{
 });
 app.get("/api/host/me",(req,res)=>res.json({ok:isHostSession(req),username:HOST_USERNAME}));
 
+app.get("/api/host/db-status",requireHost,async(req,res)=>{
+ if(!db)return res.status(503).json({ok:false,connected:false,error:"DB_HOST is not configured"});
+ try{
+   const [[meta]] = await db.query("SELECT DATABASE() AS databaseName, NOW() AS serverTime");
+   const tables=["players","game_results","payments","host_users","payment_users","questions"];
+   const counts={};
+   for(const table of tables){
+     const [[r]]=await db.query(`SELECT COUNT(*) AS c FROM \`${table}\``);
+     counts[table]=Number(r.c||0);
+   }
+   res.json({ok:true,connected:true,database:meta.databaseName,serverTime:meta.serverTime,counts});
+ }catch(err){
+   console.error("DB status failed:",err.message);
+   res.status(500).json({ok:false,connected:false,error:err.message});
+ }
+});
+
 /* ===== Payment Inventory authentication =====
    Separate credentials/session from the live Host Console. Password is stored
    as a scrypt hash in MySQL (payment_users), never in the browser.
@@ -240,7 +257,8 @@ async function findOrCreatePlayer({name,registerNumber,phone}={}){
 }
 
 async function upsertGameLog({roomCode,player,amountWon=0,resultStatus="PLAYED",safeQuit=false,entryFee=0,playedAt=new Date()}){
- if(!db||!player)return;
+ if(!player)return;
+ if(!db){ console.warn("Game log skipped: MySQL is not connected."); return; }
  try{
    const p=await findOrCreatePlayer({
      name:player.name,
@@ -259,6 +277,19 @@ async function upsertGameLog({roomCode,player,amountWon=0,resultStatus="PLAYED",
     [p.id,String(roomCode||""),"GamesArena Quiz",playedAt,Number(amountWon||0),Number(entryFee||0),String(resultStatus||"PLAYED"),safeQuit?1:0]
    );
  }catch(err){console.error("player game log failed:",err.message)}
+}
+
+async function recordPlayerRegistration(roomCode,player,entryFee=0){
+ if(!player)return;
+ await upsertGameLog({
+   roomCode,
+   player,
+   amountWon:0,
+   resultStatus:"REGISTERED",
+   safeQuit:false,
+   entryFee,
+   playedAt:new Date()
+ });
 }
 
 function cleanPayment(body){
@@ -446,6 +477,9 @@ async function initDb(){
    queueLimit:0
  });
 
+ await db.query("SELECT 1");
+ console.log(`GamesArena MySQL connected: ${process.env.DB_HOST}/${process.env.DB_NAME}`);
+
  await db.query(`CREATE TABLE IF NOT EXISTS questions(
    id INT AUTO_INCREMENT PRIMARY KEY,
    text_q TEXT NOT NULL,
@@ -515,6 +549,37 @@ async function initDb(){
  await ensureColumn("payments","submitted_at","submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP");
  await ensureColumn("payments","reviewed_at","reviewed_at DATETIME NULL");
  await ensureColumn("payments","created_by","created_by VARCHAR(100) NULL");
+
+ /* Keep the complete GamesArena question bank in MySQL as well as questions.json.
+    This makes the database useful for backups/reporting and ensures the bank is
+    populated immediately after deployment. */
+ await ensureColumn("questions","category","VARCHAR(100) NULL");
+ await ensureColumn("questions","difficulty","TINYINT NULL");
+ await ensureColumn("questions","explanation","TEXT NULL");
+ await ensureColumn("questions","reference_image","TEXT NULL");
+ await ensureColumn("questions","source","VARCHAR(500) NULL");
+ try{
+   const bank=JSON.parse(fs.readFileSync(path.join(__dirname,"questions.json"),"utf8"));
+   for(const q of (Array.isArray(bank)?bank:[])){
+     const opts=Array.isArray(q.options)?q.options:[];
+     if(!q.id||opts.length<4)continue;
+     await db.query(
+       `INSERT INTO questions(id,text_q,option_a,option_b,option_c,option_d,answer_idx,points,category,difficulty,explanation,reference_image,source)
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ON DUPLICATE KEY UPDATE
+          text_q=VALUES(text_q),option_a=VALUES(option_a),option_b=VALUES(option_b),
+          option_c=VALUES(option_c),option_d=VALUES(option_d),answer_idx=VALUES(answer_idx),
+          points=VALUES(points),category=VALUES(category),difficulty=VALUES(difficulty),
+          explanation=VALUES(explanation),reference_image=VALUES(reference_image),source=VALUES(source)`,
+       [String(q.id),String(q.text||q.question||""),String(opts[0]),String(opts[1]),String(opts[2]),String(opts[3]),
+        Number(q.answer ?? q.correctAnswer ?? 0),Number(q.points||0),String(q.category||""),
+        Number(q.difficulty||0),String(q.explanation||""),String(q.image||q.referenceImage||""),String(q.source||q.imageCredit||"")]
+     );
+   }
+   console.log(`GamesArena question bank synced to MySQL: ${bank.length} questions.`);
+ }catch(err){
+   console.error("question bank MySQL sync failed:",err.message);
+ }
 
  await ensureIndex("players","idx_players_register","INDEX idx_players_register (register_number)");
  await ensureIndex("players","idx_players_phone","INDEX idx_players_phone (phone_number)");
@@ -1223,6 +1288,7 @@ s.on("player:resume",({code,name,employeeCode,game}={})=>{
  r.users.delete(existing[0]);
  u.id=s.id;
  r.users.set(s.id,u);
+    recordPlayerRegistration(code,u,0).catch(err=>console.error("player registration log failed:",err.message));
  s.join(code);s.data.room=code;s.data.role="player";
  s.emit("joined",{name:u.name,employeeCode:u.employeeCode,resumed:true});
  emitState(code);
