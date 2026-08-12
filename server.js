@@ -617,12 +617,12 @@ async function questions(){
 // Questions progress from easy to hard and never repeat the same source fact
 // within a game. Options are shuffled so the correct answer is not always
 // in the same position.
-const GAME_POINTS=[10,20,30,40,50];
-const GAME_DIFFICULTY=[1,2,3,4,5];
-const TOTAL_QUESTIONS=5;
+const GAME_POINTS=[10,20,30,40,50,60,70,80,90,100];
+const GAME_DIFFICULTY=[1,1,3,4,5,4,4,4,5,5];
+const TOTAL_QUESTIONS=10;
 const QUESTION_TIME_MS=30000;
 const AUDIENCE_POLL_TIME_MS=60000;
-const QUESTION_BANK_VERSION="GAMESARENA-KBC-EXPANDED-INDIA-PERFICIENT-TECH-v4";
+const QUESTION_BANK_VERSION="GAMESARENA-KBC-10Q-TOUGH-PERFICIENT-v5";
 
 function shuffleCopy(arr){
  const a=Array.isArray(arr)?arr.slice():[];
@@ -633,11 +633,9 @@ function shuffleCopy(arr){
  return a;
 }
 function buildGameQuestions(bank,usedIds=new Set()){
-  // KBC-style progression requested for GamesArena:
-  // Q1 = Easy, Q2 = Easy, Q3 = Tough, Q4 = Tougher, Q5 = Perficient.
-  // Q3/Q4 must come from genuinely harder questions (difficulty >= 3/4).
-  // Q5 is always a Perficient question, with the hardest available
-  // Perficient question preferred so the corporate question is the finale.
+  // KBC-style 10-question progression:
+  // Q1-Q2 = easy warm-up, Q3-Q4 = tough, Q5 = Perficient,
+  // Q6-Q8 = hard, Q9-Q10 = very hard/final.
   const used=new Set(usedIds||[]);
   const source=Array.isArray(bank)?bank:[];
 
@@ -653,43 +651,62 @@ function buildGameQuestions(bank,usedIds=new Set()){
   }
 
   const selected=[];
+  const add=(q,displayDifficulty)=>{if(q){q._displayDifficulty=displayDifficulty;selected.push(q);}};
 
-  // Q1: Easy warm-up. Prefer difficulty 1, but allow difficulty 2
-  // if the difficulty-1 pool has been exhausted.
-  let q=pick(source.filter(q=>Number(q.difficulty)===1),"random")
-       || pick(source.filter(q=>Number(q.difficulty)<=2),"random");
-  if(q){q._displayDifficulty=1;selected.push(q);}
+  // Q1: easy.
+  add(
+    pick(source.filter(q=>Number(q.difficulty)===1),"random")
+    || pick(source.filter(q=>Number(q.difficulty)<=2),"random"),1
+  );
 
-  // Q2: Easy again. Prefer another difficulty-1 question, then difficulty 2.
-  q=pick(source.filter(q=>Number(q.difficulty)===1),"random")
-    || pick(source.filter(q=>Number(q.difficulty)<=2),"random");
-  if(q){q._displayDifficulty=2;selected.push(q);}
+  // Q2: easy.
+  add(
+    pick(source.filter(q=>Number(q.difficulty)===1),"random")
+    || pick(source.filter(q=>Number(q.difficulty)<=2),"random"),1
+  );
 
-  // Q3: Tough. Only difficulty 3+ questions are eligible.
-  q=pick(source.filter(q=>Number(q.difficulty)>=3),"random");
-  if(q){q._displayDifficulty=3;selected.push(q);}
+  // Q3-Q4: tough/harder.
+  add(pick(source.filter(q=>Number(q.difficulty)>=3),"random"),3);
+  add(
+    pick(source.filter(q=>Number(q.difficulty)>=4),"random")
+    || pick(source.filter(q=>Number(q.difficulty)>=3),"random"),4
+  );
 
-  // Q4: Tougher. Prefer difficulty 4, with difficulty 3 as a fallback
-  // only if the harder pool is temporarily exhausted.
-  q=pick(source.filter(q=>Number(q.difficulty)>=4),"random")
-    || pick(source.filter(q=>Number(q.difficulty)>=3),"random");
-  if(q){q._displayDifficulty=4;selected.push(q);}
+  // Q5 is always Perficient, as requested. Prefer the hardest Perficient item.
+  add(
+    pick(source.filter(q=>String(q.category||"").toLowerCase()==="perficient"),"hardest"),
+    5
+  );
 
-  // Q5: Perficient finale. This is category-locked so a Perficient
-  // question always appears as the fifth question.
-  q=pick(source.filter(q=>String(q.category||"").toLowerCase()==="perficient"),"hardest");
-  if(q){q._displayDifficulty=5;selected.push(q);}
+  // Q6-Q8: hard questions.
+  for(const level of [4,4,4]){
+    add(
+      pick(source.filter(q=>Number(q.difficulty)>=level),"random")
+      || pick(source.filter(q=>Number(q.difficulty)>=3),"random"),
+      4
+    );
+  }
 
-  // Safety fallback: fill any missing slots while preserving the intended
-  // progression as much as possible. Never replace an already-selected
-  // Perficient Q5.
+  // Q9-Q10: very hard/final.
+  add(
+    pick(source.filter(q=>Number(q.difficulty)>=5),"hardest")
+    || pick(source.filter(q=>Number(q.difficulty)>=4),"random"),
+    5
+  );
+  add(
+    pick(source.filter(q=>Number(q.difficulty)>=5),"hardest")
+    || pick(source.filter(q=>Number(q.difficulty)>=4),"hardest"),
+    5
+  );
+
+  // Safety fallback: fill missing slots while preserving the intended ordering.
   if(selected.length<TOTAL_QUESTIONS){
     const remaining=shuffleCopy(source.filter(q=>q && q.id && !used.has(q.id)));
     for(const candidate of remaining){
       if(selected.length>=TOTAL_QUESTIONS)break;
       const copy=structuredClone(candidate);
       const index=selected.length;
-      copy._displayDifficulty=index<2 ? index+1 : Math.min(5,index+1);
+      copy._displayDifficulty=index<2?1:(index===4?5:(index>=8?5:4));
       used.add(copy.id);
       selected.push(copy);
     }
@@ -704,8 +721,12 @@ function buildGameQuestions(bank,usedIds=new Set()){
     q.correctAnswer=q.answer;
     q.points=GAME_POINTS[index];
     q.prize=GAME_POINTS[index];
-    q.difficulty=Number(q._displayDifficulty||Math.min(5,index+1));
-    q.difficultyLabel=q.difficulty===1?"Easy":q.difficulty===2?"Easy":q.difficulty===3?"Tough":q.difficulty===4?"Hard":"Final — Perficient";
+    q.difficulty=Number(q._displayDifficulty||1);
+    q.difficultyLabel=
+      q.difficulty===1?"Easy":
+      q.difficulty===3?"Tough":
+      q.difficulty===4?"Hard":
+      "Very Hard — Final";
     delete q._displayDifficulty;
   });
   return game;
@@ -721,7 +742,7 @@ function pollCounts(poll){
   return c;
 }
 
-function makeRoom(){return{host:null,users:new Map(),questions:[],current:-1,phase:"lobby",pool:[],winner:null,completed:new Set(),played:new Set(),failed:new Set(),answers:new Map(),pendingAnswer:null,pendingPollRequest:null,poll:new Map(),lifelines:new Set(),fiftyFiftyRemoved:new Map(),timer:null,fastestSize:7,fastestStartAt:0,fastestDurationMs:15000,fastestSequence:[],fastestTimes:new Map(),fastestProgress:new Map(),fastestToken:"",fastestJoinUrl:"",fastestJoinQr:"",screenToken:"",screenUrl:"",screenQr:"",audiencePollUrl:"",audiencePollQr:"",pollActive:false,pollVotingOpen:false,winnerCelebrationUntil:0,contestantId:null,eliminatedContestant:null,ladder:[10,20,30,40,50],safeHavens:[20,40],contestantQuit:null,pendingQuit:null,usedQuestionIds:new Set(),questionTimerTimeout:null,questionTimerStartAt:0,questionTimerRemainingMs:QUESTION_TIME_MS,questionTimerPaused:false,pollTimerTimeout:null,pollTimerStartAt:0,pollTimerRemainingMs:AUDIENCE_POLL_TIME_MS,pollTimerRunning:false}}
+function makeRoom(){return{host:null,users:new Map(),questions:[],current:-1,phase:"lobby",pool:[],winner:null,completed:new Set(),played:new Set(),failed:new Set(),answers:new Map(),pendingAnswer:null,pendingPollRequest:null,poll:new Map(),lifelines:new Set(),fiftyFiftyRemoved:new Map(),timer:null,fastestSize:7,fastestStartAt:0,fastestDurationMs:15000,fastestSequence:[],fastestTimes:new Map(),fastestProgress:new Map(),fastestToken:"",fastestJoinUrl:"",fastestJoinQr:"",screenToken:"",screenUrl:"",screenQr:"",audiencePollUrl:"",audiencePollQr:"",pollActive:false,pollVotingOpen:false,winnerCelebrationUntil:0,contestantId:null,eliminatedContestant:null,ladder:[10,20,30,40,50],safeHavens:[40,80],contestantQuit:null,pendingQuit:null,usedQuestionIds:new Set(),questionTimerTimeout:null,questionTimerStartAt:0,questionTimerRemainingMs:QUESTION_TIME_MS,questionTimerPaused:false,pollTimerTimeout:null,pollTimerStartAt:0,pollTimerRemainingMs:AUDIENCE_POLL_TIME_MS,pollTimerRunning:false}}
 function active(r){return [...r.users.values()].filter(u=>u.status==="active")}
 function clearQuestionTimer(r){clearTimeout(r.questionTimerTimeout);r.questionTimerTimeout=null;}
 function questionRemaining(r){if(r.phase!=="question")return 0;if(r.questionTimerPaused)return Math.max(0,Number(r.questionTimerRemainingMs||0));if(r.questionTimerStartAt)return Math.max(0,Number(r.questionTimerRemainingMs||QUESTION_TIME_MS)-(Date.now()-r.questionTimerStartAt));return Math.max(0,Number(r.questionTimerRemainingMs||QUESTION_TIME_MS));}
@@ -756,11 +777,11 @@ function emitState(code){
  const remaining=r.phase==="fastest"?Math.max(0,r.fastestStartAt+r.fastestDurationMs-now):0;
  io.to(code).emit("state",{
   phase:r.phase,current:r.current,totalQuestions:TOTAL_QUESTIONS,winnerCelebrationUntil:r.winnerCelebrationUntil||0,
-  question:q?{id:q.id,category:q.category,difficulty:q.difficulty,difficultyLabel:q.difficultyLabel||"",text:q.text,question:q.question||q.text,options:q.options,answer:q.answer,correctAnswer:q.correctAnswer??q.answer,points:q.points,prize:q.prize??q.points,explanation:q.explanation||"",image:q.image||"",referenceImage:q.referenceImage||q.image||"",imageCredit:q.imageCredit||"",source:q.source||q.imageCredit||""}:null,
+  question:q?{id:q.id,category:q.category,difficulty:q.difficulty,difficultyLabel:q.difficultyLabel||"",text:q.text,question:q.question||q.text,options:q.options,points:q.points,prize:q.prize??q.points,explanation:q.explanation||"",image:q.image||"",referenceImage:q.referenceImage||q.image||"",imageCredit:q.imageCredit||"",source:q.source||q.imageCredit||""}:null,
   users:[...r.users.values()].map(u=>({id:u.id,name:u.name,employeeCode:u.employeeCode,score:u.score,status:u.status,assuredMoney:Number(u.assuredMoney||0),prizeWon:Number(u.prizeWon||0)})),
   registered:r.users.size,active:active(r).length,contestantId:r.contestantId||null,
   pool:r.pool.map(u=>({id:u.id,name:u.name,employeeCode:u.employeeCode})),
-  winner:r.winner?{name:r.winner.name,employeeCode:r.winner.employeeCode,time:r.winner.time}:null,contestant:r.winner?{id:r.winner.id,name:r.winner.name,employeeCode:r.winner.employeeCode}:null,contestantAssuredMoney:r.winner?Number(r.users.get(r.winner.id)?.assuredMoney||0):0,eliminatedContestant:r.eliminatedContestant||null,contestantQuit:r.contestantQuit||null,pendingQuit:r.pendingQuit||null,safeHavens:r.safeHavens||[20,40],currentAnswer:r.answers.size?[...r.answers.values()][0]:null,pendingAnswer:r.pendingAnswer||null,pendingPollRequest:r.pendingPollRequest||null,
+  winner:r.winner?{name:r.winner.name,employeeCode:r.winner.employeeCode,time:r.winner.time}:null,contestant:r.winner?{id:r.winner.id,name:r.winner.name,employeeCode:r.winner.employeeCode}:null,contestantAssuredMoney:r.winner?Number(r.users.get(r.winner.id)?.assuredMoney||0):0,eliminatedContestant:r.eliminatedContestant||null,contestantQuit:r.contestantQuit||null,pendingQuit:r.pendingQuit||null,safeHavens:r.safeHavens||[40,80],currentAnswer:r.answers.size?[...r.answers.values()][0]:null,pendingAnswer:r.pendingAnswer||null,pendingPollRequest:r.pendingPollRequest||null,
   fastestStartAt:r.fastestStartAt,
   fastestDurationMs:r.fastestDurationMs,
   fastestRemaining:remaining,
@@ -1508,8 +1529,8 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
   if(ok){
     u.score=q.points;
     u.status="active";
-    if(r.current===1)u.assuredMoney=20;
     if(r.current===3)u.assuredMoney=40;
+    if(r.current===7)u.assuredMoney=80;
     u.prizeWon=Number(u.assuredMoney||0);
     await upsertGameLog({roomCode:s.data.room,player:u,amountWon:u.prizeWon,resultStatus:r.current===4?"WON":"CONTINUING",safeQuit:false});
     io.to(s.data.room).emit("answerResult",{correct:true,points:q.points,approved:true,assuredMoney:u.assuredMoney||0});
@@ -1575,8 +1596,8 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
   if(r.pendingAnswer){s.emit("errorMsg","Your answer is already locked. The Host must reveal it first.");return;}
   if(r.pendingQuit){s.emit("errorMsg","Your Safe Quit request is already waiting for Host approval.");return;}
   const amount=Number(u.assuredMoney||0);
-  if(amount!==20&&amount!==40){
-    s.emit("errorMsg","Safe Quit is available only after securing ₹20 or ₹40.");
+  if(amount!==40&&amount!==80){
+    s.emit("errorMsg","Safe Quit is available only after securing ₹40 or ₹80.");
     return;
   }
   r.pendingQuit={playerId:u.id,id:u.id,name:u.name,employeeCode:u.employeeCode,amount,requestedAt:Date.now()};
@@ -1590,7 +1611,7 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
   const pending=r.pendingQuit,u=r.users.get(pending.playerId);
   if(!u){r.pendingQuit=null;emitState(s.data.room);return;}
   const amount=Number(u.assuredMoney||0);
-  if(amount!==20&&amount!==40){
+  if(amount!==40&&amount!==80){
     r.pendingQuit=null;
     io.to(u.id).emit("quitRejected",{reason:"The Safe Quit amount is no longer available."});
     emitState(s.data.room);return;
