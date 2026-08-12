@@ -1514,46 +1514,15 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
     await upsertGameLog({roomCode:s.data.room,player:u,amountWon:u.prizeWon,resultStatus:r.current===4?"WON":"CONTINUING",safeQuit:false});
     io.to(s.data.room).emit("answerResult",{correct:true,points:q.points,approved:true,assuredMoney:u.assuredMoney||0});
     emitState(s.data.room);
+    // Manual progression: the Host must click NEXT QUESTION.
+    // The revealed answer and explanation remain on the TV/participant screens
+    // until the Host explicitly advances.
     clearTimeout(r.timer);
-    r.timer=setTimeout(()=>{
-      const x=rooms.get(s.data.room);
-      if(!x||x.phase!=="question"||x.current<0)return;
-      x.current++;
-      x.answers.clear();
-      x.pendingAnswer=null;
-      x.poll.clear();
-      x.lifelines.clear();
-      if(x.current>=TOTAL_QUESTIONS||x.current>=x.questions.length){
-        clearQuestionTimer(x);clearAudiencePollTimer(x);
-        x.phase="winnerCelebration";
-        x.current=-1;
-        x.winnerCelebrationUntil=Date.now()+30000;
-        clearTimeout(x.timer);
-        x.timer=setTimeout(async ()=>{
-          const y=rooms.get(s.data.room);
-          if(!y)return;
-          if(y.winner?.employeeCode){
-            y.completed.add(y.winner.employeeCode);
-            const finished=y.users.get(y.winner.id);
-            if(finished){
-              finished.status="completed";
-              finished.inPool=false;
-            }
-          }
-          y.contestantId=null;
-          y.winner=null;y.pool=[];y.pendingAnswer=null;y.pendingPollRequest=null;
-          y.winnerCelebrationUntil=0;
-          for(const u of y.users.values()){u.inPool=false}
-          await startFastest(y,false);
-          emitState(s.data.room);
-        },30000);
-      }else{
-        x.phase="question";
-        resetQuestionClock(x);
-        startQuestionTimer(x);
-      }
-      emitState(s.data.room);
-    },3000);
+    r.timer=null;
+    r.questionTimerRemainingMs=0;
+    r.questionTimerStartAt=0;
+    r.questionTimerPaused=true;
+    emitState(s.data.room);
   }else{
     u.prizeWon=0;
     u.status="eliminated";
