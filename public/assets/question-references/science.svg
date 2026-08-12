@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+<defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#059669"/><stop offset="1" stop-color="#111827"/></linearGradient></defs>
+<rect width="1200" height="675" rx="36" fill="url(#g)"/>
+<circle cx="1040" cy="120" r="170" fill="#ffffff" opacity=".08"/>
+<circle cx="1080" cy="540" r="230" fill="#ffffff" opacity=".06"/>
+<text x="80" y="250" fill="white" font-family="Arial,sans-serif" font-size="74" font-weight="800">SCIENCE & NATURE</text>
+<text x="80" y="335" fill="#e5e7eb" font-family="Arial,sans-serif" font-size="34">Quick facts, nature, geography and general science</text>
+<text x="80" y="580" fill="#ffffff" opacity=".65" font-family="Arial,sans-serif" font-size="22">GamesArena • Reference Card</text>
+</svg>
