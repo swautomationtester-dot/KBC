@@ -1,0 +1,59 @@
+
+:root{
+  --ga-bg:#070914;--ga-panel:rgba(15,20,38,.78);--ga-border:rgba(255,255,255,.09);
+  --ga-text:#f8fafc;--ga-muted:#94a3b8;--ga-accent:#7c5cff;--ga-cyan:#22d3ee;
+}
+html{background:var(--ga-bg)}
+body.gaCommonPage{
+  min-height:100vh;color:var(--ga-text);
+  background:
+    radial-gradient(circle at 10% 0%,rgba(124,92,255,.16),transparent 30%),
+    radial-gradient(circle at 90% 10%,rgba(34,211,238,.10),transparent 27%),
+    linear-gradient(135deg,#070914,#0b1020 52%,#070914);
+  background-attachment:fixed;
+}
+.gaCommonPage::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.22;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:linear-gradient(to bottom,#000,transparent 90%);
+}
+.gaCommonHeader{
+  height:70px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;
+  gap:18px;padding:0 clamp(14px,3vw,34px);position:sticky;top:0;z-index:100;
+  background:rgba(6,8,18,.72);border-bottom:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(20px) saturate(140%);box-shadow:0 12px 35px rgba(0,0,0,.22);
+}
+.gaCommonBrand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff;min-width:0}
+.gaCommonBrand img{width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 8px 18px rgba(124,92,255,.25))}
+.gaCommonBrandText{font-weight:950;letter-spacing:-.4px;font-size:18px;white-space:nowrap}
+.gaCommonBrandText small{display:block;color:#64748b;font-size:8px;letter-spacing:1.7px;margin-top:1px}
+.gaCommonNav{display:flex;align-items:center;gap:8px}
+.gaCommonNav a{
+  color:#cbd5e1;text-decoration:none;padding:9px 13px;border-radius:11px;font-size:12px;font-weight:800;
+  border:1px solid transparent;transition:.18s ease;
+}
+.gaCommonNav a:hover{background:rgba(255,255,255,.06);border-color:var(--ga-border);color:#fff;transform:translateY(-1px)}
+.gaCommonLive{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.18);font-size:9px;font-weight:900;letter-spacing:1px;color:#86efac}
+.gaCommonLive i{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 15px #22c55e;animation:gaPulse 1.8s infinite}
+.gaCommonFooter{
+  margin-top:50px;padding:24px clamp(16px,4vw,40px);display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+  border-top:1px solid rgba(255,255,255,.07);background:rgba(5,7,16,.48);color:#64748b;font-size:11px;
+}
+.gaCommonFooter strong{color:#cbd5e1}
+.gaCommonFooterLinks{display:flex;gap:14px;flex-wrap:wrap}
+.gaCommonFooter a{color:#94a3b8;text-decoration:none}.gaCommonFooter a:hover{color:#fff}
+.gaPageMain{animation:gaPageIn .45s ease both}
+.gaCommonPage .wrap,.gaCommonPage .hostPage,.gaCommonPage .cmWrap{animation:gaPageIn .45s ease both}
+.gaCommonPage button,.gaCommonPage a{transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease}
+.gaCommonPage button:not(:disabled):hover{transform:translateY(-2px)}
+@keyframes gaPageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes gaPulse{50%{opacity:.55;transform:scale(1.15)}}
+@media(max-width:720px){
+  .gaCommonHeader{height:62px}.gaCommonBrand img{width:36px;height:36px}.gaCommonBrandText{font-size:16px}
+  .gaCommonNav a{padding:7px 8px;font-size:10px}.gaCommonLive{display:none}
+  .gaCommonFooter{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .gaCommonPage *{animation:none!important;transition:none!important}
+}

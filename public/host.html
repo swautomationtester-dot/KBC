@@ -4,17 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Host Console</title>
-<link rel="stylesheet" href="/style.css?v=77">
+<link rel="stylesheet" href="/style.css?v=20260812-host-modern-1">
+<link rel="stylesheet" href="/common-ui.css?v=20260812-global-1">
 </head>
-<body>
-<header class="sitebar">
-  <img src="/assets/gamesarena-logo-premium.png" class="brand">
-  <span class="chip">HOST CONSOLE</span>
-</header>
+<body class="modernHostPage">
 
-<main class="hostPage">
+
+<main class="hostPage gaPageMain">
   <div class="hostHeader compactHostHeader">
-    <div class="hostHeaderTitle">
+    <div class="hostHeaderTitle"><div class="hostLivePill"><span></span> LIVE HOST CONTROL</div>
       <div class="eyebrow">HOST CONSOLE</div>
       <div id="createStatus" class="hostConnectionStatus">🔌 Connecting to GamesArena…</div>
     </div>
@@ -84,7 +82,7 @@
             </div>
             <div class="flowButtons">
               <button id="startQuizBtn" class="primary" onclick="startQuiz()" disabled>▶️ Start Quiz</button>
-              <button id="nextQuestionBtn" onclick="nextQ()" disabled>Next Question ➜</button>
+              <button id="nextQuestionBtn" class="nextQuestionCta" onclick="nextQ()" disabled>➜ NEXT QUESTION</button>
             </div>
             <div id="hostQuestion"></div>
             <div class="hostQuestionTimerBar"><div><span class="timerLabel">QUESTION TIMER</span><strong id="questionTimer">30.0s</strong></div><div class="timerActions"><button id="pauseQuestionTimerBtn" onclick="pauseQuestionTimer()" disabled>⏸ Hold Timer</button><button id="resumeQuestionTimerBtn" onclick="resumeQuestionTimer()" disabled>▶ Resume Timer</button></div></div>
@@ -229,5 +227,6 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/host.js?v=84"></script>
+<script src="/common-ui.js?v=20260812-global-1"></script>
 </body>
 </html>

@@ -1,4 +1,5 @@
-<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Participant Registration</title><link rel="stylesheet" href="/style.css?v=75"></head><body><header class=sitebar><img src="/assets/gamesarena-logo-premium.png" class=brand><span class=chip>PARTICIPANT</span></header><main class="wrap participantPage"><div class=eyebrow>GAMESARENA QUIZ</div><h1>Enter the Arena</h1><div id=connection class="box status">Connecting…</div><div id=form><input id=room placeholder="Room code" maxlength=4 inputmode="numeric" pattern="[0-9]{4}" autocomplete="off"><input id=name placeholder="Full name" autocomplete="name" inputmode="text" pattern="[A-Za-z]+(?:[ ][A-Za-z]+)*"><input id=emp placeholder="Register number" maxlength=12 inputmode="numeric" pattern="[0-9]+" autocomplete="off"><button class="primary big" onclick=join()>Register & Join</button></div><div id=game class="hidden playerLiveGame">
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Participant Registration</title><link rel="stylesheet" href="/style.css?v=75"><link rel="stylesheet" href="/common-ui.css?v=20260812-global-1">
+</head><body><main class="wrap participantPage gaPageMain"><div class=eyebrow>GAMESARENA QUIZ</div><h1>Enter the Arena</h1><div id=connection class="box status">Connecting…</div><div id=form><input id=room placeholder="Room code" maxlength=4 inputmode="numeric" pattern="[0-9]{4}" autocomplete="off"><input id=name placeholder="Full name" autocomplete="name" inputmode="text" pattern="[A-Za-z]+(?:[ ][A-Za-z]+)*"><input id=emp placeholder="Register number" maxlength=12 inputmode="numeric" pattern="[0-9]+" autocomplete="off"><button class="primary big" onclick=join()>Register & Join</button></div><div id=game class="hidden playerLiveGame">
  <div class="playerIdentity"><span class="playerLiveDot"></span><span id=playerName>Player</span></div>
  <section class=playerMain>
   <div class="playerQuestionTimer"><span>QUESTION TIMER</span><strong id="questionTimer">30.0s</strong></div><div id=status class=box>Waiting for the host…</div>
@@ -12,4 +13,5 @@
  <div><b>Q3</b><strong>₹30</strong><span>🟡 Medium</span></div>
  <div><b>Q4</b><strong>₹40</strong><span>🟠 Hard</span></div>
  <div><b>Q5</b><strong>₹50</strong><span>🔴 Final</span></div>
-</section></main><script src=/socket.io/socket.io.js></script><script src="/player.js?v=74"></script></body></html>
+</section></main><script src=/socket.io/socket.io.js></script><script src="/player.js?v=74"></script><script src="/common-ui.js?v=20260812-global-1"></script>
+</body></html>

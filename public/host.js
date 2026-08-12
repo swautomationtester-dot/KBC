@@ -200,7 +200,7 @@ s.on("answerLocked",a=>{
 });
 s.on("answerRevealed",a=>{
  $("answerReview").classList.add("hidden");
- $("status").innerHTML=a.correct?`✅ Correct answer approved — ${a.contestant.name} continues.`:`❌ Wrong answer — ${a.contestant.name} is eliminated.`;
+ $("status").innerHTML=a.correct?`✅ Answer revealed — ${a.contestant.name} continues. <b>Host: click NEXT QUESTION when ready.</b>`:`❌ Wrong answer — ${a.contestant.name} is eliminated.`;
 });
 s.on("answerRejected",a=>{
  $("answerReview").classList.add("hidden");
@@ -261,7 +261,7 @@ function updateFlowControls(x){
   const canRestart=phase==="fastestTimeout" && Array.isArray(x.pool) && x.pool.length>0;
   const canNext7=["fastestResult","fastestTimeout","eliminated"].includes(phase);
   const canStart=phase==="fastestResult" && !!(x.winner||x.contestant);
-  const canNextQ=phase==="question" && !x.pendingAnswer && !x.pendingQuit;
+  const canNextQ=phase==="question" && !x.pendingAnswer && !x.pendingQuit && !!x.currentAnswer;
   const canPoll=phase==="question" && !!x.winner;
 
   const set=(id,disabled)=>{const el=$(id);if(el)el.disabled=disabled};
@@ -271,7 +271,7 @@ function updateFlowControls(x){
   set("startQuizBtn",!canStart);
   const startBtn=$("startQuizBtn");
   if(startBtn) startBtn.textContent=canStart?"▶️ START QUIZ — "+(x.winner?.name||x.contestant?.name||"WINNER"):"▶️ Start Quiz";
-  set("nextQuestionBtn",!canNextQ);
+  set("nextQuestionBtn",!canNextQ); const nq=$("nextQuestionBtn"); if(nq) nq.textContent=canNextQ?"➜ NEXT QUESTION":"NEXT QUESTION";
   const pollBtn=$("audiencePollBtn");
   if(pollBtn){
     const pollNeedsScan=!!x.pollActive&&!x.pollVotingOpen&&Number(x.audienceConnected||0)<1;
