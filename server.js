@@ -145,8 +145,32 @@ app.post("/api/host/logout",(req,res)=>{
 });
 app.get("/api/host/me",(req,res)=>res.json({ok:isHostSession(req),username:HOST_USERNAME}));
 
+
+app.get("/api/host/player-logs",requireHost,async(req,res)=>{
+ if(!db)return res.status(503).json({ok:false,error:"MySQL is not connected. Check Hostinger environment variables and restart the application."});
+ const q=String(req.query.q||"").trim();
+ try{
+   const [rows]=await db.query(
+    `SELECT g.id,g.room_code AS roomCode,g.game_type AS gameType,
+            pl.player_name AS playerName,pl.register_number AS registerNumber,pl.phone_number AS phone,
+            g.played_at AS playedAt,g.entry_fee AS entryFee,g.amount_won AS amountWon,
+            g.result_status AS resultStatus,g.safe_quit AS safeQuit
+     FROM game_results g
+     JOIN players pl ON pl.id=g.player_id
+     ${q?"WHERE pl.player_name LIKE ? OR pl.phone_number LIKE ? OR pl.register_number LIKE ?":""}
+     ORDER BY g.played_at DESC LIMIT 500`,
+    q?[`%${q}%`,`%${q}%`,`%${q}%`]:[]
+   );
+   res.json({ok:true,rows});
+ }catch(err){
+   dbLastError=err.message;
+   console.error("host player logs failed:",err.message);
+   res.status(500).json({ok:false,error:"Unable to load player logs: "+err.message});
+ }
+});
+
 app.get("/api/host/db-status",requireHost,async(req,res)=>{
- if(!db)return res.status(503).json({ok:false,connected:false,error:"DB_HOST is not configured"});
+ if(!db)return res.status(503).json({ok:false,connected:false,error:process.env.DB_HOST?("MySQL is not connected: "+(dbLastError||"initialization is still pending")):"DB_HOST is not configured"});
  try{
    const [[meta]] = await db.query("SELECT DATABASE() AS databaseName, NOW() AS serverTime");
    const tables=["players","game_results","payments","host_users","payment_users","questions"];
@@ -257,8 +281,13 @@ async function findOrCreatePlayer({name,registerNumber,phone}={}){
 }
 
 async function upsertGameLog({roomCode,player,amountWon=0,resultStatus="PLAYED",safeQuit=false,entryFee=0,playedAt=new Date()}){
- if(!player)return;
- if(!db){ console.warn("Game log skipped: MySQL is not connected."); return; }
+ if(!player)return false;
+ const payload={roomCode,player,amountWon,resultStatus,safeQuit,entryFee,playedAt};
+ if(!db){
+   if(pendingGameLogs.length<1000)pendingGameLogs.push(payload);
+   console.warn("Game log queued: MySQL is not connected.");
+   return false;
+ }
  try{
    const p=await findOrCreatePlayer({
      name:player.name,
@@ -276,9 +305,23 @@ async function upsertGameLog({roomCode,player,amountWon=0,resultStatus="PLAYED",
        safe_quit=VALUES(safe_quit)`,
     [p.id,String(roomCode||""),"GamesArena Quiz",playedAt,Number(amountWon||0),Number(entryFee||0),String(resultStatus||"PLAYED"),safeQuit?1:0]
    );
- }catch(err){console.error("player game log failed:",err.message)}
+   return true;
+ }catch(err){
+   dbLastError=err.message;
+   console.error("player game log failed:",err.message);
+   if(pendingGameLogs.length<1000)pendingGameLogs.push(payload);
+   return false;
+ }
 }
 
+async function flushPendingGameLogs(){
+ if(!db||!pendingGameLogs.length)return;
+ const batch=pendingGameLogs.splice(0,pendingGameLogs.length);
+ for(const payload of batch){
+   const ok=await upsertGameLog(payload);
+   if(!ok)break;
+ }
+}
 async function recordPlayerRegistration(roomCode,player,entryFee=0){
  if(!player)return;
  await upsertGameLog({
@@ -466,7 +509,7 @@ async function initDb(){
    console.warn("DB_HOST is not configured; MySQL features will remain unavailable.");
    return;
  }
- db=await mysql.createPool({
+ const pool=await mysql.createPool({
    host:process.env.DB_HOST,
    user:process.env.DB_USER,
    password:process.env.DB_PASSWORD,
@@ -477,7 +520,9 @@ async function initDb(){
    queueLimit:0
  });
 
- await db.query("SELECT 1");
+ await pool.query("SELECT 1");
+ db=pool;
+ dbLastError="";
  console.log(`GamesArena MySQL connected: ${process.env.DB_HOST}/${process.env.DB_NAME}`);
 
  await db.query(`CREATE TABLE IF NOT EXISTS questions(
@@ -733,6 +778,8 @@ function buildGameQuestions(bank,usedIds=new Set()){
 }
 
 const rooms=new Map();
+const pendingGameLogs=[];
+let dbLastError="";
 function pollCounts(poll){
   const c={0:0,1:0,2:0,3:0};
   for(const choice of (poll?.values?.()||[])){
@@ -1620,8 +1667,9 @@ s.on("host:audiencePollStop",()=>{const r=rooms.get(s.data.room);if(!r||r.host!=
   await upsertGameLog({roomCode:s.data.room,player:u,amountWon:amount,resultStatus:"SAFE_QUIT",safeQuit:true});
   r.contestantQuit={id:u.id,name:u.name,employeeCode:u.employeeCode,amount,at:Date.now()};
   r.pendingQuit=null;
-  io.to(s.data.room).emit("contestantQuit",{contestant:{name:u.name,employeeCode:u.employeeCode},amount});
-  io.to(u.id).emit("quitAccepted",{amount});
+  const quitMessage=`${u.name} left with the safe money of ₹${amount.toLocaleString("en-IN")}. Well played!`;
+  io.to(s.data.room).emit("contestantQuit",{contestant:{name:u.name,employeeCode:u.employeeCode},amount,message:quitMessage});
+  io.to(u.id).emit("quitAccepted",{amount,name:u.name,employeeCode:u.employeeCode,message:quitMessage});
   r.pendingAnswer=null;r.pendingPollRequest=null;r.poll.clear();
   nextContestant(s.data.room);
   setTimeout(()=>{const x=rooms.get(s.data.room);if(x&&x.contestantQuit&&x.contestantQuit.employeeCode===u.employeeCode){x.contestantQuit=null;emitState(s.data.room);}},5000);
@@ -1915,6 +1963,20 @@ server.listen(PORT, "0.0.0.0", () => {
   console.log(`GamesArena listening on port ${PORT}`);
 });
 
-initDb()
-  .then(() => console.log("GamesArena database initialization complete."))
-  .catch(err => console.error("GamesArena database initialization failed; continuing without DB:", err.message));
+async function connectDatabaseWithRetry(){
+  try{
+    await initDb();
+    await flushPendingGameLogs();
+    console.log("GamesArena database initialization complete.");
+  }catch(err){
+    db=null;
+    dbLastError=err.message;
+    console.error("GamesArena database initialization failed:", err.message);
+  }
+}
+connectDatabaseWithRetry();
+if(process.env.DB_HOST){
+  setInterval(()=>{
+    if(!db)connectDatabaseWithRetry();
+  },20000);
+}
