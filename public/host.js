@@ -447,3 +447,9 @@ async function searchPlayerLogs(){
   $("playerLogResults").innerHTML=j.rows.length?j.rows.map(x=>`<div class="paymentRow"><b>${escapeHtml(x.playerName)}</b><small>Register: ${escapeHtml(x.registerNumber)} • Phone: ${escapeHtml(x.phone||"—")}</small><small>${escapeHtml(new Date(x.playedAt).toLocaleString())} • ${escapeHtml(x.resultStatus)} • Won ₹${Number(x.amountWon||0).toFixed(2)}</small><small>Room ${escapeHtml(x.roomCode)} • Entry ₹${Number(x.entryFee||0).toFixed(2)} ${x.safeQuit?"• SAFE QUIT":""}</small></div>`).join(""):"<small>No player history found.</small>";
  }catch(e){$("playerLogResults").innerHTML=`<div class="paymentRow">${escapeHtml(e.message)}</div>`}
 }
+
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape")return;
+  const p=$("paymentEditModal");
+  if(p&&!p.classList.contains("hidden"))closePaymentModal();
+});

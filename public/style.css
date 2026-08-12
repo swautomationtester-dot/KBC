@@ -1801,3 +1801,113 @@ body:has(.hostPage) .answerReview .reject{background:#6b2730!important;color:#ff
 @media(prefers-reduced-motion:reduce){
   .modernHostPage *{animation:none!important;transition:none!important}
 }
+
+/* ===== FINAL HOST MODAL / VIEWPORT FIX =====
+   The host page uses .modernHostPage (not .gaCommonPage), so keep
+   modal/viewport rules scoped to the actual page class. */
+body.modernHostPage{
+  min-height:100dvh;
+  overflow-x:hidden;
+}
+body.modernHostPage:has(.hostLoginModal:not(.hidden)){
+  overflow:hidden;
+}
+body.modernHostPage .hostLoginModal{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:99999 !important;
+  width:100vw !important;
+  height:100dvh !important;
+  min-height:100dvh !important;
+  margin:0 !important;
+  padding:clamp(12px,3vw,32px) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  background:rgba(0,10,18,.82) !important;
+  backdrop-filter:blur(12px) !important;
+  -webkit-backdrop-filter:blur(12px) !important;
+}
+body.modernHostPage .hostLoginModal.hidden{
+  display:none !important;
+}
+body.modernHostPage .hostLoginCard,
+body.modernHostPage .paymentEditCard{
+  position:relative !important;
+  width:min(520px,100%) !important;
+  max-width:520px !important;
+  max-height:calc(100dvh - 32px) !important;
+  margin:auto !important;
+  padding:clamp(18px,3vw,28px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  background:linear-gradient(180deg,#073d42,#052f34) !important;
+  border:1px solid rgba(244,194,79,.60) !important;
+  border-radius:22px !important;
+  box-shadow:0 30px 100px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.04) inset !important;
+}
+body.modernHostPage .hostLoginCard form{
+  width:100%;
+  display:grid;
+  gap:13px;
+}
+body.modernHostPage .hostLoginCard input,
+body.modernHostPage .paymentEditCard input,
+body.modernHostPage .paymentEditCard select,
+body.modernHostPage .paymentEditCard textarea{
+  width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+}
+body.modernHostPage .paymentEditGrid{
+  width:100%;
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:10px !important;
+}
+body.modernHostPage .paymentEditGrid label{
+  min-width:0;
+}
+body.modernHostPage .paymentEditGrid .wide{
+  grid-column:1 / -1 !important;
+}
+body.modernHostPage .modalX{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:2;
+}
+@media(max-width:600px){
+  body.modernHostPage .hostLoginModal{
+    align-items:flex-start !important;
+    padding:12px 10px !important;
+  }
+  body.modernHostPage .hostLoginCard,
+  body.modernHostPage .paymentEditCard{
+    width:100% !important;
+    max-width:none !important;
+    max-height:calc(100dvh - 24px) !important;
+    border-radius:18px !important;
+    padding:18px !important;
+  }
+  body.modernHostPage .paymentEditGrid{
+    grid-template-columns:1fr !important;
+  }
+  body.modernHostPage .paymentEditGrid .wide{
+    grid-column:auto !important;
+  }
+}
+@media(max-height:600px) and (orientation:landscape){
+  body.modernHostPage .hostLoginModal{
+    align-items:flex-start !important;
+    padding:8px !important;
+  }
+  body.modernHostPage .hostLoginCard,
+  body.modernHostPage .paymentEditCard{
+    max-height:calc(100dvh - 16px) !important;
+  }
+}
