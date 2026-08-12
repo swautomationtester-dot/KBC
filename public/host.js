@@ -341,7 +341,15 @@ s.on("state",x=>{ window.__hostState=x; audiencePollOpen=!!x.pollActive;renderHo
    `<h3>Fastest Finger Times</h3>`+x.fastestTimes.sort((a,b)=>a.time-b.time).map(v=>`<div class=row><span>${v.name} <small>${v.employeeCode}</small></span><b>${v.status==="COMPLETED"?v.time.toFixed(0)+" ms":v.status}</b></div>`).join(""):"";
 
  const fixedLadder=[10,20,30,40,50,60,70,80,90,100];
-$("hostLadder").innerHTML=fixedLadder.map((v,i)=>`<div class="row ${i===x.current?"ladderActive":""}"><span>Q${i+1}</span><b>₹${v.toLocaleString("en-IN")}</b></div>`).join("");
+ const safeMoney=new Set([40,80]);
+ $("hostLadder").innerHTML=fixedLadder.map((v,i)=>{
+   const isSafe=safeMoney.has(v);
+   return `<div class="row ${i===x.current?"ladderActive":""} ${isSafe?"ladderSafeMoney":""}">
+     <span>Q${i+1}${isSafe?` <em class="safeMoneyBadge">SAFE MONEY</em>`:""}</span>
+     <b>₹${v.toLocaleString("en-IN")}</b>
+   </div>`;
+ }).join("")+
+ `<div class="hostSafeMoneyNote"><strong>🛡️ SAFE MONEY</strong><br>₹40 after Q4 and ₹80 after Q8 are protected milestones. Safe Quit is available at these milestones with Host approval.</div>`;
  $("board").innerHTML=x.users.filter(u=>u.status!=="eliminated").sort((a,b)=>b.score-a.score).map((u,i)=>`<div class="row participantStatusRow"><span>#${i+1} ${u.name}</span><b>${u.score}</b><em class="statusPill ${String(u.status||"waiting").toLowerCase()}">${String(u.status||"WAITING").toUpperCase()}</em></div>`).join("");
 });
 
@@ -377,7 +385,14 @@ s.on("audiencePollTimeUp",()=>{audiencePollOpen=false;updatePollButton();if($("s
 
 
 /* ===== Payment Inventory / Player Log ===== */
-function showPaymentPanel(html){const p=$("paymentInventoryPanel");if(!p)return;p.classList.remove("hidden");p.innerHTML=html}
+function showPaymentPanel(html){const p=$("paymentInventoryPanel");if(!p)return;p.classList.remove("hidden");const b=$("paymentInventoryPanelBody");if(b)b.innerHTML=html;else p.innerHTML=html}
+function closePaymentInventoryPanel(){$("paymentInventoryPanel")?.classList.add("hidden")}
+async function checkDbStatus(){
+ try{
+  const j=await apiHost("/api/host/db-status");
+  alert(`MySQL connected\nDatabase: ${j.database}\nPlayers: ${j.counts.players}\nGame logs: ${j.counts.game_results}\nPayments: ${j.counts.payments}\nQuestions: ${j.counts.questions}`);
+ }catch(e){alert(`MySQL status: ${e.message}`)}
+}
 async function apiHost(url,options={}){
  const r=await fetch(url,{credentials:"same-origin",...options});
  const j=await r.json().catch(()=>({error:"Invalid server response"}));

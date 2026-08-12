@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Host Console</title>
-<link rel="stylesheet" href="/style.css?v=20260812-host-final-responsive-2">
+<link rel="stylesheet" href="/style.css?v=20260812-host-safequit-db-3">
 <link rel="stylesheet" href="/common-ui.css?v=20260812-global-2">
 </head>
 <body class="modernHostPage">
@@ -18,6 +18,8 @@
     </div>
     <div class="hostHeaderActions">
       <button id="create" class="primary createRoomBtn" onclick="createRoom()">＋ Create Room</button>
+      <button class="homeLink" onclick="loadPlayerLogs()">📜 Game Logs</button>
+      <button class="homeLink" onclick="checkDbStatus()">🗄️ DB Status</button>
       <button id="hostLogoutBtn" class="homeLink" onclick="hostLogout()">Logout</button><a class="homeLink" href="/">Home</a>
     </div>
   </div>
@@ -186,6 +188,16 @@
     </div>
   </div>
 
+  <div id="paymentInventoryPanel" class="hostOverlayPanel hidden" role="dialog" aria-modal="true" aria-label="Game logs">
+    <div class="hostOverlayCard">
+      <button class="modalX" onclick="closePaymentInventoryPanel()">×</button>
+      <div class="eyebrow">GAME RECORDS</div>
+      <h2>Player Game Logs</h2>
+      <p>Search by player name, register number or phone. Safe-money exits are marked clearly.</p>
+      <div id="paymentInventoryPanelBody"></div>
+    </div>
+  </div>
+
   <div id="paymentEditModal" class="hostLoginModal hidden">
     <div class="paymentEditCard">
       <button class="modalX" onclick="closePaymentModal()">×</button>
@@ -226,7 +238,7 @@
 </main>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/host.js?v=20260812-10q-1"></script>
+<script src="/host.js?v=20260812-safequit-db-3"></script>
 <script src="/common-ui.js?v=20260812-global-2"></script>
 </body>
 </html>

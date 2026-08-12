@@ -160,12 +160,19 @@ function tick(){tone(700,.06,"square",.025)}
 function renderLadder(current){
  const ladder=$("prizeLadder");if(!ladder)return;
  const five=[10,20,30,40,50,60,70,80,90,100];
+ const safe=new Set([40,80]);
  ladder.innerHTML=five.slice().reverse().map((v,ri)=>{
    const i=five.length-1-ri;
-   return `<div class="ladderRow ${i===current?"active":""} ${i<current?"reached":""}">
-     <span>${i+1}</span><b>₹${v.toLocaleString("en-IN")}</b>
+   const isSafe=safe.has(v);
+   return `<div class="ladderRow ${i===current?"active":""} ${i<current?"reached":""} ${isSafe?"safeMoneyRow":""}">
+     <span>Q${i+1}${isSafe?` <em class="safeMoneyBadge">SAFE MONEY</em>`:""}</span>
+     <b>₹${v.toLocaleString("en-IN")}</b>
    </div>`;
- }).join("");
+ }).join("")+
+ `<div class="safeMoneyLegend">
+   <div><span class="safeMoneySwatch"></span><strong>SAFE MONEY</strong></div>
+   <p>Gold milestones: <b>₹40 after Q4</b> and <b>₹80 after Q8</b>. These amounts are protected once reached. Safe Quit is available at a Safe Money milestone and requires Host approval.</p>
+ </div>`;
 }
 function transition(title,sub=""){ removeCls($("tvmain"),"tv-enter");void $("tvmain").offsetWidth;$("tvmain").classList.add("tv-enter");$("tvmain").innerHTML=`<div class=transition><div class=spinnerRing></div><div class=tvkicker>${title}</div><h1>${sub}</h1></div>`}
 function countdown(seconds,onDone,pool=[],allUsers=[]){
@@ -264,10 +271,23 @@ s.on("answerLocked",a=>{
   lock.innerHTML=`<span>🔒 ANSWER LOCKED</span> ${escapeHtml(a.contestant?.name||"Contestant")} selected <b>${String.fromCharCode(65+a.choice)}. ${escapeHtml(a.option)}</b><small> Waiting for host approval…</small>`;
   panel.appendChild(lock);tone(520,.12,"sine",.04);
 });
-s.on("contestantQuit",a=>{
+function renderSafeQuitTV(a){
  const panel=document.getElementById("tvmain"); if(!panel)return;
- panel.innerHTML=`<div class="elimination"><div class="tvkicker">🚪 CONTESTANT WALKED AWAY</div><div class="winnerCrown">🏆</div><h1>${escapeHtml(a.contestant?.name||"Contestant")}</h1><p>They chose to quit and take the guaranteed amount.</p><div class="securedPoints">GUARANTEED PRIZE <b>₹${Number(a.amount||0).toLocaleString("en-IN")}</b></div><div class="nextBadge">NEXT: FASTEST FINGER</div></div>`;
- setTimeout(()=>{if(latestTvState&&latestTvState.phase==="fastest")render(latestTvState);},4000);
+ const name=a?.contestant?.name||a?.name||"Contestant";
+ const amount=Number(a?.amount||0);
+ panel.innerHTML=`<div class="elimination safeQuitFarewell">
+   <div class="tvkicker">🚪 SAFE MONEY — WALKED AWAY</div>
+   <div class="winnerCrown">🏆</div>
+   <h1>${escapeHtml(name)}</h1>
+   <p><strong>${escapeHtml(a?.message||`${name} left with the safe money of ₹${amount.toLocaleString("en-IN")}. Well played!`)}</strong></p>
+   <div class="securedPoints">SAFE MONEY <b>₹${amount.toLocaleString("en-IN")}</b></div>
+   <div class="nextBadge">WELL PLAYED • NEXT CONTESTANT</div>
+ </div>`;
+}
+s.on("contestantQuit",a=>{
+ renderSafeQuitTV(a);
+ setTimeout(()=>{if(latestTvState&&latestTvState.contestantQuit)renderSafeQuitTV(latestTvState.contestantQuit);},250);
+ setTimeout(()=>{if(latestTvState&&latestTvState.phase==="fastest"&&!latestTvState.contestantQuit)render(latestTvState);},5000);
 });
 
 s.on("contestantAnswer",a=>{
@@ -297,7 +317,8 @@ s.on("poll",c=>{
   renderPoll(latestTvState);
 });
 s.on("state",x=>{ latestTvState=x;try{
- updateJoin(x);renderParticipants(x);$("roomLabel").textContent=x.phase.toUpperCase();renderLadder(x.current);
+ updateJoin(x);
+ if(x.contestantQuit){ renderSafeQuitTV(x.contestantQuit); return; }renderParticipants(x);$("roomLabel").textContent=x.phase.toUpperCase();renderLadder(x.current);
  renderPoll(x);
 
  if(x.phase==="registration"){

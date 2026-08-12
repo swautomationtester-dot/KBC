@@ -61,9 +61,26 @@ function renderQuitButton(amount,enabled=true){
  const n=Number(amount||0); wrap.classList.remove("hidden");
  btn.textContent=n>0?`🚪 Quit & Take ₹${n}`:"🚪 Quit (No guaranteed amount yet)";
  btn.disabled=!enabled||n<=0;
- if(hint)hint.textContent=n>0?`Guaranteed amount secured: ₹${n}. Host approval is required to walk away.`:"Reach ₹40 after Q4 or ₹80 after Q8 to unlock Safe Quit.";
+ if(hint)hint.innerHTML=n>0?`<span class="safeQuitGoldNote">🛡️ Safe Money secured: ₹${n}</span><br>Host approval is required to walk away.`:`<span class="safeQuitGoldNote">🛡️ Safe Money milestones: ₹40 after Q4 • ₹80 after Q8</span><br>Safe Quit becomes available at these milestones and requires Host approval.`;
 }
 function hideQuitButton(){const w=$("quitWrap");if(w)w.classList.add("hidden");}
+let safeQuitNoticeUntil=0;
+function showSafeQuitNotice(data){
+ const name=data?.name||data?.contestant?.name||$("playerName")?.textContent||"Player";
+ const amount=Number(data?.amount||0);
+ safeQuitNoticeUntil=Date.now()+5000;
+ hideQuitButton();
+ if($("answers"))$("answers").innerHTML="";
+ if($("life"))$("life").innerHTML="";
+ if($("result"))$("result").innerHTML="";
+ if($("status"))$("status").innerHTML=`<div class="quitDecision safeQuitFarewell">
+   <div class="eyebrow">🏆 WELL PLAYED</div>
+   <h2>${escapeHtml(name)} LEFT WITH THE SAFE MONEY</h2>
+   <p>${escapeHtml(data?.message||`${name} left with the safe money of ₹${amount.toLocaleString("en-IN")}. Well played!`)}</p>
+   <strong>₹${amount.toLocaleString("en-IN")}</strong>
+ </div>`;
+}
+
 function quitGame(){
  if(answerLocked)return; const btn=$("quitBtn"); if(btn?.disabled)return;
  const amount=Number(btn.textContent.replace(/\D/g,"")||0); if(amount<=0)return;
@@ -225,6 +242,11 @@ function renderAudiencePollResult(counts, question){
 }
 
 s.on("state",x=>{ tvUniqueUrl=x.screenUrl||tvUniqueUrl; updateQuizTimers(x); renderPlayerLadder(x.users);
+ if(safeQuitNoticeUntil>Date.now()){ return; }
+ if(x.contestantQuit && x.contestantQuit.employeeCode===me){
+   showSafeQuitNotice({name:x.contestantQuit.name,amount:x.contestantQuit.amount,message:x.contestantQuit.message});
+   return;
+ }
  if(eliminationUntil>Date.now()){
    return;
  }
@@ -416,8 +438,7 @@ s.on("quitRejected",r=>{
  $("status").innerHTML=`⚠️ <b>Safe Quit was not approved.</b><br>${r.reason||"Continue the game."}`;
 });
 s.on("quitAccepted",r=>{
- hideQuitButton(); $("answers").innerHTML=""; $("life").innerHTML="";
- $("status").innerHTML=`<div class="quitDecision"><div class="eyebrow">🚪 WALKED AWAY</div><h2>Congratulations!</h2><p>You quit the game and secured</p><strong>₹${Number(r.amount||0).toLocaleString("en-IN")}</strong><small>Watch the TV for the next contestant.</small></div>`;
+ showSafeQuitNotice(r);
 });
 s.on("audiencePollRequested",()=>{});
 s.on("audiencePollApproved",()=>{

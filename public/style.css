@@ -1911,3 +1911,154 @@ body.modernHostPage .modalX{
     max-height:calc(100dvh - 16px) !important;
   }
 }
+
+/* ===== Game log overlay ===== */
+body.modernHostPage .hostOverlayPanel{
+  position:fixed;
+  inset:0;
+  z-index:99990;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(12px,3vw,32px);
+  background:rgba(0,10,18,.82);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  overflow:auto;
+}
+body.modernHostPage .hostOverlayPanel.hidden{display:none}
+body.modernHostPage .hostOverlayCard{
+  width:min(900px,100%);
+  max-height:calc(100dvh - 32px);
+  overflow:auto;
+  padding:clamp(18px,3vw,30px);
+  border:1px solid rgba(244,194,79,.55);
+  border-radius:22px;
+  background:linear-gradient(180deg,#073d42,#052f34);
+  box-shadow:0 30px 100px rgba(0,0,0,.65);
+}
+body.modernHostPage .hostOverlayCard .paymentSearch{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  margin-bottom:14px;
+}
+body.modernHostPage .hostOverlayCard .paymentSearch input{
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+}
+body.modernHostPage .hostOverlayCard .paymentRow{
+  display:grid;
+  gap:4px;
+  padding:13px 0;
+  border-bottom:1px solid rgba(255,255,255,.10);
+}
+body.modernHostPage .hostOverlayCard .paymentRow b{font-size:1rem}
+body.modernHostPage .hostOverlayCard .paymentRow small{opacity:.78}
+@media(max-width:600px){
+  body.modernHostPage .hostOverlayPanel{padding:10px;align-items:flex-start}
+  body.modernHostPage .hostOverlayCard{max-height:calc(100dvh - 20px);border-radius:18px;padding:18px}
+  body.modernHostPage .hostOverlayCard .paymentSearch{grid-template-columns:1fr}
+}
+.safeQuitFarewell{
+  animation:gaSafeQuitIn .45s ease both;
+}
+@keyframes gaSafeQuitIn{
+  from{opacity:0;transform:translateY(16px) scale(.98)}
+  to{opacity:1;transform:none}
+}
+
+/* ===== Safe Money ladder treatment ===== */
+#tvSideRail #prizeLadder .ladderRow.safeMoneyRow{
+  position:relative;
+  margin:4px 0;
+  border:1px solid rgba(241,204,93,.72);
+  background:linear-gradient(90deg,rgba(241,204,93,.24),rgba(241,204,93,.08));
+  color:#fff4c7;
+  box-shadow:inset 0 0 18px rgba(241,204,93,.08);
+}
+#tvSideRail #prizeLadder .ladderRow.safeMoneyRow b{
+  color:#f1cc5d;
+  font-size:14px;
+}
+#tvSideRail #prizeLadder .ladderRow.safeMoneyRow.active{
+  background:linear-gradient(90deg,#f1cc5d,#e2b94c);
+  color:#17373a;
+  box-shadow:0 0 18px rgba(241,204,93,.34);
+}
+#tvSideRail #prizeLadder .ladderRow.safeMoneyRow.active b{color:#17373a}
+.safeMoneyBadge{
+  display:inline-block;
+  margin-left:4px;
+  padding:2px 5px;
+  border:1px solid rgba(241,204,93,.7);
+  border-radius:999px;
+  color:#f1cc5d;
+  font-size:7px;
+  font-style:normal;
+  font-weight:1000;
+  letter-spacing:.7px;
+  vertical-align:middle;
+}
+.ladderRow.safeMoneyRow.active .safeMoneyBadge{
+  border-color:#17373a55;
+  color:#17373a;
+}
+.safeMoneyLegend{
+  margin-top:8px;
+  padding:9px 10px 10px;
+  border:1px solid rgba(241,204,93,.35);
+  border-radius:10px;
+  background:rgba(241,204,93,.07);
+}
+.safeMoneyLegend>div{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#f1cc5d;
+  font-size:9px;
+  letter-spacing:1.1px;
+}
+.safeMoneySwatch{
+  width:9px;height:9px;border-radius:50%;
+  background:#f1cc5d;
+  box-shadow:0 0 9px rgba(241,204,93,.55);
+}
+.safeMoneyLegend p{
+  margin:5px 0 0;
+  color:#b9d2cf;
+  font-size:8.5px;
+  line-height:1.45;
+}
+.safeMoneyLegend p b{color:#f5db83}
+.hostLadder .row.ladderSafeMoney{
+  margin:3px 0;
+  border:1px solid rgba(241,204,93,.62);
+  background:rgba(241,204,93,.11);
+  color:#fff3c0;
+  border-radius:9px;
+  box-shadow:inset 0 0 12px rgba(241,204,93,.05);
+}
+.hostLadder .row.ladderSafeMoney b{color:#f1cc5d}
+.hostLadder .row.ladderSafeMoney.ladderActive{
+  background:rgba(241,204,93,.26);
+  border-color:#f1cc5d;
+}
+.hostSafeMoneyNote{
+  margin-top:10px;
+  padding:10px 11px;
+  border:1px solid rgba(241,204,93,.38);
+  border-radius:11px;
+  background:rgba(241,204,93,.07);
+  color:#b9d2cf;
+  font-size:9px;
+  line-height:1.45;
+}
+.hostSafeMoneyNote strong{color:#f1cc5d;letter-spacing:1px;font-size:10px}
+
+.safeQuitGoldNote{
+  color:#f1cc5d;
+  font-weight:1000;
+  letter-spacing:.25px;
+}
