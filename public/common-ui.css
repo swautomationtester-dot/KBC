@@ -57,3 +57,104 @@ body.gaCommonPage{
 @media(prefers-reduced-motion:reduce){
   .gaCommonPage *{animation:none!important;transition:none!important}
 }
+
+/* ===== GamesArena responsive system v20260812 ===== */
+*,*::before,*::after{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,video,canvas{max-width:100%;height:auto}
+button,input,select,textarea{max-width:100%}
+table{max-width:100%}
+pre,code{max-width:100%;overflow:auto}
+.wrap,.hostPage,.cmWrap,.paymentWrap,.qrStage,.registrationLobbyLayout,.pollStage{width:min(100% - 24px,1440px);max-width:1440px}
+.gaCommonPage main{min-width:0}
+.gaCommonPage .hostPage{padding-bottom:40px}
+.gaCommonPage .hostHeader,.gaCommonPage .sectionHead,.gaCommonPage .flowHeading{min-width:0}
+.gaCommonPage .hostHeader>*{min-width:0}
+.gaCommonPage .hostHeaderActions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.gaCommonPage .hostGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:20px}
+.gaCommonPage .hostMain,.gaCommonPage .hostSide{min-width:0}
+.gaCommonPage .controlCard,.gaCommonPage .flowSection,.gaCommonPage .hostPrizeCard,.gaCommonPage .hostJoinCard{min-width:0}
+.gaCommonPage .flowButtons{display:flex;flex-wrap:wrap;gap:9px}
+.gaCommonPage .flowButtons button{flex:1 1 180px;min-width:0}
+.gaCommonPage .statsModern{grid-template-columns:repeat(4,minmax(0,1fr))}
+.gaCommonPage .hostOptions,.gaCommonPage .answers{min-width:0}
+.gaCommonPage .hostQuestionCard,.gaCommonPage .hostQuestionCard h3{overflow-wrap:anywhere}
+.gaCommonPage .hostLoginModal{
+  position:fixed;inset:0;z-index:10000;overflow:auto;
+  display:flex;align-items:center;justify-content:center;
+  padding:86px 16px 28px;
+}
+.gaCommonPage .hostLoginCard,.gaCommonPage .paymentEditCard{
+  max-height:calc(100dvh - 114px);overflow:auto;
+  width:min(430px,100%);flex:0 1 auto;
+}
+.gaCommonPage .paymentEditGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gaCommonPage .paymentEditGrid .wide{grid-column:1/-1}
+.gaCommonPage .hostSide{position:sticky;top:90px;align-self:start}
+.gaCommonPage .hostSide .qr,.gaCommonPage .hostSideQr{max-width:180px;height:auto}
+.gaCommonPage .hostSideRoomCode strong{font-size:clamp(30px,5vw,52px)}
+.gaCommonPage .paymentInventoryPanel,.gaCommonPage .paymentTable,.gaCommonPage .tableWrap{
+  width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.gaCommonPage .paymentTable table,.gaCommonPage .paymentInventoryPanel table{min-width:720px}
+.gaCommonPage .gaCommonFooter{position:relative}
+.gaCommonPage .fastestPlayerStage{
+  width:min(760px,100%);margin:0 auto;padding:clamp(18px,4vw,36px);
+  border:1px solid rgba(227,198,106,.30);border-radius:28px;
+  background:radial-gradient(circle at 50% 0%,rgba(227,198,106,.12),transparent 55%),rgba(2,37,42,.72);
+  box-shadow:0 22px 70px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.06);
+  text-align:center;animation:gaPageIn .35s ease both;
+}
+.gaCommonPage .fastestPlayerKicker{color:#e3c66a;font-weight:950;letter-spacing:3px;font-size:12px}
+.gaCommonPage .fastestPlayerStage h2{font-size:clamp(26px,6vw,52px);margin:10px 0 8px;letter-spacing:-1px}
+.gaCommonPage .fastestPlayerHint{color:#b9d3d0;font-size:clamp(12px,2.2vw,16px);margin:0 auto 18px;max-width:600px}
+.gaCommonPage .fastestPlayerSequence{
+  min-height:clamp(74px,12vw,130px);display:flex;align-items:center;justify-content:center;
+  margin:14px 0;padding:12px;overflow:hidden;
+  border:1px solid rgba(227,198,106,.40);border-radius:20px;background:rgba(255,255,255,.06);
+  color:#e3c66a;font-weight:950;font-size:clamp(28px,7vw,72px);letter-spacing:clamp(4px,1.8vw,16px);
+}
+.gaCommonPage .fastestPlayerTimer{font-size:clamp(28px,6vw,58px);font-weight:950;color:#fff;margin:12px 0 18px;min-height:1.2em}
+.gaCommonPage .fastestPlayerProgress{margin-top:14px;color:#9fd0cf;font-size:12px;font-weight:900;letter-spacing:1px}
+.gaCommonPage .fastPad{width:min(520px,100%);max-width:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 auto}
+.gaCommonPage .fastKey{min-height:clamp(74px,16vw,120px);font-size:clamp(28px,6vw,48px);padding:12px;border-radius:18px}
+.gaCommonPage .fastKey.pressed{transform:scale(.96);box-shadow:0 0 0 3px rgba(227,198,106,.35)}
+.gaCommonPage .fastKey.wrongKey{animation:fastWrong .25s ease}
+@keyframes fastWrong{50%{transform:translateX(5px);border-color:#ff6b7a}}
+.gaCommonPage .sequenceHidden{visibility:hidden;opacity:0}
+@media(max-width:1050px){
+  .gaCommonPage .hostGrid{grid-template-columns:1fr}
+  .gaCommonPage .hostSide{position:static}
+  .gaCommonPage .statsModern{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gaCommonPage .hostHeader{align-items:flex-start}
+}
+@media(max-width:700px){
+  .gaCommonPage .hostPage{width:100%;padding:18px 10px 45px}
+  .gaCommonPage .hostHeader{flex-direction:column;gap:12px}
+  .gaCommonPage .hostHeaderActions{width:100%;justify-content:flex-start}
+  .gaCommonPage .hostHeaderActions>*{flex:1 1 120px}
+  .gaCommonPage .statsModern{grid-template-columns:1fr 1fr;gap:8px}
+  .gaCommonPage .statsModern>div{padding:13px}
+  .gaCommonPage .controlCard{padding:13px}
+  .gaCommonPage .flowSection{padding:13px}
+  .gaCommonPage .sectionHead{align-items:flex-start;flex-direction:column;gap:8px}
+  .gaCommonPage .paymentEditGrid{grid-template-columns:1fr}
+  .gaCommonPage .paymentEditGrid .wide{grid-column:auto}
+  .gaCommonPage .hostLoginModal{padding:74px 10px 16px;align-items:flex-start}
+  .gaCommonPage .hostLoginCard,.gaCommonPage .paymentEditCard{max-height:calc(100dvh - 90px);padding:20px}
+  .gaCommonPage .fastestPlayerStage{border-radius:20px;padding:18px 12px}
+  .gaCommonPage .fastPad{gap:8px}
+  .gaCommonPage .fastKey{min-height:82px;border-radius:14px}
+}
+@media(max-width:480px){
+  .gaCommonNav a{font-size:9px;padding:7px 6px}
+  .gaCommonBrandText{font-size:15px}
+  .gaCommonBrandText small{font-size:7px}
+  .gaCommonPage .statsModern{grid-template-columns:1fr 1fr}
+  .gaCommonPage .flowButtons{display:grid;grid-template-columns:1fr}
+  .gaCommonPage .flowButtons button{width:100%}
+  .gaCommonPage .fastestPlayerSequence{letter-spacing:3px}
+}
+@media(prefers-reduced-motion:reduce){
+  .gaCommonPage .fastestPlayerStage,.gaCommonPage .fastKey.wrongKey{animation:none}
+}

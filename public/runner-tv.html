@@ -1,6 +1,6 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GamesArena Runner • TV</title><link rel="stylesheet" href="/runner-tv.css?v=3"><link rel="stylesheet" href="/common-ui.css?v=20260812-global-1">
+<title>GamesArena Runner • TV</title><link rel="stylesheet" href="/runner-tv.css?v=3"><link rel="stylesheet" href="/common-ui.css?v=20260812-global-2">
 </head>
 <body class="runnerTv">
 <canvas id="game"></canvas>
@@ -10,5 +10,5 @@
 <div id="finish" class="finish hidden"></div>
 <div id="tvJoin" class="tvJoin"><div><b>GAMESARENA RUNNER</b><p>Open the TV link from the Host, or enter the 4-digit room code.</p><input id="tvCode" maxlength="4" inputmode="numeric" placeholder="ROOM CODE"><button id="tvJoinBtn">OPEN GAME</button></div></div>
 <script src="/socket.io/socket.io.js"></script><script src="/runner-tv.js?v=3"></script>
-<script>document.getElementById("tvJoinBtn").onclick=()=>{const c=document.getElementById("tvCode").value.trim();if(c)location.search="?room="+encodeURIComponent(c)};</script><script src="/common-ui.js?v=20260812-global-1"></script>
+<script>document.getElementById("tvJoinBtn").onclick=()=>{const c=document.getElementById("tvCode").value.trim();if(c)location.search="?room="+encodeURIComponent(c)};</script><script src="/common-ui.js?v=20260812-global-2"></script>
 </body></html>

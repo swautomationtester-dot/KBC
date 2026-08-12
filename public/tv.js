@@ -27,7 +27,7 @@ function playQuestionAudio(questionIndex){
     questionAudio.play().catch(()=>{});
   }catch(e){}
 }
-const prizes=[10,20,30,40,50];
+const prizes=[10,20,30,40,50,60,70,80,90,100];
 function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
 
@@ -50,7 +50,7 @@ function renderParticipants(x){
 function renderTvQuestion(x){
  const removed=new Set((x.fiftyFiftyRemoved||[]).map(Number));
  const options=x.question.options.map((o,i)=>removed.has(i)?`<div class="fiftyRemoved"><b>${String.fromCharCode(65+i)}</b><span>OPTION REMOVED</span></div>`:`<div><b>${String.fromCharCode(65+i)}</b><span>${escapeHtml(o)}</span></div>`).join("");
- $("tvmain").innerHTML=`<div class="questionScreen ${x.current===4?"finalQuestion":""}"><div class=qmeta><span>QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}</span><span>${escapeHtml(x.question.category||"General Knowledge")}</span><span>₹${Number(x.question.points||0).toLocaleString("en-IN")}</span><strong id="tvQuestionTimer" class="tvQuestionTimer">30.0s</strong></div>${x.current===1?'<div class="finalBadge">🛡️ SAFE HAVEN • ₹20</div>':x.current===3?'<div class="finalBadge">🛡️ SAFE HAVEN • ₹40</div>':x.current===4?'<div class="finalBadge">🏆 FINAL QUESTION • ₹50</div>':""}<h1>${escapeHtml(x.question.text)}</h1><div class=tvopts>${options}</div></div>`;
+ $("tvmain").innerHTML=`<div class="questionScreen ${x.current===9?"finalQuestion":""}"><div class=qmeta><span>QUESTION ${x.current+1} OF ${(x.totalQuestions||10)}</span><span>${escapeHtml(x.question.category||"General Knowledge")}</span><span>₹${Number(x.question.points||0).toLocaleString("en-IN")}</span><strong id="tvQuestionTimer" class="tvQuestionTimer">30.0s</strong></div>${x.current===3?'<div class="finalBadge">🛡️ SAFE HAVEN • ₹40</div>':x.current===7?'<div class="finalBadge">🛡️ SAFE HAVEN • ₹80</div>':x.current===9?'<div class="finalBadge">🏆 FINAL QUESTION • ₹100</div>':""}<h1>${escapeHtml(x.question.text)}</h1><div class=tvopts>${options}</div></div>`;
  updateTvQuestionTimer(x);
 }
 let tvQuestionClock=null;
@@ -159,7 +159,7 @@ function wrong(){tone(180,.35,"sawtooth",.06);tone(110,.5,"sawtooth",.05,.18)}
 function tick(){tone(700,.06,"square",.025)}
 function renderLadder(current){
  const ladder=$("prizeLadder");if(!ladder)return;
- const five=[10,20,30,40,50];
+ const five=[10,20,30,40,50,60,70,80,90,100];
  ladder.innerHTML=five.slice().reverse().map((v,ri)=>{
    const i=five.length-1-ri;
    return `<div class="ladderRow ${i===current?"active":""} ${i<current?"reached":""}">
@@ -344,7 +344,7 @@ s.on("state",x=>{ latestTvState=x;try{
  if(x.phase==="eliminated"){
  const e=x.eliminatedContestant;
  $("tvmain").innerHTML=`<div class=elimination><div class=tvkicker>CONTESTANT ELIMINATED</div><div class=wrongX>✕</div><h1>WRONG ANSWER</h1><h2>${e?e.name:"Contestant"}</h2><p>Well played!</p><div class=securedPoints>PRIZE WON <b>₹${Number(e?.prizeWon??0).toLocaleString("en-IN")}</b></div><div class=nextBadge>NEXT: FASTEST FINGER</div></div>`;return}
- if(x.phase==="question"&&x.question){if(lastQuestion!==x.current){playQuestionAudio(x.current);transition("NEW CONTESTANT GAME",`QUESTION ${x.current+1} OF ${(x.totalQuestions||5)}`);setTimeout(()=>{renderTvQuestion(x);tone(440,.18);tone(660,.22,"sine",.05,.18);if(latestTvState?.pollActive){renderPoll(latestTvState);}},650);lastQuestion=x.current}else{applyTv5050(x);}return}
+ if(x.phase==="question"&&x.question){if(lastQuestion!==x.current){playQuestionAudio(x.current);transition("NEW CONTESTANT GAME",`QUESTION ${x.current+1} OF ${(x.totalQuestions||10)}`);setTimeout(()=>{renderTvQuestion(x);tone(440,.18);tone(660,.22,"sine",.05,.18);if(latestTvState?.pollActive){renderPoll(latestTvState);}},650);lastQuestion=x.current}else{applyTv5050(x);}return}
  if(x.phase==="winnerCelebration"){
   const winner=x.winner||{};
   const until=Number(x.winnerCelebrationUntil||Date.now()+30000);
@@ -354,7 +354,7 @@ s.on("state",x=>{ latestTvState=x;try{
     <div class="winnerCheck">ANSWER CHECK</div>
     <h1 class="winnerName">${winner.name||"Champion"}</h1>
     <p class="winnerCongrats">ALL 5 ANSWERS CORRECT</p>
-    <div class="winnerPoints">₹50</div>
+    <div class="winnerPoints">₹100</div>
     <div class="winnerCountdown" id="winnerCountdown">30</div>
     <button class="soundPrompt" id="winnerSoundBtn">🔊 PLAY CELEBRATION MUSIC</button>
   </div>`;

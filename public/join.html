@@ -1,17 +1,17 @@
-<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Participant Registration</title><link rel="stylesheet" href="/style.css?v=75"><link rel="stylesheet" href="/common-ui.css?v=20260812-global-1">
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Participant Registration</title><link rel="stylesheet" href="/style.css?v=75"><link rel="stylesheet" href="/common-ui.css?v=20260812-global-2">
 </head><body><main class="wrap participantPage gaPageMain"><div class=eyebrow>GAMESARENA QUIZ</div><h1>Enter the Arena</h1><div id=connection class="box status">Connecting…</div><div id=form><input id=room placeholder="Room code" maxlength=4 inputmode="numeric" pattern="[0-9]{4}" autocomplete="off"><input id=name placeholder="Full name" autocomplete="name" inputmode="text" pattern="[A-Za-z]+(?:[ ][A-Za-z]+)*"><input id=emp placeholder="Register number" maxlength=12 inputmode="numeric" pattern="[0-9]+" autocomplete="off"><button class="primary big" onclick=join()>Register & Join</button></div><div id=game class="hidden playerLiveGame">
  <div class="playerIdentity"><span class="playerLiveDot"></span><span id=playerName>Player</span></div>
  <section class=playerMain>
   <div class="playerQuestionTimer"><span>QUESTION TIMER</span><strong id="questionTimer">30.0s</strong></div><div id=status class=box>Waiting for the host…</div>
   <div id=answers class=answers></div>
   <div id=life class=lifelines></div>
-  <div id="audiencePollResult" class="audiencePollResult hidden"></div><div id=result></div><div id="quitWrap" class="quitWrap hidden"><button id="quitBtn" class="quitBtn" onclick="quitGame()">🚪 Quit &amp; Take ₹0</button><small id="quitHint">Reach ₹20 after Q2 or ₹40 after Q4 to unlock Safe Quit. Host approval is required.</small></div>
+  <div id="audiencePollResult" class="audiencePollResult hidden"></div><div id=result></div><div id="quitWrap" class="quitWrap hidden"><button id="quitBtn" class="quitBtn" onclick="quitGame()">🚪 Quit &amp; Take ₹0</button><small id="quitHint">Reach ₹40 after Q4 or ₹80 after Q8 to unlock Safe Quit. Host approval is required.</small></div>
  </section>
 </div><section class="prizeDifficultyGuide" aria-label="Question prize and difficulty">
  <div><b>Q1</b><strong>₹10</strong><span>🟢 Very Easy</span></div>
  <div><b>Q2</b><strong>₹20</strong><span>🟢 Easy</span></div>
  <div><b>Q3</b><strong>₹30</strong><span>🟡 Medium</span></div>
  <div><b>Q4</b><strong>₹40</strong><span>🟠 Hard</span></div>
- <div><b>Q5</b><strong>₹50</strong><span>🔴 Final</span></div>
-</section></main><script src=/socket.io/socket.io.js></script><script src="/player.js?v=74"></script><script src="/common-ui.js?v=20260812-global-1"></script>
+ <div><b>Q5</b><strong>₹50</strong><span>🟣 Perficient</span></div><div><b>Q6</b><strong>₹60</strong><span>Hard</span></div><div><b>Q7</b><strong>₹70</strong><span>Hard</span></div><div><b>Q8</b><strong>₹80</strong><span>🛡️ Safe Haven</span></div><div><b>Q9</b><strong>₹90</strong><span>Very Hard</span></div><div><b>Q10</b><strong>₹100</strong><span>🏆 Final</span></div>
+</section></main><script src=/socket.io/socket.io.js></script><script src="/player.js?v=20260812-10q-1"></script><script src="/common-ui.js?v=20260812-global-2"></script>
 </body></html>

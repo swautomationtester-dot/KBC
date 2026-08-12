@@ -18,8 +18,8 @@ function updateQuizTimers(x){
  const paintPoll=()=>{const el=$("audiencePollTimer");if(!el)return;let ms=Number(x.pollTimerRemaining||0);if(x.pollTimerRunning&&x.pollTimerStartAt)ms=Math.max(0,ms-(Date.now()-x.pollTimerStartAt));el.textContent=x.pollTimerRunning?`${(ms/1000).toFixed(1)}s`:`WAITING`;};
  paintPoll();if(x.pollTimerRunning)pollClockTimer=setInterval(paintPoll,100);
 }
-const prizeLadder=[10,20,30,40,50];
-const safeHavens=[20,40];
+const prizeLadder=[10,20,30,40,50,60,70,80,90,100];
+const safeHavens=[40,80];
 function playerScore(users){const u=(users||[]).find(v=>v.employeeCode===me);return u?Number(u.score||0):0}
 function renderPlayerLadder(users){ /* hidden in the live player view */ }
 function clearAnswerResult(){if($("result"))$("result").innerHTML="";}
@@ -61,7 +61,7 @@ function renderQuitButton(amount,enabled=true){
  const n=Number(amount||0); wrap.classList.remove("hidden");
  btn.textContent=n>0?`🚪 Quit & Take ₹${n}`:"🚪 Quit (No guaranteed amount yet)";
  btn.disabled=!enabled||n<=0;
- if(hint)hint.textContent=n>0?`Guaranteed amount secured: ₹${n}. Host approval is required to walk away.`:"Reach ₹20 after Q2 or ₹40 after Q4 to unlock Safe Quit.";
+ if(hint)hint.textContent=n>0?`Guaranteed amount secured: ₹${n}. Host approval is required to walk away.`:"Reach ₹40 after Q4 or ₹80 after Q8 to unlock Safe Quit.";
 }
 function hideQuitButton(){const w=$("quitWrap");if(w)w.classList.add("hidden");}
 function quitGame(){
@@ -82,21 +82,58 @@ function life(type){
  s.emit("lifeline",{type});
 }
 function renderFastest(pool,sequence,startAt,duration){
- const p=pool.find(x=>x.employeeCode===me);clearInterval(fastTimer);
+ const p=pool.find(x=>x.employeeCode===me);
+ clearInterval(fastTimer);
  if(!p){
    $("answers").innerHTML="";
    $("status").innerHTML="⏳ <b>Waiting for the next Fastest Finger.</b><br>You are still registered. Stay on this screen — the host may select you in the next group of 7.";
-   return
+   return;
  }
- fastSeq=sequence;fastIndex=0;fastStarted=false;
- $("status").innerHTML=`⚡ <b>FASTEST FINGER</b><br>Repeat the 5-letter sequence as fast as possible.`;
- $("answers").innerHTML=`<div class="sequence sequenceHidden" id="sequence" aria-hidden="true"></div><div id="fastCountdown" class="fastCountdown">GET READY</div><div class="fastPad" id="fastPad"></div>`;
+ fastSeq=sequence||[];fastIndex=0;fastStarted=false;
+ $("status").innerHTML="";
+ $("answers").innerHTML=`
+   <section class="fastestPlayerStage" aria-label="Fastest Finger">
+     <div class="fastestPlayerKicker">⚡ FASTEST FINGER</div>
+     <h2>REPEAT THE SEQUENCE</h2>
+     <p class="fastestPlayerHint">Watch the sequence. When GO appears, tap the matching buttons in the same order.</p>
+     <div class="fastestPlayerSequence sequenceHidden" id="sequence" aria-hidden="true"></div>
+     <div class="fastestPlayerTimer" id="fastCountdown">GET READY</div>
+     <div class="fastPad" id="fastPad"></div>
+     <div class="fastestPlayerProgress" id="fastProgress">0 / ${fastSeq.length} correct</div>
+   </section>`;
  const pad=$("fastPad");
- ["A","B","C","D"].forEach((label,i)=>{const b=document.createElement("button");b.className="answer fastKey";b.textContent=label;b.dataset.index=i;b.disabled=true;b.addEventListener("click",()=>tapFast(i,b));pad.appendChild(b)});
- const begin=()=>{fastStarted=true;fastIndex=0;$("sequence").textContent=sequence.map(n=>String.fromCharCode(65+n)).join(" • ");$("sequence").classList.remove("sequenceHidden");$("sequence").setAttribute("aria-hidden","false");document.querySelectorAll(".fastKey").forEach(b=>b.disabled=false);$("fastCountdown").textContent="GO!";clearInterval(fastTimer);fastTimer=setInterval(()=>{const remain=Math.max(0,startAt+duration-Date.now());$("fastCountdown").textContent=`${(remain/1000).toFixed(1)}s`;if(remain<=0){clearInterval(fastTimer);fastStarted=false}},50)};
- const wait=()=>{const ms=Math.max(0,startAt-Date.now());$("fastCountdown").textContent=ms>0?`STARTING IN ${(ms/1000).toFixed(1)}s`:"GO!";if(ms<=0)begin()};
+ ["A","B","C","D"].forEach((label,i)=>{
+   const b=document.createElement("button");
+   b.className="answer fastKey";
+   b.textContent=label;
+   b.dataset.index=i;
+   b.disabled=true;
+   b.setAttribute("aria-label","Fastest Finger "+label);
+   b.addEventListener("click",()=>tapFast(i,b));
+   pad.appendChild(b);
+ });
+ const begin=()=>{
+   fastStarted=true;fastIndex=0;
+   $("sequence").textContent=fastSeq.map(n=>String.fromCharCode(65+n)).join(" • ");
+   $("sequence").classList.remove("sequenceHidden");
+   $("sequence").setAttribute("aria-hidden","false");
+   document.querySelectorAll(".fastKey").forEach(b=>b.disabled=false);
+   $("fastCountdown").textContent="GO!";
+   clearInterval(fastTimer);
+   fastTimer=setInterval(()=>{
+     const remain=Math.max(0,startAt+duration-Date.now());
+     $("fastCountdown").textContent=`${(remain/1000).toFixed(1)}s`;
+     if(remain<=0){clearInterval(fastTimer);fastStarted=false;document.querySelectorAll(".fastKey").forEach(b=>b.disabled=true);}
+   },50);
+ };
+ const wait=()=>{
+   const ms=Math.max(0,startAt-Date.now());
+   $("fastCountdown").textContent=ms>0?`STARTING IN ${(ms/1000).toFixed(1)}s`:"GO!";
+   if(ms<=0)begin();
+ };
  fastTimer=setInterval(wait,50);wait();
 }
+
 function tapFast(i,button){
  if(!fastStarted)return;
  button.classList.add("pressed");setTimeout(()=>button.classList.remove("pressed"),120);
@@ -105,10 +142,12 @@ function tapFast(i,button){
 s.on("fastestProgressResult",r=>{
  if(r.correct){
    fastIndex++;
+   if($("fastProgress"))$("fastProgress").textContent=`${fastIndex} / ${fastSeq.length} correct`;
    $("fastCountdown").textContent=r.complete?`🏆 SUBMITTED — ${r.elapsed.toFixed(0)} ms`:`${r.elapsed.toFixed(0)} ms • ${fastIndex}/${fastSeq.length}`;
    if(r.complete){fastStarted=false;clearInterval(fastTimer);document.querySelectorAll(".fastKey").forEach(b=>b.disabled=true)}
  }else{
    fastIndex=0;
+   if($("fastProgress"))$("fastProgress").textContent=`0 / ${fastSeq.length} correct`;
    $("fastCountdown").textContent=`❌ WRONG LETTER — RESET • ${r.elapsed.toFixed(0)} ms`;
    document.querySelectorAll(".fastKey").forEach(b=>{b.classList.add("wrongKey");setTimeout(()=>b.classList.remove("wrongKey"),300)});
  }
@@ -229,7 +268,7 @@ s.on("state",x=>{ tvUniqueUrl=x.screenUrl||tvUniqueUrl; updateQuizTimers(x); ren
      $("connection").classList.add("hidden");
      $("game").classList.remove("hidden");answerLocked=!!x.pendingAnswer;
      fiftyFiftyRemoved=Array.isArray(x.fiftyFiftyRemoved)?x.fiftyFiftyRemoved.map(Number):[];
-     $("status").innerHTML=`<div class=eyebrow>YOUR GAME • QUESTION ${x.current+1} OF ${(x.totalQuestions||5)} • ${x.question.points} POINTS</div><div class="questionCategory">${x.question.category||"General Knowledge"}</div><br><b>${x.question.text}</b>`;
+     $("status").innerHTML=`<div class=eyebrow>YOUR GAME • QUESTION ${x.current+1} OF ${(x.totalQuestions||10)} • ${x.question.points} POINTS</div><div class="questionCategory">${x.question.category||"General Knowledge"}</div><br><b>${x.question.text}</b>`;
      $("answers").innerHTML="";
      x.question.options.forEach((o,i)=>{
        const b=document.createElement("button");
@@ -278,7 +317,7 @@ $("life").innerHTML=`<button onclick="life('5050')" ${lock5050?"disabled":""}>${
       <h1>CONGRATULATIONS</h1>
       <h2>${x.winner.name||"Champion"}</h2>
       <p>ALL 5 ANSWERS CORRECT</p>
-      <strong>₹50</strong>
+      <strong>₹100</strong>
       <div class="winnerCountdown" id="playerWinnerCountdown">30</div>
       <button class="primary" id="playerWinnerSound">🔊 PLAY CELEBRATION MUSIC</button>
     </div>`;
